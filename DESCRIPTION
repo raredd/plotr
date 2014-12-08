@@ -1,0 +1,19 @@
+Package: plotr
+Type: Package
+Title: More plotting functions and examples.
+Version: 0.0.1
+Author: Robert Redd  <raredd01@gmail.com>
+Maintainer: Robert Redd <raredd01@gmail.com>
+Description: Various collected plots, plotting tools, and other examples.
+Depends:
+    R (>= 3.0.2)
+Suggests:
+    ggplot2,
+    grid,
+    gridExtra,
+    Hmisc,
+    rawr
+License: GPL-3 + file LICENSE
+LazyData: yes
+URL: https://github.com/raredd/plotr
+Roxygen: list(wrap = FALSE)
