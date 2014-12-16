@@ -51,6 +51,7 @@ gplot <- function(x, y, ...) UseMethod("gplot")
 
 #' @rdname gplot
 #' @export
+
 gplot.default <- function(x, y = NULL, type = "p", xlim = NULL, ylim = NULL, 
                           log = "", main = NULL, sub = NULL, xlab = NULL, 
                           ylab = NULL, ann = par("ann"), axes = TRUE, 
@@ -116,6 +117,7 @@ gplot.default <- function(x, y = NULL, type = "p", xlim = NULL, ylim = NULL,
 
 #' @rdname gplot
 #' @export
+
 gplot.data.frame <- function(x, grid = TRUE, col.grid = 'grey90', col.acc = 'white', ...) {
   gplot2 <- function(x, xlab = names(x)[1L], ylab = names(x)[2L], ...,
                      grid = grid, col.grid = col.grid, col.acc = col.acc)
@@ -146,6 +148,7 @@ gplot.data.frame <- function(x, grid = TRUE, col.grid = 'grey90', col.acc = 'whi
 #' @param col.acc \code{grid} accent color
 #' 
 #' @export
+
 gplot.density <- function(x, main = NULL, xlab = NULL, ylab = "Density",
                           type = "l", zero.line = TRUE, grid = TRUE, col.grid = 'grey90', col.acc = 'white', ...) {
   if (is.null(xlab)) 
@@ -168,6 +171,7 @@ gplot.density <- function(x, main = NULL, xlab = NULL, ylab = "Density",
 #' @param col.acc \code{grid} accent color
 #' 
 #' @export
+
 gplot.formula <- function(formula, data = parent.frame(), ..., subset, 
                           ylab = varnames[response], ask = dev.interactive(),
                           grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
@@ -264,6 +268,7 @@ gplot.formula <- function(formula, data = parent.frame(), ..., subset,
 #' @param col.acc \code{grid} accent color
 #' 
 #' @export
+
 gplot.lm <- function(x, which = c(1L:3L, 5L), grid = TRUE, col.grid = 'grey90', col.acc = 'white', 
                      caption = list("Residuals vs Fitted","Normal Q-Q",
                                      "Scale-Location", "Cook's distance",
@@ -583,6 +588,7 @@ gplot.lm <- function(x, which = c(1L:3L, 5L), grid = TRUE, col.grid = 'grey90', 
 #' @param col.acc \code{grid} accent color
 #' 
 #' @export
+
 gplot.table <- function(x, type = "h", ylim = c(0, max(x)), lwd = 2,
                         xlab = NULL, ylab = NULL, frame.plot = is.num, ...,
                         grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
@@ -640,6 +646,7 @@ gqqnorm <- function(y, ...) UseMethod("gqqnorm")
 
 #' @rdname gqqnorm
 #' @export
+
 gqqnorm.default <- function(y, ylim, main = "Normal Q-Q Plot", 
                             xlab = "Theoretical Quantiles", 
                             ylab = "Sample Quantiles", plot.it = TRUE, 
@@ -669,6 +676,7 @@ gqqnorm.default <- function(y, ylim, main = "Normal Q-Q Plot",
 
 #' @rdname gqqnorm
 #' @export
+
 gqqplot <- function(x, y, plot.it = TRUE, xlab = deparse(substitute(x)), 
           ylab = deparse(substitute(y)), ..., 
           grid = TRUE, col.grid = 'grey90', col.acc = 'white') {

@@ -2,8 +2,8 @@ Package: plotr
 Type: Package
 Title: More plotting functions and examples.
 Version: 0.0.1
-Author: Robert Redd  <raredd01@gmail.com>
-Maintainer: Robert Redd <raredd01@gmail.com>
+Authors@R: person("Robert", "Redd", email = "raredd01@gmail.com",
+  role = c("aut", "cre"))
 Description: Various collected plots, plotting tools, and other examples.
 Depends:
     R (>= 3.0.2)
@@ -12,8 +12,10 @@ Suggests:
     grid,
     gridExtra,
     Hmisc,
+    knitr,
     rawr
-License: GPL-3 + file LICENSE
+License: GPL-2
 LazyData: yes
 URL: https://github.com/raredd/plotr
 Roxygen: list(wrap = FALSE)
+VignetteBuilder: knitr
