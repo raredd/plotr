@@ -560,7 +560,7 @@ prettypie <- function(dat, file, dev = 'pdf', width = 15, height = 11,
                       main, sub, note) {
   m <- match.call()
   if (missing(main)) main <- ''
-  if (missing(sub)) sub <- ''
+  if (missing(sub))  sub  <- ''
   if (missing(note)) note <- ''
   if (missing(file)) file <- getwd()
   
@@ -622,4 +622,150 @@ prettypie <- function(dat, file, dev = 'pdf', width = 15, height = 11,
   mtext(sub, side = 3, line = -3.5, adj = 0, cex = 1.75, outer = TRUE, font = 3)
   mtext(note, side = 1, line = 0, adj = 1, cex = 1.2, outer = TRUE, font = 3)
   dev.off()
+}
+
+#' Map barplot
+#' 
+#' Creates a barplot in the shape of a map region.
+#' 
+#' @param x a vector of proportions summing to 1 (approximately)
+#' @param db data base; see \code{\link[maps]{map}}
+#' @param region the region; see \code{\link[maps]{map}}
+#' @param labels optional vector of labels for each section
+#' @param cols a vector of colors for each section
+#' 
+#' @examples
+#' par(mar = c(0,0,0,0))
+#' barmap(c(1,1,1)/3, region = 'Germany', cols = c('red','black','gold'))
+#'  
+#' voteGermany2013 <- read.table(header = TRUE, text = "Party Result
+#'                               1 CDU/CSU   49.4
+#'                               2     SPD   30.5
+#'                               3   LINKE   10.2
+#'                               4  GRUENE   10.0")
+#'  
+#' with(voteGermany2013,
+#'      barmap(Result / 100, region = 'Germany',
+#'             labels = sprintf('%s (%s%%)', Party, Result)))
+#' 
+#' @export
+
+barmap <- function(x, db = 'worldHires', region, labels, cols) {
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  
+  require('maps')
+  require('mapdata')
+  
+  ## fill = TRUE !important
+  dat <- map(db, region, fill = TRUE)
+  
+  ## set up plotting window
+  p <- par('usr')
+  plot.new()
+  plot.window(p[1:2], p[3:4])
+  
+  ## calculate some useful things
+  xx <- range(dat$x, na.rm = TRUE)
+  yy <- range(dat$y, na.rm = TRUE)
+  zz <- diff(yy) * x
+  
+  if (missing(cols))
+    cols <- palette(rainbow(length(x)))
+  
+  ## draw and color rectangles
+  dyy <- rep(0, length(zz))
+  dy <- 0
+  for (ii in seq_along(zz)) {
+    rect(p[1], yy[1] + dy, p[2], yy[1] + (dy <- sum(zz[1:ii])),
+         col = cols[ii], border = NA)
+    ## label y-coordinates
+    dyy[ii] <- yy[1] + c(0, cumsum(zz))[ii] + zz[ii] / 2
+  }
+  
+  map(db, region, col = 'black', add = TRUE)
+  
+  ## trim around borders
+  xb <- xx + c(-1,1)
+  yb <- yy + c(-1,1)
+  polypath(c(dat$x, NA, c(xb, rev(xb))), c(dat$y, NA, rep(yb, each = 2)),
+           col = 'white', rule = 'evenodd')
+  
+  if (!missing(labels))
+    text(max(xx), dyy, labels = labels, pos = 4, xpd = NA)
+}
+
+#' Wide bar plots
+#' 
+#' Create a series of barplots by grouping factor.
+#' 
+#' @param x vector of grouping values
+#' @param y numeric vector of data values
+#' @param main overall title for plot
+#' @param sub sub-title for plot
+#' @param foot footnote for plot
+#' @param note note for plot
+#' @param col a vector of colors for elements of the form 
+#' \code{c(section background, text, negative bars, positive bars)}
+#' 
+#' @examples
+#' \dontrun{
+#' pdf('./widebar.pdf', width = 14, height = 7)
+#' par(oma = c(5,5,7,5), mar = c(5,0,3,.1), las = 1,
+#'     fg = 'transparent', bg = 'grey98')
+#' widebars(x <- rep(2004:2015, each = 4), rnorm(48),
+#'          main = sprintf('Market value, %s',
+#'                         paste0(range(x), collapse = ' - ')),
+#'          sub = 'Percent change, quarterly',
+#'          foot = sprintf('Values current as of %s',
+#'                         format(Sys.time(), '%b %Y')),
+#'          note = 'github.com/raredd')
+#' dev.off()
+#' }
+#' 
+#' par(oma = c(5,5,7,5), mar = c(5,0,3,.1), las = 1,
+#'     fg = 'transparent', bg = 'grey98')
+#' widebars(mtcars$gear, mtcars$mpg * sample(c(-1,1), 32, replace = TRUE),
+#'          'Motor Trend car road tests', 'Miles per gallon by gear',
+#'          'some footnote that isn\'t important', 'blahblah')
+#' @export
+
+widebars <- function(x, y, main, sub, foot, note,
+                     col = c('grey90','grey30','lightblue2','dodgerblue2')) {
+  
+  if (missing(main)) main <- ''
+  if (missing(sub))  sub  <- ''
+  if (missing(foot)) foot <- ''
+  if (missing(note)) note <- ''
+  
+  ## data and aesthetic vars
+  bgcol  <- col[1]
+  txtcol <- col[2]
+  barcol <- col[3:4]
+  
+  xx <- unique(x)
+  rr <- range(y) + c(-1, 1) * diff(range(y)) / 50
+  
+  par(mfcol = c(1, length(xx)))
+  for (ii in 1:length(xx)) {
+    xt <- y[x == xx[ii]]
+    cols <- ifelse(xt < 0, barcol[1], barcol[2])
+    barplot(xt, border = NA, bty = 'n', col = cols, ylim = rr, axes = FALSE,
+            panel.first = {
+              usr <- par('usr')
+              rect(usr[1], usr[3], usr[2], usr[4], col = bgcol)
+            })
+    if (ii == 1)
+      axis(2, lwd = 0, cex.axis = 1.25,
+#            labels = paste0(pretty(rr), '%'),
+           at = pretty(rr))
+    mtext(text = xx[ii], side = 1, line = 2, cex = 1.25, col = txtcol)
+  }
+  
+  mtext(main, line = 2.5, adj = 0, cex = 2, col = txtcol, outer = TRUE)
+  mtext(sub, line = -0.5, adj = 0, cex = 1.5, col = txtcol, outer = TRUE)
+  mtext(note, side = 1, line = 1, adj = 1, cex = 1.25, font = 3,
+        col = txtcol, outer = TRUE)
+  mtext(foot, side = 1, line = 1, adj = 0, cex = 1.25, font = 3,
+        col = txtcol, outer = TRUE)
 }
