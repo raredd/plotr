@@ -1,5 +1,6 @@
 ## some random plot things
-# color.bar, prettybars, prettybars2, zoomin, ptlocator, prettypie
+# color.bar, prettybars, prettybars2, zoomin, ptlocator, prettypie, widebars,
+# waffle, bump
 ##
 
 #' Color legend
@@ -768,4 +769,125 @@ widebars <- function(x, y, main, sub, foot, note,
         col = txtcol, outer = TRUE)
   mtext(foot, side = 1, line = 1, adj = 0, cex = 1.25, font = 3,
         col = txtcol, outer = TRUE)
+}
+
+#' waffle
+#' 
+#' A waffle chart
+#' 
+#' If \code{mat} is given, all other arguments except \dots are ignored, and
+#' \code{mat} is used to specify dimensions, layout, and colors for the plot;
+#' see examples.
+#' 
+#' @param x an integer vector with counts for each group
+#' @param rows number of rows
+#' @param horiz logical; orientation of the chart and pattern of coloring
+#' boxes; default is \code{TRUE} (horiztonal)
+#' @param cols colors for each group, should be of length \code{length(x)}
+#' @param mat an optional matrix giving the layout; see details
+#' @param ... additional graphical parameters passed to \code{par}
+#' @examples
+#' waffle(c(3, 10), rows = 2, cols = c('red','black'))
+#' waffle(c(15, 700), rows = 40, horiz = FALSE, cols = c('salmon2','grey90'))
+#' 
+#' cols <- c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF")
+#' waffle(c(80, 30, 20, 10), rows = 8, cols = cols, mar = c(0,0,0,7))
+#' legend('right', legend = LETTERS[1:4], pch = 15, col = cols, pt.cex = 2,
+#'        bty = 'n')
+#'        
+#' ## using mat
+#' mat <- rep(c(cols, NA), times = c(80, 30, 20, 10, 4))
+#' waffle(mat = matrix(mat, 8))
+#' 
+#' \dontrun{
+#' pdf('~/desktop/waffle.pdf', width = 7, height = 3)
+#' savings <- c('Mortgage ($84,911)' = 84911,
+#'              'Auto and\ntuition loans ($14,414)'=14414,
+#'              'Home equity loans ($10,062)' = 10062,
+#'              'Credit cards\n($8,565)' = 8565)
+#' w <- waffle(savings / 392, rows = 7, cols = c("#c7d4b6", "#a3aabd", "#a0d0de", "#97b5cf"),
+#'             bg = 'cornsilk', mar = c(0,0,0,3))
+#' xx <- c(-.05, .73, .85, .93)
+#' yy <- c(-.05, -.05, -.35, -.05)
+#' segments(x0 = xx, y0 = .05, y1 = yy, lty = 'dotted',
+#'          lwd = 1, xpd = NA, col = 'grey50')
+#' text(xx, yy + .05, labels = names(savings), xpd = NA, cex = .6, col = 'grey50', pos = 1)
+#' p <- par('usr')
+#' mtext('Average household savings each year', at = xx[1], font = 2,
+#'       col = 'grey50', adj = 0, line = 1)
+#' mtext('Source: Federal Reserve', side = 1, font = 3, at = xx[1],
+#'       col = 'grey50', adj = 0, cex = .6, line = 2)
+#' legend(.87, 1.3, legend = '$392', xpd = NA, bty = 'n', bg = 'cornsilk',
+#'        col = 'orange', text.col = 'grey50', pch = 15, cex = .8, pt.cex = 1.5)
+#' dev.off()
+#' }
+#' 
+#' @export
+
+waffle <- function(x, rows, horiz = TRUE, cols = seq_along(x), mat, ...) {
+  
+  if (!missing(mat)) {
+#     m <- mat[nrow(mat):1, ]
+    m <- mat
+  } else {
+    xx <- rep(cols, times = x)
+    lx <- length(xx)
+    m <- matrix(nrow = rows, ncol = (lx %/% rows) + (lx %% rows != 0))
+    m[1:length(xx)] <- xx
+    
+    if (!horiz) {
+      m <- matrix(c(m), nrow = rows, byrow = TRUE)
+      m <- m[nrow(m):1, ]
+    }
+  }
+  
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  
+  par(list(...))
+  plot.new()
+  o <- cbind(c(row(m)), c(col(m))) + 1
+  plot.window(xlim = c(0, max(o[, 2]) + 1), ylim = c(0, max(o[, 1]) + 1),
+              asp = 1, xaxs = 'i', yaxs = 'i')
+  rect(o[, 2], o[, 1], o[, 2] + .85, o[, 1] + .85, col = c(m), border = NA)
+  
+  invisible(list(m = m, o = o))
+}
+
+#' bump chart
+#' 
+#' A bump chart
+#' 
+#' @param mat an \code{n x t} matrix with \code{n} observations and \code{t}
+#' timepoints
+#' @param adj label position adjustment
+#' @param ... additional graphical parameters passed to \code{par}
+#' 
+#' @examples
+#' mat <- replicate(5, sample(1:10))
+#' dimnames(mat) <- list(rownames(mtcars)[1:nrow(mat)], paste0('time', 1:ncol(mat)))
+#' bump(mat, mar = c(2,4,2,9), adj = .1, bg = 'cornsilk')
+#' 
+#' @export
+
+bump <- function(mat, adj = .5, ...) {
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  
+  par(list(...))
+  plot.new()
+  plot.window(xlim = c(0, ncol(mat)), ylim = c(0, nrow(mat)),
+              xaxs = 'i', yaxs = 'i')
+  segments(x0 = 1:ncol(mat), y0 = 1 - adj, y1 = nrow(mat),
+           col = 'grey70', lty = 'dashed')
+  
+  lapply(1:nrow(mat), function(x) lines(mat[x, ], col = x))
+  rn <- rownames(mat)
+  start <- order(mat[, 1])
+  end <- order(mat[, ncol(mat)])
+  
+  text(1 - adj, 1:nrow(mat), labels = rn[start], col = start, adj = 1, xpd = NA)
+  text(ncol(mat) + adj, 1:nrow(mat), labels = rn[end], col = end,
+       xpd = NA, adj = 0)
+  text(1:ncol(mat), y = 0, labels = colnames(mat), xpd = NA)
 }
