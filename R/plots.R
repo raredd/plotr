@@ -1,6 +1,6 @@
 ## some random plot things
 # color.bar, prettybars, prettybars2, zoomin, ptlocator, prettypie, widebars,
-# waffle, bump
+# waffle, bump, histr
 ##
 
 #' Color legend
@@ -890,4 +890,66 @@ bump <- function(mat, adj = .5, ...) {
   text(ncol(mat) + adj, 1:nrow(mat), labels = rn[end], col = end,
        xpd = NA, adj = 0)
   text(1:ncol(mat), y = 0, labels = colnames(mat), xpd = NA)
+}
+
+#' histr
+#' 
+#' A histogram with density curve and rug.
+#' 
+#' @param x a vector of values for which the histogram is desired
+#' @param ... additional parameters passed to \code{\link{hist}} or graphical
+#' parameters passed to \code{\link{par}}
+#' @param line.pars optional list of additional parameters passed to
+#' \code{\link{line}}
+#' @param rug.pars optional list of additional parameters passed to
+#' \code{\link{rug}}
+#' @param poly.pars optional list of additional parameters passed to
+#' \code{\link{polygon}}
+#' 
+#' @return
+#' A list of length two containing the return value of \code{\link{hist}}
+#' and \code{\link{density}} for \code{x}.
+#' 
+#' @examples
+#' set.seed(1)
+#' histr(x <- rnorm(100), xlim = c(-3, 3), las = 1)
+#' plot(density(x), xlim = c(-3, 3))
+#' 
+#' histr(x + 50, main = 'Age at diagnosis', xlab = 'Age',
+#'       poly.pars = list(col = 'dodgerblue2', density = 30),
+#'       lines.pars = list(lty = 'dashed', lwd = 3),
+#'       rug.pars = list(side = 3, col = 'red'))
+#' 
+#' @export
+
+histr <- function(x, ..., lines.pars, rug.pars, poly.pars) {
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  m <- match.call()
+  if (length(xx <- grep('pars', names(m))))
+    m[xx] <- lapply(m[xx], function(ii) as.list(ii)[-1L])
+  
+  par(las = 1, mar = c(5,4,4,4.5) + .1, tcl = .2)
+  d <- density(x)
+  h <- if (is.null(match.call()$xlab))
+    hist(x, ..., xlab = sprintf('N = %s  Bandwidth = %.3f', d$n, d$bw)) else
+      hist(x, ...)
+  rs <- max(h$counts) / max(d$y)
+  
+  do.call('lines', c(list(x = d$x, y = d$y * rs, type = 'l'), m$lines.pars))
+  do.call('rug', c(list(x = x), m$rug.pars))
+  do.call('polygon', 
+          c(list(x = c(d$x, rev(d$x)),
+                 y = c(d$y * rs, rep(par('usr')[3], length(d$y))),
+                 col = adjustcolor(m$poly.pars$col %||% NA, alpha.f = .25),
+                 border = NA),
+            m$poly.pars[-which(names(m$poly.pars) == 'col')]))
+  
+  par(new = TRUE)
+  plot(density(x), type = 'n', ann = FALSE, axes = FALSE)
+  p <- par('usr')
+  text(p[2] + .15 * diff(p[1:2]), mean(p[3:4]), labels = 'Density',
+       srt = -90, xpd = NA)
+  axis(4)
+  invisible(list(h = h, d = d))
 }
