@@ -1,6 +1,6 @@
 ## some random plot things
 # color.bar, prettybars, prettybars2, zoomin, ptlocator, prettypie, widebars,
-# waffle, bump, histr
+# waffle, bump, histr, polyShade
 ##
 
 #' Color legend
@@ -952,4 +952,52 @@ histr <- function(x, ..., lines.pars, rug.pars, poly.pars) {
        srt = -90, xpd = NA)
   axis(4)
   invisible(list(h = h, d = d))
+}
+
+#' Polygon shading
+#' 
+#' Color or shade the area under a curve.
+#' 
+#' @param x,y x- and y-values from the curve
+#' @param from a vector of x-coordinates \emph{from} which to color
+#' @param to a vector of x-coordinates \emph{to} which to color (same length)
+#' as \code{from}
+#' @param n tuning parameter for fitting the shading region to the curve; a
+#' lower value will result in a worse fit around the curve
+#' @param miny by default, shading will extend from the curve to \code{min(y)}
+#' @param ... additional parameters passed to \code{\link{polygon}}; common
+#' uses are \code{density} for shading lines, \code{col} for shading color(s),
+#' \code{border} for border color, or \code{lty} for line type
+#' 
+#' @seealso
+#' \url{http://www.fromthebottomoftheheap.net/2013/01/11/shading-regions-under-a-curve/}
+#' 
+#' @examples
+#' set.seed(1)
+#' x <- c(rnorm(75), rnorm(25, 5))
+#' plot(xx <- density(x), panel.first = {
+#'   polyColor(xx$x, xx$y, from = c(min(xx$x), 6), to = c(-2, max(xx$x)),
+#'             col = adjustcolor('red', .3), border = NA)
+#' })
+#' 
+#' polyColor(xx$x, xx$y, -1, 2, col = 'red', border = NA)
+#' polyColor(xx$x, xx$y, 0, 4, col = 'blue', density = 20, lty = 4, 
+#'           miny = par('usr')[1], border = NA)
+#' 
+#' @export
+
+polyShade <- function(x, y, from, to, n = 50, miny, ...) {
+  if (!identical(lf <- length(from), lt <- length(to)))
+    stop('\'from\' and \'to\' should have the same length')
+  if (missing(miny))
+    miny <- min(y)
+  
+  drawPoly <- function(fun, from, to, n = 50, miny, ...) {
+    Sq <- seq(from = from, to = to, length = n)
+    polygon(x = c(Sq[1], Sq, Sq[n]), y = c(miny, fun(Sq), miny), ...)
+  }
+  interp <- approxfun(x = x, y = y)
+  mapply(drawPoly, from = from, to = to, ...,
+         MoreArgs = list(fun = interp, n = n, miny = miny))
+  invisible()
 }
