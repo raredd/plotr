@@ -1,0 +1,21 @@
+---
+title: "plotr"
+author: "Robert Redd"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r}
+## a pretty legend
+par(mfrow = c(2,1))
+with(mtcars,
+     plot(mpg, pch = 19, cex = 2, main = 'color by weight (red = heavier)',
+     col = colorRampPalette(c('yellow','red'))(1000)[rescaler(wt, c(1, 1000))]))
+with(mtcars,
+     plot(mpg, pch = 19, cex = 2, bty = 'l', main = 'color by weight (red = heavier)',
+     col = color.bar(c('yellow','red'), x = wt, y = mpg, labels = wt)))
+```
