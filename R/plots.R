@@ -946,7 +946,7 @@ histr <- function(x, ..., lines.pars, rug.pars, poly.pars) {
             m$poly.pars[-which(names(m$poly.pars) == 'col')]))
   
   par(new = TRUE)
-  plot(density(x), type = 'n', ann = FALSE, axes = FALSE)
+  plot(d, type = 'n', ann = FALSE, axes = FALSE)
   p <- par('usr')
   text(p[2] + .15 * diff(p[1:2]), mean(p[3:4]), labels = 'Density',
        srt = -90, xpd = NA)
