@@ -12,6 +12,7 @@ Suggests:
     grid,
     gridExtra,
     Hmisc,
+    igraph,
     knitr,
     rawr
 License: GPL-2
