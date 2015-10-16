@@ -773,7 +773,7 @@ widebars <- function(x, y, main, sub, foot, note,
 
 #' waffle
 #' 
-#' A waffle chart
+#' A waffle chart.
 #' 
 #' If \code{mat} is given, all other arguments except \dots are ignored, and
 #' \code{mat} is used to specify dimensions, layout, and colors for the plot;
@@ -786,6 +786,7 @@ widebars <- function(x, y, main, sub, foot, note,
 #' @param cols colors for each group, should be of length \code{length(x)}
 #' @param mat an optional matrix giving the layout; see details
 #' @param ... additional graphical parameters passed to \code{par}
+#' 
 #' @examples
 #' waffle(c(3, 10), rows = 2, cols = c('red','black'))
 #' waffle(c(15, 700), rows = 40, horiz = FALSE, cols = c('salmon2','grey90'))

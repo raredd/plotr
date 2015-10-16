@@ -1,4 +1,6 @@
-## utils
+### utils
+# plotr_utils, %ni%, %inside%, %||%, tcol
+###
 
 #' plotr utils
 #' 
