@@ -1,5 +1,5 @@
 ### utils
-# plotr_utils, %ni%, %inside%, %||%, tcol
+# plotr_utils, %ni%, %inside%, %||%, tcol, rescaler
 ###
 
 #' plotr utils
@@ -87,4 +87,21 @@ tcol <- function(color, trans = 255) {
   res <- unlist(unname(Map(paste0, res, as.character(as.hexmode(trans)))))
   res[is.na(color)] <- NA
   return(res)
+}
+
+## rawr::rescaler
+rescaler <- function(x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
+  zero_range <- function (x, tol = .Machine$double.eps * 100) {
+    if (length(x) == 1) return(TRUE)
+    if (length(x) != 2) stop('\'x\' must be length one or two')
+    if (any(is.na(x)))  return(NA)
+    if (x[1] == x[2])   return(TRUE)
+    if (all(is.infinite(x))) return(FALSE)
+    m <- min(abs(x))
+    if (m == 0) return(FALSE)
+    abs((x[1] - x[2]) / m) < tol
+  }
+  if (zero_range(from) || zero_range(to))
+    return(rep(mean(to), length(x)))
+  (x - from[1]) / diff(from) * diff(to) + to[1]
 }
