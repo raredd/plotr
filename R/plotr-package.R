@@ -5,4 +5,5 @@
 #' @name plotr-package
 #' @aliases plotr
 #' @docType package
+#' @import ggplot2 grid gridExtra
 NULL
