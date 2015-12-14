@@ -1,4 +1,4 @@
-##
+### gg-style base plots
 # gplot, gplot.default, gplot.data.frame, gplot.density, gplot.formula, 
 # gplot.lm, gplot.table, gqqnorm, gqqnorm.default, gqqplot, gcurve,
 # gplot.function, gplot.factor, gplot.histogram, ghist, ghist.default, 
@@ -6,24 +6,7 @@
 # gboxplot.default, gboxplot.matrix gboxplot.formula, gbxp, gstripchart,
 # gstripchart.default, gstripchart.formula, gspineplot, gspineplot.default,
 # gspineplot.formula, gsunflowerplot
-##
-
-
-## TODO
-# EXAMPLES CHECKED: curve, plot, plot.default, plot.data.frame, density,
-# plot.formula, plot.lm, plot.table, qqnorm, qqplot, curve, plot.function,
-# plot.factor, plot.histogram, hist, hist.default, hist.Date, hist.POSIXt,
-# gbarplot, gbarplot.default, boxplot, boxplot.default, boxplot.matrix, 
-# boxplot.formula, bxp, gstripchart, spinplot, spineplot.default, 
-# spineplot.formula, matplot, matpoints, matlines, sunflowerplot.default,
-# sunflowerplot.formula
-#
-# ADD DOCS:
-# OTHERS: cdplot-NO, contour-NO, coplot-NO, dotchart-NO, filled.contour-NO,
-# image-NO, mosaicplot-NO, persp-NO, pie-NO, piechart-DEFUNCT, plot.xy-NO,
-# plotHclust-NO, polypath-NO, rasterImage-NO, rug-NO, stars, stem-NO, 
-# xspline-NO, plot.design-NO
-##
+###
 
 
 #' Generic X-Y plotting
