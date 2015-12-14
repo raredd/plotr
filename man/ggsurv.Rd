@@ -144,7 +144,7 @@ coxfit1 <- survfit(coxph(Surv(time = time, event = status) ~ strata(I(age > 45))
 
 ggsurv(kmfit0)
 
-ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2, col.cens = 'blue', 
+ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2,
   grid = FALSE, pval = c(500, .75))
 
 ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2,

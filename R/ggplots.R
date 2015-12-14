@@ -216,7 +216,7 @@ ggwidths <- function(..., moreArgs) {
 #' 
 #' ggsurv(kmfit0)
 #' 
-#' ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2, col.cens = 'blue', 
+#' ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2,
 #'   grid = FALSE, pval = c(500, .75))
 #' 
 #' ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2,
@@ -279,7 +279,7 @@ ggsurv <- function(s,
     message('ticks not specified: \ntick marks defaulting to seq(0, ',
             'max(time), length.out = 10)\n')
   if (missing(xlab)) xlab <- 'Time'
-  if (missing(ylab)) ylab <- 'Probability of event'
+  if (missing(ylab)) ylab <- 'Probability of survival'
   if (missing(main)) main <- ''
   
   #### allow for backwards compatibility
