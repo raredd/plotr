@@ -135,7 +135,7 @@ ggwidths <- function(..., moreArgs) {
 #' number of strata
 #' @param lty.surv line type used for survival line; default is 1 (solid line)
 #' @param censor logical; if \code{TRUE}, plots censored observations (default)
-#' @param col.cens color for censore
+#' @param col.cens color for censor marks
 #' @param mark plotting character for censored observations
 #' @param confin logical; plot confidence bounds around survival estimate
 #' @param confband logical; plot confidence band; note that this is not a 
@@ -219,11 +219,12 @@ ggwidths <- function(..., moreArgs) {
 #' ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2, col.cens = 'blue', 
 #'   grid = FALSE, pval = c(500, .75))
 #' 
-#' ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2, col.cens = 'red', 
-#'   confband = TRUE, col.band = c('blue','red'), 
-#'   legend.labels = c('Male', 'Female'), median = TRUE, ticks = c(0, 1000, 200))
+#' ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2,
+#'   confband = TRUE, col.band = c('blue','red'),
+#'   legend.labels = c('Male', 'Female'),
+#'   median = TRUE, ticks = c(0, 1000, 200))
 #'   
-#' ggsurv(coxfit0, basehaz = TRUE)
+#' ggsurv(coxfit0, basehaz = TRUE, col.surv = 1:4)
 #' 
 #' ## this long label mis-aligns the table numbers, so we can use plot.margin
 #' ## to adjust; it may be easier to adjust plot.margin instead of table.margin
@@ -235,9 +236,8 @@ ggwidths <- function(..., moreArgs) {
 #' \dontrun{
 #' png('plot.png', height = 600, width = 750)
 #' ggsurv(coxfit1, confin = FALSE, median = TRUE, confband = FALSE,
-#'   legend.labels = c('< 45','> 45'), 
-#'   col.surv = c('red','green'), mark = '#', col.cens = 'black', 
-#'   legend = FALSE)
+#'   legend.labels = c('< 45','> 45'), legend = FALSE,
+#'   col.surv = c('red','green'), mark = '#')
 #' dev.off()
 #' }
 #' @export
@@ -358,12 +358,12 @@ ggsurv <- function(s,
                                 colour = col.surv, shape = mark) 
       } else { 
         if (is.null(col.cens) & is.null(col.surv)) {
-          tmp <- tmp + geom_point(data = subset(survdat, n.censor > 0), 
-                                  aes(x = time, y = surv), 
+          tmp <- tmp + geom_point(data = subset(survdat, n.censor > 0),
+                                  aes(x = time, y = surv),
                                   colour = 'black', shape = mark)
         } else {
-          tmp <- tmp + geom_point(data = subset(survdat, n.censor > 0), 
-                                  aes(x = time, y = surv), 
+          tmp <- tmp + geom_point(data = subset(survdat, n.censor > 0),
+                                  aes(x = time, y = surv),
                                   colour = col.cens, shape = mark)
         }
       }
@@ -440,11 +440,11 @@ ggsurv <- function(s,
         tmp <- tmp + geom_point(data = subset(survdat, n.censor > 0), 
                                 aes(x = time, y = surv, colour = strata, 
                                     group = strata), shape = mark) 
-      } else { 
+      } else {
         tmp <- tmp + geom_point(data = subset(survdat, n.censor > 0), 
                                 aes(x = time, y = surv, colour = strata, 
-                                    group = strata, shape = strata), 
-                                colour = col.cens) + 
+                                    group = strata, shape = strata)) +
+          # scale_colour_manual(values = col.cens) +
           scale_shape_manual(values = marks)
       }
     }
