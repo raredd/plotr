@@ -21,7 +21,7 @@ number of strata}
 
 \item{censor}{logical; if \code{TRUE}, plots censored observations (default)}
 
-\item{col.cens}{color for censore}
+\item{col.cens}{color for censor marks}
 
 \item{mark}{plotting character for censored observations}
 
@@ -147,11 +147,12 @@ ggsurv(kmfit0)
 ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2, col.cens = 'blue', 
   grid = FALSE, pval = c(500, .75))
 
-ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2, col.cens = 'red', 
-  confband = TRUE, col.band = c('blue','red'), 
-  legend.labels = c('Male', 'Female'), median = TRUE, ticks = c(0, 1000, 200))
+ggsurv(kmfit1, confin = FALSE, lty.surv = 1:2,
+  confband = TRUE, col.band = c('blue','red'),
+  legend.labels = c('Male', 'Female'),
+  median = TRUE, ticks = c(0, 1000, 200))
   
-ggsurv(coxfit0, basehaz = TRUE)
+ggsurv(coxfit0, basehaz = TRUE, col.surv = 1:4)
 
 ## this long label mis-aligns the table numbers, so we can use plot.margin
 ## to adjust; it may be easier to adjust plot.margin instead of table.margin
@@ -163,9 +164,8 @@ ggsurv(coxfit0, confin = FALSE, col.atrisk = 'black',
 \dontrun{
 png('plot.png', height = 600, width = 750)
 ggsurv(coxfit1, confin = FALSE, median = TRUE, confband = FALSE,
-  legend.labels = c('< 45','> 45'), 
-  col.surv = c('red','green'), mark = '#', col.cens = 'black', 
-  legend = FALSE)
+  legend.labels = c('< 45','> 45'), legend = FALSE,
+  col.surv = c('red','green'), mark = '#')
 dev.off()
 }
 }
