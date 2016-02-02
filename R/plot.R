@@ -1,6 +1,5 @@
 ## some random plot things
-# prettybars, prettybars2, zoomin, ptlocator, prettypie, widebars, waffle,
-# bump, histr
+# prettybars, prettybars2, zoomin, prettypie, widebars, waffle, bump, histr
 ##
 
 
@@ -472,25 +471,25 @@ barmap <- function(x, db = 'worldHires', region, labels, cols) {
 #' \code{c(section background, text, negative bars, positive bars)}
 #' 
 #' @examples
-#' \dontrun{
-#' pdf('./widebar.pdf', width = 14, height = 7)
-#' par(oma = c(5,5,7,5), mar = c(5,0,3,.1), las = 1,
-#'     fg = 'transparent', bg = 'grey98')
-#' widebars(x <- rep(2004:2015, each = 4), rnorm(48),
-#'          main = sprintf('Market value, %s',
-#'                         paste0(range(x), collapse = ' - ')),
-#'          sub = 'Percent change, quarterly',
-#'          foot = sprintf('Values current as of %s',
-#'                         format(Sys.time(), '%b %Y')),
-#'          note = 'github.com/raredd')
-#' dev.off()
-#' }
 #' 
 #' par(oma = c(5,5,7,5), mar = c(5,0,3,.1), las = 1,
 #'     fg = 'transparent', bg = 'grey98')
 #' widebars(mtcars$gear, mtcars$mpg * sample(c(-1,1), 32, replace = TRUE),
 #'          'Motor Trend car road tests', 'Miles per gallon by gear',
-#'          'some footnote that isn\'t important', 'blahblah')
+#'          'some footnote that is not important', 'blahblah')
+#' 
+#' \dontrun{
+#' pdf('./widebar.pdf', width = 14, height = 7)
+#' par(oma = c(5,5,7,5), mar = c(5,0,3,.1), las = 1,
+#'     fg = 'transparent', bg = 'grey98')
+#' widebars(x <- rep(2004:2015, each = 4), rnorm(48),
+#'          main = paste('Market value,', paste0(range(x), collapse = ' - ')),
+#'          sub = 'Percent change, quarterly',
+#'          foot = paste('Values current as of', format(Sys.time(), '%b %Y')),
+#'          note = 'github.com/raredd')
+#' dev.off()
+#' }
+#' 
 #' @export
 
 widebars <- function(x, y, main, sub, foot, note,

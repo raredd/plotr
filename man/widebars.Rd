@@ -26,4 +26,25 @@ widebars(x, y, main, sub, foot, note, col = c("grey90", "grey30",
 \description{
 Create a series of barplots by grouping factor.
 }
+\examples{
+
+par(oma = c(5,5,7,5), mar = c(5,0,3,.1), las = 1,
+    fg = 'transparent', bg = 'grey98')
+widebars(mtcars$gear, mtcars$mpg * sample(c(-1,1), 32, replace = TRUE),
+         'Motor Trend car road tests', 'Miles per gallon by gear',
+         'some footnote that is not important', 'blahblah')
+
+\dontrun{
+pdf('./widebar.pdf', width = 14, height = 7)
+par(oma = c(5,5,7,5), mar = c(5,0,3,.1), las = 1,
+    fg = 'transparent', bg = 'grey98')
+widebars(x <- rep(2004:2015, each = 4), rnorm(48),
+         main = paste('Market value,', paste0(range(x), collapse = ' - ')),
+         sub = 'Percent change, quarterly',
+         foot = paste('Values current as of', format(Sys.time(), '\%b \%Y')),
+         note = 'github.com/raredd')
+dev.off()
+}
+
+}
 
