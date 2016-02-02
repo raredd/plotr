@@ -646,6 +646,7 @@ click_shape <- function(shape = 'line', col = 'black', border = col,
 #' plot(1, ann = FALSE)
 #' ctext(x = 1, y = 1, text = c('hello','little','point'), cols = 1:3, pos = 1)
 #' cmtext(c('a','side','label'), 1:2, space = FALSE, side = 4, cex = 3)
+#' cmtext(c('a','a','a'), 4:6, space = FALSE, side = 4, cex = 3, line = -2)
 #' 
 #' ## note that line, cex, font, etc will be recycled
 #' ctitle(main = c('the','main','label'), xlab = c('x','label'),
@@ -719,17 +720,18 @@ ctitle <- function(main = NULL, sub = NULL, xlab = NULL, ylab = NULL,
 
 ctext_ <- function(text, cols, space) {
   # (ctext_(c('one','two','three'), 3:4, TRUE))
-  if (space && (lt <- length(text)) > 1)
+  # (ctext_(c('one','one','one'), 3:4, TRUE)) ## breaks old version
+  if (space && (lt <- length(text)) > 1L)
     text[2:lt] <- paste0(' ', text[2:lt])
-  expr <- sprintf('expression(phantom(%s))',
-                  paste0(shQuote(text), collapse = ') * phantom('))
   l <- lapply(seq_along(text), function(x) {
-    xx <- gsub(sprintf('phantom\\(\'%s\'\\)', text[x]), shQuote(text[x]), expr)
+    txt <- shQuote(text)
+    txt[-x] <- sprintf('phantom(%s)', txt[-x])
+    xx <- sprintf('expression(%s)', paste0(txt, collapse = ' * '))
     eval(parse(text = xx))
   })
   if ((lt <- length(text)) > (lc <- length(cols))) {
-    warning('colors will be recycled', domain = NA)
-    cols <- rep(cols, ceiling(lt / lc))
+    # warning('colors will be recycled', domain = NA)
+    cols <- rep_len(cols, lt)
   }
-  invisible(list(text = l, colors = cols))
+  list(text = l, colors = cols)
 }

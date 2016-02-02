@@ -39,6 +39,7 @@ all label types; see examples.
 plot(1, ann = FALSE)
 ctext(x = 1, y = 1, text = c('hello','little','point'), cols = 1:3, pos = 1)
 cmtext(c('a','side','label'), 1:2, space = FALSE, side = 4, cex = 3)
+cmtext(c('a','a','a'), 4:6, space = FALSE, side = 4, cex = 3, line = -2)
 
 ## note that line, cex, font, etc will be recycled
 ctitle(main = c('the','main','label'), xlab = c('x','label'),
