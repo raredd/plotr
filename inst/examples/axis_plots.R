@@ -1,6 +1,6 @@
 ## plot small graphics along x-axis and/or y-axis
 
-pdf('~/desktop/tmp.pdf', width = 16, height = 6)
+pdf('~/desktop/axis_plots', width = 16, height = 6)
 npoints <- 15
 set.seed(1)
 y <- rexp(npoints)

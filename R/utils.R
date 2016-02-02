@@ -2,6 +2,7 @@
 # plotr_utils, %ni%, %inside%, %||%, tcol, rescaler
 ###
 
+
 #' plotr utils
 #' 
 #' Some utilities for \code{plotr}.

@@ -113,3 +113,4 @@ gboxplot(x, ...)
 \description{
 Produce a box-and-whisker plot(s) of the given (grouped) values.
 }
+
