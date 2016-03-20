@@ -5,7 +5,7 @@
 
 #' prettybars
 #' 
-#' A barplot
+#' A barplot.
 #' 
 #' @param x numeric vector; values of bar heights
 #' @param y rownames of bars (or extracted from a named vector)
@@ -147,7 +147,7 @@ prettybars <- function(x, y = names(x), emph = NULL,
 
 #' prettybars2
 #' 
-#' A barplot
+#' A barplot.
 #' 
 #' @param x a table of data, typically from \code{\link{table}} or 
 #' \code{\link{xtabs}}

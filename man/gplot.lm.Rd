@@ -62,7 +62,7 @@
 \item{cex.id}{magnification of point labels.}
 
 \item{qqline}{logical indicating if a \code{\link{qqline}()} should be
-  added to the normal Q-Q plot.}
+    added to the normal Q-Q plot.}
 
 \item{cook.levels}{levels of Cook's distance at which to draw contours.}
 

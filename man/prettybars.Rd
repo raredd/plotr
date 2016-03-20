@@ -52,7 +52,7 @@ prettybars(x, y = names(x), emph = NULL, col.bar = grey(0.9),
 \code{\link{par}}}
 }
 \description{
-A barplot
+A barplot.
 }
 \examples{
 set.seed(1618)

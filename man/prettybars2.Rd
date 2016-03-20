@@ -50,7 +50,7 @@ axes for user input}
 \item{...}{additional graphical parameters passed to \code{\link{par}}}
 }
 \description{
-A barplot
+A barplot.
 }
 \examples{
 set.seed(1618)
