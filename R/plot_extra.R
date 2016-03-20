@@ -1,6 +1,6 @@
 ### plotting extras
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
-# click_text, click_shape, ctext, cmtext, ctitle, ctext_
+# click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2
 ###
 
 
@@ -734,4 +734,79 @@ ctext_ <- function(text, cols, space) {
     cols <- rep_len(cols, lt)
   }
   list(text = l, colors = cols)
+}
+
+#' polygon2
+#' 
+#' Draw \emph{regular} \code{\link{polygon}}s as plotting characters. This
+#' function calculates the \code{{x,y}} coordinates for given centroids and
+#' radii and passes each pair of vectors to \code{\link{polygon}} to draw.
+#' Note that all arguments except \code{x}, \code{y}, \code{radius},
+#' \code{sides}, and \code{srt} are passed directly to \code{\link{polygon}},
+#' so see \code{?polygon} for additional details.
+#' 
+#' @param x,y x- and y-coordinate vectors of polygon centroids
+#' @param radius distance from centroid to each vertex
+#' @param sides number of sides for polygons; since only regular polygons may
+#' be plotted, possible values are \code{(1:360)[360L %% 1:360 == 0L]}
+#' @param srt rotation in degrees for polygon
+#' @param density density of shading lines in lines per inch
+#' @param angle slope of shading lines, given as an angle in degrees (counter-
+#' clockwise)
+#' @param border polygon border color
+#' @param col polygon fill color
+#' @param lty line type to be used for border and/or shading lines
+#' @param fillOddEven logical controlling polygon shading mode
+#' @param ... additional graphical parameters such as \code{xpd}, \code{lend},
+#' \code{ljoin}, and \code{lmitre} passed to \code{\link{par}}
+#' 
+#' @examples
+#' ## sides can be any of
+#' (sides <- (1:360)[360L %% 1:360 == 0L])
+#' plot.new()
+#' for (ii in sides)
+#'   polygon2(0, 0, sides = ii)  ## okay
+#' # polygon2(0, 0, sides = 7)   ## error
+#' 
+#' x <- mtcars$mpg
+#' y <- mtcars$wt
+#' plot(x, y, type = 'n', asp = 1)
+#' polygon2(x, y, density = 30, angle = 90, col = mtcars$gear)
+#' polygon2(x, y + 1, srt = 30, lty = 'dotted', col = 'transparent')
+#' polygon2(x, y + -2, radius = .5, sides = 5)
+#' 
+#' @export
+
+polygon2 <- function(x, y = NULL, radius, sides = 6, srt = 0,
+                     density = NULL, angle = 45, border = NULL, col = NA,
+                     lty = par('lty'), fillOddEven = FALSE, ...) {
+  ## helper
+  ## get {x,y} around circle with r=radius for n sides
+  get_coords <- function(x, y, radius, sides, srt) {
+    stopifnot(360L %% sides == 0L)
+    deg <- seq(90, 450, 360L %/% as.integer(sides)) + srt
+    coords <- p2c(radius, deg, TRUE)
+    list(x = x + coords$x, y = y + coords$y)
+  }
+  
+  ## expand params to be passed to vectorized polygon
+  radius <- if (missing(radius))
+    sqrt(prod(par('cin'))) else radius
+  rl <- max(length(x), length(y))
+  m <- as.list(match.call(expand.dots = TRUE))
+  f <- formals(polygon2)
+  m[[1]] <- f$`...` <- NULL
+  m <- modifyList(f, m)
+  m$x <- m$y <- m$radius <- m$sides <- m$srt <- NULL
+  
+  ## filter out NULL params (y, density, border) if given
+  m <- Filter(Negate(is.null), m)
+  m <- lapply(m, function(xx)
+    if (!is.null(eval(xx))) rep_len(eval(xx), rl))
+  
+  V <- Vectorize(get_coords, SIMPLIFY = FALSE)
+  coords <- V(x, y, radius, sides, srt)
+  lapply(seq_along(coords), function(ii)
+    do.call('polygon', c(coords[[ii]], lapply(m, '[', ii))))
+  invisible(coords)
 }

@@ -4,6 +4,8 @@ Title: More plotting functions and examples
 Version: 0.0.2
 Authors@R: person("Robert", "Redd", email = "raredd01@gmail.com",
   role = c("aut", "cre"))
+Author: Robert Redd
+Maintainer: Robert Redd <raredd01@gmail.com>
 Description: Various collected plots, plotting tools, and other examples.
 Imports:
     ggplot2,
