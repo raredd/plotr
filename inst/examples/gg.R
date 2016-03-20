@@ -1,8 +1,8 @@
 ## pie charts in ggplot
 
-browsers <- source(system.file('source','browsers.r', package = 'plotr'))$value
+browsers <- source(system.file('source', 'browsers.r', package = 'plotr'))$value
 
-library(ggplot2)
+library('ggplot2')
 ggplot(browsers) + 
   ## create plot in rectangular coordinates
   geom_rect(aes(fill = version, ymax = ymax, ymin = ymin, xmax = 4, xmin = 3)) +

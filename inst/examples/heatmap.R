@@ -9,6 +9,10 @@ N1 <- 50
 N2 <- 50
 cutoff <- .5
 
+## group (yaxix) and heatmap colors
+gcols <- c('blue','green','red','orange','yellow')
+hcols <- c('grey50','grey90','dodgerblue2')
+
 set.seed(1)
 f <- function() {
   ll <- function()
@@ -29,14 +33,18 @@ corr <- matrix(runif(N1 * N2, -1, 1), nrow = N1,
 corr[corr %inside% (cutoff * c(-1, 1))] <- 0
 cs <- data.frame(rn = rownames(corr), rs = rowSums(abs(corr) > 0))
 ord <- rev(with(cs, order(-xtfrm(substr(rn, 1, 1)), rs, decreasing = TRUE)))
-m <- corr[ord, ]
+m <- om <- corr[ord, ]
 cs <- cs[ord, 'rs']
+# om[] <- cut(om, breaks = 10)
+# om <- sign(corr[ord, ])
+# om <- sort_matrix(om)
+# m <- m[, colnames(om)]
 # m <- m[rev(seq_len(nrow(m))), ]
+
 
 ## gene functional categories/colors
 grps <- table(substr(rownames(m), 1, 1))
-cgrps <- adjustcolor(c('blue','green','red','orange','yellow')[seq_along(grps)],
-                     alpha.f = .3)
+cgrps <- adjustcolor(gcols[seq_along(grps)], alpha.f = .3)
 
 
 pdf('~/desktop/tmp.pdf', width = 20, height = 10)
@@ -49,7 +57,7 @@ plot.window(xlim = c(0, max(o[, 2]) + 1), ylim = c(0, max(o[, 1]) + 1),
             xaxs = 'i', yaxs = 'i')
 p <- par('usr')
 rect(o[, 2], o[, 1] - .5, o[, 2] + .95, o[, 1] + .35, border = NA,
-     col = colorRampPalette(c('grey50','grey90','dodgerblue2'))(1000)[c(m) * 500 + 500])
+     col = colorRampPalette(hcols)(1000)[c(m) * 500 + 500])
 
 ## gene labels and color functional groups
 mtext(side = 2, text = 'Genes', line = 0)
@@ -62,7 +70,8 @@ rect(rep(0, nrow(m)), seq_len(nrow(m)) + 1 - .5, rep(1.75, nrow(m)),
 ## cheap legends
 par(family = '')
 legend(p[1], p[3], pch = 15, cex = 1, bty = 'n', xpd = NA, pt.cex = 2,
-       legend = c('Epigenetic','Immune','JAK-STAT',expression('BCR-NF-'~kappa~'B'),'B-cell')[seq_along(grps)],
+       legend = c('Epigenetic','Immune','JAK-STAT',
+                  expression('BCR-NF-'~kappa~'B'),'B-cell')[seq_along(grps)],
        col = rev(cgrps), horiz = TRUE)
 legend(p[2] * .5, p[3], pch = 15, cex = 1, bty = 'n', xpd = NA, pt.cex = 1.5,
        legend = c('Down-regulation', 'Up-regulation'),

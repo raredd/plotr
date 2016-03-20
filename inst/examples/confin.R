@@ -54,4 +54,3 @@ lines(newx, preds[ ,2], lty = 'dashed', col = 'red')
 ## clip plotting region to keep abline inside polygon
 clip(min(newx), max(newx), par('usr')[3], par('usr')[4])
 abline(mod, col = 'red')
-
