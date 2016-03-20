@@ -1,5 +1,7 @@
 ### utils
 # plotr_utils, %ni%, %inside%, %||%, tcol, rescaler
+#
+# polar-cartesian utils: d2r, r2d, p2c, c2p, p2r, p2d
 ###
 
 
@@ -105,4 +107,33 @@ rescaler <- function(x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
   if (zero_range(from) || zero_range(to))
     return(rep(mean(to), length(x)))
   (x - from[1]) / diff(from) * diff(to) + to[1]
+}
+
+## convert degrees to radians or vice versa
+d2r <- function(degrees = 1) degrees * (pi / 180)
+r2d <- function(radians = 1) radians * (180 / pi)
+
+## convert polar to cartesian or vice versa
+p2c <- function(radius, theta, degree = FALSE) {
+  # p2c(c2p(0, 1)$r, c2p(0, 1)$t)
+  if (degree)
+    theta <- d2r(theta)
+  list(x = radius * cos(theta),
+       y = radius * sin(theta))
+}
+c2p <- function(x, y, degree = FALSE) {
+  # c2p(p2c(1, 30, TRUE)$x, p2c(1, 30, TRUE)$y, TRUE)
+  list(radius = sqrt(x ** 2 + y ** 2),
+       theta = atan2(y, x) * if (degree) r2d() else 1)
+}
+
+## x,y coords to radians/degrees
+p2r <- function(x, y, cx = 0, cy = 0) {
+  # p2r(0,1)
+  atan2(y - cy, x - cx)
+  # ifelse(r < 0, pi / 2 + abs(r), r)
+}
+p2d <- function(x, y, cx = 0, cy = 0) {
+  # p2d(0,1)
+  r2d(atan2(y - cy, x - cx))
 }
