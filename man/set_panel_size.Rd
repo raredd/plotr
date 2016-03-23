@@ -39,6 +39,6 @@ Baptiste Auguie
 }
 \references{
 \href{http://stackoverflow.com/questions/32580946/setting-absolute-size-of-
-facets-in-ggplot2}(SO question)
+facets-in-ggplot2}{SO question}
 }
 

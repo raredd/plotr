@@ -1,6 +1,6 @@
 ### ggplot things
 # ggcols, ggclip, ggwidths, ggsurv, survdat, ggmultiplot, facet_adjust,
-# print.facet_adjust, ggcaterpillar, ggheat, ggheat2
+# print.facet_adjust, ggcaterpillar, ggheat, ggheat2, set_panel_size
 ###
 
 
@@ -1216,7 +1216,7 @@ ggheat2 <- function(data, corr = cor(data, use = 'pairwise.complete'),
 #' 
 #' @references
 #' \href{http://stackoverflow.com/questions/32580946/setting-absolute-size-of-
-#' facets-in-ggplot2}(SO question)
+#' facets-in-ggplot2}{SO question}
 #' 
 #' @examples
 #' library('ggplot2')
