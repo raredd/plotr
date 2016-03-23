@@ -463,8 +463,8 @@ ggsurv <- function(s,
                                directions = "hv", linetype = 0 ,alpha = 0.25)
       # custom conf band fill colors
       if (!missing(col.band)) 
-        tmp <- tmp + scale_fill_manual(values = rep(col.band, 
-                                                    length(unique(survdat$strata))))
+        tmp <- tmp + scale_fill_manual(
+          values = rep(col.band, length(unique(survdat$strata))))
     }
     
     # median survival line
@@ -554,10 +554,10 @@ ggsurv <- function(s,
   ## here
   if (!missing(ticks) && median && median.ticks) 
     tmp <- tmp + 
-    scale_x_continuous(breaks = sort(c(tmp.med$time, seq(ticks[1], ticks[2], 
-                                                         by = ticks[3]))),
-                       labels = format(sort(c(tmp.med$time, seq(ticks[1], 
-                                                                ticks[2], by = ticks[3]))), nsmall = 0))
+    scale_x_continuous(
+      breaks = sort(c(tmp.med$time, seq(ticks[1], ticks[2], by = ticks[3]))),
+      labels = format(sort(c(tmp.med$time, seq(ticks[1], ticks[2],
+                                               by = ticks[3]))), nsmall = 0))
   if (!missing(xlim)) tmp <- tmp + xlim(xlim)
   if (!missing(ylim)) tmp <- tmp + ylim(ylim)
   tmp <- tmp + theme(legend.title = element_blank())
@@ -1197,4 +1197,64 @@ ggheat2 <- function(data, corr = cor(data, use = 'pairwise.complete'),
           legend.title	   = element_text(size = 15),
           axis.text.x      = element_text(angle = -90))
   p
+}
+
+#' Set panel size
+#' 
+#' Use strict size for panels when number of panels in rows/columns are not
+#' equal.
+#' 
+#' @param p a \code{\link[ggplot2]{ggplot}} object
+#' @param file optional file name if result should be saved to file, passed
+#' to \code{\link[ggplot2]{ggsave}}
+#' @param margin a \code{\link[grid]{unit}} object giving the plot margins
+#' @param width,height a \code{\link[grid]{unit}} object giving height and
+#' width for each plot
+#' 
+#' @author
+#' Baptiste Auguie
+#' 
+#' @references
+#' \href{http://stackoverflow.com/questions/32580946/setting-absolute-size-of-
+#' facets-in-ggplot2}(SO question)
+#' 
+#' @examples
+#' library('ggplot2')
+#' library('gridExtra')
+#' p1 <- ggplot(mtcars, aes(mpg, wt)) + geom_point() + facet_wrap(~ vs)
+#' p2 <- ggplot(mtcars, aes(mpg, wt)) + geom_point() + facet_wrap(~ gear)
+#' grid.arrange(p1, p2)
+#' 
+#' g1 <- set_panel_size(p1)
+#' g2 <- set_panel_size(p2)
+#' grid.arrange(g1, g2)
+#' 
+#' @export
+
+set_panel_size <- function(p = NULL, file = NULL, margin = unit(1, 'cm'),
+                           width = unit(4, 'cm'), height = unit(4, 'cm')) {
+  g <- ggplotGrob(p)
+  panels <- grep('panel', g$layout$name)
+  panel_index_w <- unique(g$layout$l[panels])
+  panel_index_h <- unique(g$layout$t[panels])
+  nw <- length(panel_index_w)
+  nh <- length(panel_index_h)
+  
+  if (getRversion() < numeric_version('3.3.0')) {
+    # the following conversion is necessary because there is no `[<-`.unit
+    # method so promoting to unit.list allows standard list indexing
+    g$widths <- grid:::unit.list(g$widths)
+    g$heights <- grid:::unit.list(g$heights)
+    
+    g$widths[panel_index_w] <-  rep(list(width),  nw)
+    g$heights[panel_index_h] <- rep(list(height), nh)
+  } else {
+    g$widths[panel_index_w] <-  rep(width,  nw)
+    g$heights[panel_index_h] <- rep(height, nh)
+  }
+  if (!is.null(file))
+    ggsave(file, g,
+           width = convertWidth(sum(g$widths) + margin, 'in', TRUE),
+           height = convertHeight(sum(g$heights) + margin, 'in', TRUE))
+  g
 }
