@@ -9,7 +9,7 @@ N1 <- 50
 N2 <- 50
 cutoff <- .5
 
-## group (yaxix) and heatmap colors
+## group (yaxis) and heatmap colors
 gcols <- c('blue','green','red','orange','yellow')
 hcols <- c('grey50','grey90','dodgerblue2')
 
