@@ -1,6 +1,7 @@
 ### ggplot things
 # ggcols, ggclip, ggwidths, ggsurv, survdat, ggmultiplot, facet_adjust,
-# print.facet_adjust, ggcaterpillar, ggheat, ggheat2, set_panel_size
+# print.facet_adjust, ggcaterpillar, ggheat, ggheat2, set_panel_size,
+# facet_limits
 ###
 
 
@@ -1257,4 +1258,106 @@ set_panel_size <- function(p = NULL, file = NULL, margin = unit(1, 'cm'),
            width = convertWidth(sum(g$widths) + margin, 'in', TRUE),
            height = convertHeight(sum(g$heights) + margin, 'in', TRUE))
   g
+}
+
+#' Custom facet limits
+#' 
+#' When melting a data set of factor variables, the desired levels are dropped
+#' during the reshaping to a single variable. Therefore, variables will either
+#' show all unique values as levels or only levels where data is present. This
+#' function gives ability to set custom x limits for each variable (including
+#' the side effect of working for continuous variables).
+#' 
+#' @param pl a \code{\link{ggplot}} object
+#' @param limits a list containing the limits for each subplot
+#' @param useNA how to handle \code{NA} values
+#' 
+#' @examples
+#' library('ggplot2')
+#' datf <- datn <- mtcars[, c(2, 8:11)]
+#' datf[] <- lapply(datf, factor)
+#' 
+#' datfl <- reshape2::melt(datf, id.vars = 'am')
+#' datnl <- reshape2::melt(datn, id.vars = 'am')
+#' 
+#' datfl$value[datfl$value == 4] <- NA
+#' # datfl <- na.omit(datfl)
+#' 
+#' pf <- ggplot(datfl, aes(value, fill = factor(am))) +
+#'   facet_wrap(~ variable) +
+#'   facet_wrap(~ variable, scales = 'free') +
+#'   geom_bar(position = 'dodge')
+#' 
+#' ## facets either show all levels for each plot or only those with data
+#' pf
+#' 
+#' facet_limits(pf, lapply(datf, levels), useNA = 'no')
+#' facet_limits(pf, lapply(datf, levels), useNA = 'ifany')
+#' facet_limits(pf, lapply(datf, levels), useNA = 'always')
+#' 
+#' pn <- ggplot(datnl, aes(value, fill = factor(am))) +
+#'   facet_wrap(~ variable, scales = 'free_x') +
+#'   geom_bar(position = 'dodge')
+#' pn
+#' 
+#' facet_limits(pn, lapply(datn, extendrange, f = 1))
+#' facet_limits(pn, list(c(0,10), c(-1,5), c(2,8), c(0,20)))
+#' 
+#' @export
+
+facet_limits <- function(pl, limits, useNA = c('ifany','no','always'), return_data = FALSE) {
+  ## at least scale_x needs to be free
+  pl$facet$free$x <- TRUE
+  useNA <- match.arg(useNA)
+  
+  ## add 'NA' as level and replace NA with 'NA'
+  addNA2 <- function(x, ifany = FALSE) {
+    if (!is.factor(x)) {
+      x[is.na(x)] <- 'NA'
+      x <- factor(x)
+    }
+    if (ifany & !anyNA(x))
+      return(x)
+    ll <- levels(x)
+    if (!anyNA(ll))
+      ll <- unique(c(ll, 'NA'))
+    factor(x, levels = ll)
+  }
+  
+  xvar <- tail(as.character(pl$mapping$x), 1L)
+  fvar <- as.character(pl$facet$facets)
+  
+  data <- pl$data
+  lvl  <- unique(data[, fvar])
+  
+  if (class(pl$data[, xvar]) %in% c('character', 'factor') & useNA != 'no')
+    pl$data[, xvar] <- addNA2(pl$data[, xvar], useNA == 'ifany')
+  
+  limits <- if (all(lvl %in% names(limits)))
+    limits[as.character(lvl)]
+  else if (length(limits) == length(lvl))
+    setNames(limits, lvl)
+  else stop('unable to match \'limits\' with facet panels', call. = FALSE)
+  
+  fun.na <- if (fac <- class(data[, xvar]) %in% c('factor', 'character')) {
+    nas <- sapply(split(data[, xvar], data[, fvar]), anyNA) | useNA == 'always'
+    limits[nas] <- Map(c, limits[nas], 'NA')
+    switch(useNA, ifany = function(x) addNA2(x, TRUE),
+           no = function(x) x[x != 'NA'], always = addNA2)
+  } else identity
+  
+  dummy <- lapply(seq_along(limits), function(x) {
+    wh <- names(limits[x])
+    if (!wh %in% lvl) return(NULL)
+    lim <- fun.na(factor(limits[[x]]))
+    tmp <- data[rep(1L, length(lim)), ]
+    tmp[, fvar] <- factor(wh, lvl)
+    tmp[, xvar] <- if (fac) lim else na.omit(limits[[x]])
+    geom_blank(data = tmp)
+  })
+  
+  ## add geom_blank before data layers keeps NA
+  ## simply pl + geom_blank _without dropping NA_ seems to be limitation
+  # pl$layers <- c(dummy, pl$layers)
+  pl + dummy
 }
