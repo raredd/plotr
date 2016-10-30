@@ -13,6 +13,9 @@ polygon2(x, y = NULL, radius, sides = 6, srt = 0, density = NULL,
 
 \item{radius}{distance from centroid to each vertex}
 
+\item{sides}{number of sides for polygons; since only regular polygons may
+be plotted, possible values are \code{(1:360)[360L \%\% 1:360 == 0L]}}
+
 \item{srt}{rotation in degrees for polygon}
 
 \item{density}{density of shading lines in lines per inch}
@@ -44,8 +47,8 @@ so see \code{?polygon} for additional details.
 (sides <- (1:360)[360L \%\% 1:360 == 0L])
 plot.new()
 for (ii in sides)
-  polygon2(0, 0, sides = ii)  ## okay
-# polygon2(0, 0, sides = 7)   ## error
+  polygon2(0.5, 0.5, sides = ii)  ## okay
+# polygon2(0.5, 0.5, sides = 7)   ## error
 
 x <- mtcars$mpg
 y <- mtcars$wt

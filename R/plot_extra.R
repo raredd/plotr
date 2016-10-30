@@ -748,7 +748,7 @@ ctext_ <- function(text, cols, space) {
 #' @param x,y x- and y-coordinate vectors of polygon centroids
 #' @param radius distance from centroid to each vertex
 #' @param sides number of sides for polygons; since only regular polygons may
-#' be plotted, possible values are \code{(1:360)[360L %% 1:360 == 0L]}
+#' be plotted, possible values are \code{(1:360)[360L \%\% 1:360 == 0L]}
 #' @param srt rotation in degrees for polygon
 #' @param density density of shading lines in lines per inch
 #' @param angle slope of shading lines, given as an angle in degrees (counter-
@@ -765,8 +765,8 @@ ctext_ <- function(text, cols, space) {
 #' (sides <- (1:360)[360L %% 1:360 == 0L])
 #' plot.new()
 #' for (ii in sides)
-#'   polygon2(0, 0, sides = ii)  ## okay
-#' # polygon2(0, 0, sides = 7)   ## error
+#'   polygon2(0.5, 0.5, sides = ii)  ## okay
+#' # polygon2(0.5, 0.5, sides = 7)   ## error
 #' 
 #' x <- mtcars$mpg
 #' y <- mtcars$wt
