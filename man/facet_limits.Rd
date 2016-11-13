@@ -4,17 +4,18 @@
 \alias{facet_limits}
 \title{Custom facet limits}
 \usage{
-facet_limits(pl, limits, useNA = c("ifany", "no", "always"),
-  return_data = FALSE)
+facet_limits(pl, limits, useNA = c("ifany", "no", "always"))
 }
 \arguments{
 \item{pl}{a \code{\link{ggplot}} object}
 
-\item{limits}{a list containing the limits for each subplot}
+\item{limits}{a named list containing one for more limits for each subplot}
 
 \item{useNA}{how to handle \code{NA} values}
 }
 \description{
+Modify x-axis limits for \code{\link{facet_wrap}}.
+
 When melting a data set of factor variables, the desired levels are dropped
 during the reshaping to a single variable. Therefore, variables will either
 show all unique values as levels or only levels where data is present. This
@@ -33,12 +34,14 @@ datfl$value[datfl$value == 4] <- NA
 # datfl <- na.omit(datfl)
 
 pf <- ggplot(datfl, aes(value, fill = factor(am))) +
-  facet_wrap(~ variable) +
+  # facet_wrap(~ variable) +
   facet_wrap(~ variable, scales = 'free') +
   geom_bar(position = 'dodge')
 
 ## facets either show all levels for each plot or only those with data
 pf
+
+facet_limits(pf, list(gear = c(3,4,5), vs = 0:6), useNA = 'no')
 
 facet_limits(pf, lapply(datf, levels), useNA = 'no')
 facet_limits(pf, lapply(datf, levels), useNA = 'ifany')
@@ -48,6 +51,8 @@ pn <- ggplot(datnl, aes(value, fill = factor(am))) +
   facet_wrap(~ variable, scales = 'free_x') +
   geom_bar(position = 'dodge')
 pn
+
+facet_limits(pn, list(carb = c(0,100)))
 
 facet_limits(pn, lapply(datn, extendrange, f = 1))
 facet_limits(pn, list(c(0,10), c(-1,5), c(2,8), c(0,20)))
