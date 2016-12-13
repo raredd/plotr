@@ -1,7 +1,7 @@
 ### ggplot things
 # ggcols, ggclip, ggwidths, ggsurv, survdat, ggmultiplot, facet_adjust,
 # print.facet_adjust, ggcaterpillar, ggheat, ggheat2, set_panel_size,
-# facet_limits
+# facet_limits, bar_counts
 ###
 
 
@@ -1377,4 +1377,89 @@ facet_limits <- function(pl, limits, useNA = c('ifany','no','always')) {
   ## simply pl + geom_blank _without dropping NA_ seems to be limitation
   # pl$layers <- c(dummy, pl$layers)
   pl + dummy
+}
+
+#' Add counts to bar plots
+#' 
+#' Add a text layer to a bar plot with the count and percentage.
+#' 
+#' @param data data set to use for plot and \code{x}, \code{y}
+#' @param x,fill,facet the variables used for \code{x} (required), \code{fill}
+#' (optional), and \code{\link{facet_wrap}} (optional - currently only
+#' \code{facet_wrap} and a single variable are supported) in the original plot
+#' @param position a character string of \code{"stack"} or \code{"fill"}; this
+#' will be the same value used in \code{\link{geom_bar}}
+#' @param rev logical; controls the reversal of text labels along the y-axis;
+#' depending on the version of \code{ggplot}, the levels of \code{fill} and
+#' order in the plot may be reversed (this was only fixed recently in
+#' \pkg{ggplot})
+#' @param fmt a character string giving the format for the text; "n" and "p"
+#' will be replaced with counts and percentages, respectively; all other text
+#' will be left unchanged including newlines (\code{\\n}) and percent signs;
+#' see examples
+#' @param ... additional arguments passed to \code{\link{geom_text}}
+#' 
+#' @examples
+#' mt <- within(mtcars, {
+#'   vs <- factor(vs)
+#'   gear <- factor(gear)
+#' })
+#' 
+#' library('ggplot2')
+#' ggplot(mt, aes(vs)) +
+#'   geom_bar() +
+#'   bar_counts(mt, vs, fmt = 'N = n', colour = 'white')
+#' 
+#' ggplot(mt, aes(vs, fill = gear)) +
+#'   geom_bar() +
+#'   facet_wrap(~ am) +
+#'   bar_counts(mt, vs, gear, am, fmt = 'N = n\np%')
+#' 
+#' ggplot(mt, aes(vs, fill = gear)) +
+#'   geom_bar(position = 'fill') +
+#'   bar_counts(mt, vs, gear, position = 'fill',
+#'              colour = 'white', size = 5, family = 'HersheySerif',
+#'              fontface = 'bold.italic')
+#' 
+#' @export
+
+bar_counts <- function(data, x, fill, facet = NULL, position = c('stack', 'fill'),
+                       rev = FALSE, fmt = 'n (p%)', ...) {
+  x <- deparse(substitute(x))
+  y <- if (missing(fill))
+    NULL else deparse(substitute(fill))
+  
+  facet <- if (is.null(facet))
+    NULL else deparse(substitute(facet))
+  position <- match.arg(position)
+  
+  data$n_alt <- ave(seq(nrow(data)),
+                    as.list(data[, c(x, y, facet), drop = FALSE]),
+                    FUN = length)
+  data <- data[!duplicated(data[, c(x, y, facet)]), ]
+  data <- data[order(data[, x], if (!is.null(y)) {
+    if (rev) xtfrm(data[, y]) else -xtfrm(data[, y])
+  } else seq_along(data[, x])), ]
+  
+  ind <- as.list(data[, c(x, facet), drop = FALSE])
+  data <- within(data, {
+    pos_alt <- ave(n_alt, ind, FUN = function(ii)
+      ii / if (position == 'stack') 1 else sum(ii))
+    pct_alt <- ave(pos_alt, ind, FUN = function(ii) cumsum(ii) - 0.5 * ii)
+    n_pct   <- round(ave(n_alt, ind, FUN = function(ii) ii / sum(ii)) * 100)
+    # lbl     <- sprintf(fmt, n_alt, n_pct)
+  })
+  
+  fmt2 <- as.list(strsplit(gsub('[^np]', '', fmt), '')[[1]])
+  fmt2 <- lapply(fmt2, function(x) {
+    if (x == 'n')
+      data$n_alt else if (x == 'p') data$n_pct
+  })
+  fmt <- gsub('%+', '%%', fmt)
+  fmt <- gsub('n|p', '%s', fmt)
+  data$lbl <- do.call('sprintf', c(list(fmt = fmt), fmt2))
+  
+  list(geom_text(data = data,
+                 aes_string(label = 'lbl', x = x, y = 'pct_alt'),
+                 ...))
 }

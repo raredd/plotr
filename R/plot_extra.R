@@ -1,6 +1,6 @@
 ### plotting extras
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
-# click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2
+# click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot
 ###
 
 
@@ -809,4 +809,174 @@ polygon2 <- function(x, y = NULL, radius, sides = 6, srt = 0,
   lapply(seq_along(coords), function(ii)
     do.call('polygon', c(coords[[ii]], lapply(m, '[', ii))))
   invisible(coords)
+}
+
+#' Subplot
+#' 
+#' Embed a subplot in an existing plot at specified coordinates.
+#' 
+#' The coordinates for \code{expr} may be given by a keyword passed to
+#' \code{x} (similar to \code{\link{legend}}). \code{x} will be grepped for
+#' "right", "left", "top", and/or "bottom", and the coordinates for
+#' \code{expr} will be automatically calculated; see examples.
+#' 
+#' If \code{x} and \code{y} are numeric and length 1, these will be used as
+#' the center of the plotting region; if length 2, these will be used as the
+#' minimum and maximum coordinates of the plotting region (similarly if
+#' \code{x} is missing and the user is prompted by \code{\link{locator}} to
+#' give the coordinates interactively).
+#' 
+#' @param expr an expression defining the plot to be embedded
+#' @param x,y coordinates of the new plot given by a keyword (see details)
+#' or values accepted by \code{\link{xy.coords}}; if missing, the user
+#' will be prompted to select the bottom-left and top-right coordinates for
+#' the plotting region
+#' @param size the size of the plot in inches if \code{x} and \code{y} are
+#' length 1
+#' @param vadj vertical adjustment of the plot when \code{y} is a scalar; the
+#' default is to center vertically; 0 means place the bottom of the plot at
+#' \code{y}, and 1 places the top of the plot at \code{y}
+#' @param hadj horizontal adjustment of the plot when \code{x} is a scalar,
+#' the default is to center horizontally; 0 means place the left edge of the
+#' plot at \code{x}, and 1 means place the right edge of the plot at \code{x}
+#' @param inset 1 or 2 numbers representing the proportion of the plot to
+#' inset the subplot from edges when \code{x} is a character string; the first
+#' element is the horizontal inset, and the second is the vertical inset
+#' @param type character string of \code{"plt"} or \code{"fig"}; if "plt"
+#' then the plotting region is defined by \code{x}, \code{y}, and \code{size}
+#' with axes, etc. outside the box; if "fig" then all annotations are also
+#' inside the box
+#' @param pars a list of parameters to be passed to \code{\link{par}} before
+#' running \code{expr}
+#' 
+#' @seealso
+#' \code{TeachingDemos::subplot}; \url{http://sickel.net/blogg/?p=688};
+#' \code{\link{inset}}
+#' 
+#' @return
+#' The list of graphical parameters used when drawing \code{expr}, useful for
+#' adding an additional subplot after \code{subplot} has finished.
+#' 
+#' @examples
+#' plot(1)
+#' subplot(plot(density(rnorm(100)), ann = FALSE), 1.2, 1.2)
+#' subplot(plot(density(rnorm(100)), ann = FALSE, axes = FALSE), 'bottomright')
+#' 
+#' 
+#' \dontrun{
+#' ## augment a map
+#' library('maptools')
+#' data(state.vbm)
+#' 
+#' plot(state.vbm, fg = NULL)
+#' tmp <- cbind(state.vbm$center_x, state.vbm$center_y)
+#' 
+#' for (i in 1:50) {
+#'   tmp2 <- as.matrix(USArrests[i, c(1, 4)])
+#'   tmp3 <- max(USArrests[, c(1, 4)])
+#'   subplot({
+#'     barplot(matrix(tmp2), ylim = c(0, tmp3), yaxt = 'n', col = 1:2,
+#'             beside = TRUE, border = 1:2)
+#'    }, x = tmp[i, 1], y = tmp[i, 2], size = c(.1, .1))
+#' }
+#' legend('bottomright', legend = colnames(USArrests)[c(1, 4)], fill = 1:2)
+#' }
+#' 
+#' 
+#' set.seed(1)
+#' tmp <- rnorm(25)
+#' qqnorm(tmp)
+#' qqline(tmp)
+#' pars <- subplot(hist(tmp, ann = F), 0, -1)
+#' 
+#' ## wrong way to add a reference line to histogram
+#' abline(v = 0, col = 2, lwd = 2)
+#' 
+#' ## right way to add a reference line to histogram
+#' op <- par(no.readonly = TRUE)
+#' par(pars)
+#' abline(v = 0, col = 3, lwd = 2)
+#' par(op)
+#' 
+#' @export
+
+subplot <- function(expr, x, y = NULL, log = NULL, size = c(1,1),
+                    vadj = 0.5, hadj = 0.5, inset = c(0,0),
+                    type = c('plt', 'fig'), pars = NULL) {
+  type <- match.arg(type)
+  size <- rep_len(size, 2L)
+  # op <- par(no.readonly = TRUE)
+  op <- par(c(type, 'usr', names(pars)))
+  on.exit(par(op))
+  
+  if (missing(x))
+    x <- locator(2L)
+  else {
+    suppressWarnings({
+      x <- sort(x)
+      y <- sort(y)
+    })
+  }
+  
+  if (is.character(x)) {
+    if (length(inset) == 1L)
+      inset <- rep(inset, 2L)
+    x.char <- x
+    usr <- par('usr')
+    x <- mean(usr[1:2])
+    y <- mean(usr[3:4])
+    
+    if (length(grep('left', x.char, ignore.case = TRUE))) {
+      x <- usr[1] + inset[1] * (usr[2] - usr[1])
+      if (missing(hadj))
+        hadj <- 0
+    }
+    if (length(grep('right', x.char, ignore.case = TRUE))) {
+      x <- usr[2] - inset[1] * (usr[2] - usr[1])
+      if (missing(hadj))
+        hadj <- 1
+    }
+    if (length(grep('top', x.char, ignore.case=TRUE))) {
+      y <- usr[4] - inset[2] * (usr[4] - usr[3])
+      if (missing(vadj))
+        vadj <- 1
+    }
+    if (length(grep('bottom', x.char, ignore.case = TRUE))) {
+      y <- usr[3] + inset[2] * (usr[4] - usr[3])
+      if (missing(vadj))
+        vadj <- 0
+    }
+  }
+  
+  xy <- xy.coords(x, y, log = log)
+  
+  if (length(xy$x) != 2L) {
+    pin <- par('pin')
+    xx <- grconvertX(xy$x[1], to = 'npc')
+    yy <- grconvertY(xy$y[1], to = 'npc')
+    
+    x <- c(xx - hadj * size[1] / pin[1],
+           xx + (1 - hadj) * size[1] / pin[1])
+    y <- c(yy - vadj * size[2] / pin[2],
+           yy + (1 - vadj) * size[2] / pin[2])
+    
+    xyx <- grconvertX(x, from = 'npc', to = 'nfc')
+    xyy <- grconvertY(y, from = 'npc', to = 'nfc')
+  } else {
+    xyx <- grconvertX(xy$x, to = 'nfc')
+    xyy <- grconvertY(xy$y, to = 'nfc')
+  }
+  
+  par(pars)
+  if (type == 'fig') {
+    xyx <- grconvertX(xyx, from = 'nfc', to = 'ndc')
+    xyy <- grconvertY(xyy, from = 'nfc', to = 'ndc')
+    par(fig = c(xyx, xyy), new = TRUE)
+  } else {
+    par(plt = c(xyx, xyy), new = TRUE)
+  }
+  
+  expr
+  
+  invisible(par(no.readonly = TRUE))
 }
