@@ -4,40 +4,41 @@
 \alias{ggmultiplot}
 \title{Draw multiple ggplot objects in a single layout}
 \usage{
-ggmultiplot(..., plotlist = NULL, cols = 1, layout = NULL)
+ggmultiplot(..., plotlist = NULL, ncol = 1L, layout = NULL)
 }
 \arguments{
 \item{...}{ggplot objects}
 
 \item{plotlist}{list of ggplot objects (optional)}
 
-\item{cols}{number of columns in layout}
+\item{ncol}{number of columns in layout}
 
 \item{layout}{matrix specifying the layout; if present, \code{cols} is 
 ignored; 
 
 if layout is \code{matrix(c(1, 2, 3, 3), nrow = 2, byrow = TRUE)},
 for example, then plot 1 will go in the upper left, 2 will go in the upper 
-right, and 3 will go all the way across the bottom.}
+right, and 3 will go all the way across the bottom}
 }
 \description{
 Uses functions in \pkg{grid} to arrange one or more 
-\code{\link[ggplot2]{ggplot}} objects into a single layout
+\code{\link[ggplot2]{ggplot}} objects into a single layout.
 }
 \examples{
-data(mtcars)
 library('ggplot2')
+gg <- ggplot(mtcars, aes(factor(1), fill = factor(cyl))) +
+  geom_bar(width = 1) + theme_minimal()
+gg1 <- gg + coord_polar()
+gg2 <- gg + coord_polar(theta = 'y')
+gg3 <- ggplot(mtcars, aes(factor(cyl), fill = factor(cyl))) +
+  geom_bar(width = 1) + coord_polar() + theme_minimal()
 
-tmp <- ggplot(mtcars, aes(factor(1), fill = factor(cyl))) + 
-  geom_bar(width = 1)
-tmp1 <- tmp + coord_polar()
-tmp2 <- tmp + coord_polar(theta = 'y')
-tmp3 <- ggplot(mtcars, aes(factor(cyl), fill = factor(cyl))) + 
-  geom_bar(width = 1) + coord_polar()
-
-ggmultiplot(tmp1, tmp2, tmp3, cols = 2)
-ggmultiplot(tmp1, tmp2, tmp3, 
-  layout = matrix(c(1, 2, 3, 3, 3, 3), ncol = 2, byrow = TRUE))
+ggmultiplot(gg)
+ggmultiplot(gg1, gg2, gg3, ncol = 2)
+ggmultiplot(
+  gg1, gg2, gg3,
+  layout = matrix(c(1, 2, 3, 3, 3, 3), ncol = 2, byrow = TRUE)
+)
   
 }
 
