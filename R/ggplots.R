@@ -1,7 +1,7 @@
 ### ggplot things
 # ggcols, ggclip, ggwidths, ggsurv, survdat, ggmultiplot, facet_adjust,
 # print.facet_adjust, ggcaterpillar, ggheat, ggheat2, set_panel_size,
-# facet_limits, bar_counts
+# facet_limits, bar_counts, ggtable
 ###
 
 
@@ -726,68 +726,57 @@ survdat_ <- function(s) {
 #' Draw multiple ggplot objects in a single layout
 #' 
 #' Uses functions in \pkg{grid} to arrange one or more 
-#' \code{\link[ggplot2]{ggplot}} objects into a single layout
+#' \code{\link[ggplot2]{ggplot}} objects into a single layout.
 #' 
 #' @param ... ggplot objects
 #' @param plotlist list of ggplot objects (optional)
-#' @param cols number of columns in layout
+#' @param ncol number of columns in layout
 #' @param layout matrix specifying the layout; if present, \code{cols} is 
 #' ignored; 
 #' 
 #' if layout is \code{matrix(c(1, 2, 3, 3), nrow = 2, byrow = TRUE)},
 #' for example, then plot 1 will go in the upper left, 2 will go in the upper 
-#' right, and 3 will go all the way across the bottom.
+#' right, and 3 will go all the way across the bottom
 #' 
 #' @examples
-#' data(mtcars)
 #' library('ggplot2')
+#' gg <- ggplot(mtcars, aes(factor(1), fill = factor(cyl))) +
+#'   geom_bar(width = 1) + theme_minimal()
+#' gg1 <- gg + coord_polar()
+#' gg2 <- gg + coord_polar(theta = 'y')
+#' gg3 <- ggplot(mtcars, aes(factor(cyl), fill = factor(cyl))) +
+#'   geom_bar(width = 1) + coord_polar() + theme_minimal()
 #' 
-#' tmp <- ggplot(mtcars, aes(factor(1), fill = factor(cyl))) + 
-#'   geom_bar(width = 1)
-#' tmp1 <- tmp + coord_polar()
-#' tmp2 <- tmp + coord_polar(theta = 'y')
-#' tmp3 <- ggplot(mtcars, aes(factor(cyl), fill = factor(cyl))) + 
-#'   geom_bar(width = 1) + coord_polar()
-#' 
-#' ggmultiplot(tmp1, tmp2, tmp3, cols = 2)
-#' ggmultiplot(tmp1, tmp2, tmp3, 
-#'   layout = matrix(c(1, 2, 3, 3, 3, 3), ncol = 2, byrow = TRUE))
+#' ggmultiplot(gg)
+#' ggmultiplot(gg1, gg2, gg3, ncol = 2)
+#' ggmultiplot(
+#'   gg1, gg2, gg3,
+#'   layout = matrix(c(1, 2, 3, 3, 3, 3), ncol = 2, byrow = TRUE)
+#' )
 #'   
 #' @export
 
-ggmultiplot <- function(..., plotlist = NULL, cols = 1, layout = NULL) {
+ggmultiplot <- function(..., plotlist = NULL, ncol = 1L, layout = NULL) {
+  pl <- c(list(...), plotlist)
+  if (!(np <- length(pl)))
+    stop('No plots')
   
-  # make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
+  layout <- if (is.null(layout))
+    matrix(seq.int(ncol * ceiling(np / ncol)), ceiling(np / ncol), ncol)
+  else layout
   
-  numPlots = length(plots)
-  
-  # If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-    # make the panel
-    # ncol: number of columns of plots
-    # nrow: number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots / cols)),
-                     ncol = cols, nrow = ceiling(numPlots/cols))
-  }
-  
-  if (numPlots==1) {
-    print(plots[[1]])
-    
-  } else {
-    # set up the page
+  if (np > 1L) {
     grid.newpage()
     pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
     
-    # make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-      
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
+    for (ii in seq.int(np)) {
+      matchidx <- as.data.frame(which(layout == ii, arr.ind = TRUE))
+      print(pl[[ii]],
+            vp = viewport(layout.pos.row = matchidx$row,
+                          layout.pos.col = matchidx$col))
     }
-  }
+  } else print(pl[[1L]])
+  invisible(pl)
 }
 
 #' Facet labeling 
@@ -1462,4 +1451,58 @@ bar_counts <- function(data, x, fill, facet = NULL, position = c('stack', 'fill'
   list(geom_text(data = data,
                  aes_string(label = 'lbl', x = x, y = 'pct_alt'),
                  ...))
+}
+
+#' Table plot
+#' 
+#' @param data a matrix, table, or data frame
+#' @param caption the table caption
+#' @param row.names logical, \code{NULL}, or a character vector of row names
+#' for the table
+#' @param newpage logical; if \code{TRUE} the table is drawn on a new page
+#' 
+#' @seealso
+#' \code{\link[gridExtra]{grid.table}}
+#' 
+#' @examples
+#' library('grid')
+#' library('gridExtra')
+#' ggtable(head(mtcars))
+#' ggtable(head(mtcars), row.names = FALSE)
+#' 
+#' @export
+
+ggtable <- function(data, caption = dname, row.names, newpage = TRUE) {
+  dname <- deparse(substitute(data))
+  pad <- unit(2, 'line')
+  
+  row.names <- if (missing(row.names) || isTRUE(row.names))
+    rownames(data) else if (is.null(row.names)) NULL else
+      if (identical(row.names, FALSE)) FALSE else row.names
+  
+  theme <- list(
+    bg_params = list(fill = '#d3d3d3'),
+    fg_params = list(fontface = 2L,
+                     col = if (identical(row.names, FALSE)) {
+                       row.names <- NULL
+                       0
+                     } else 1)
+  )
+  
+  theme <- ttheme_minimal(
+    rowhead = theme,
+    colhead = modifyList(theme, list(fg_params = list(col = 1)))
+  )
+  
+  rownames(data) <- row.names
+  gt <- tableGrob(data, theme = theme)
+  
+  cap <- textGrob(caption, gp = gpar(fontsize = 15))
+  
+  gt <- gtable_add_rows(gt, grobHeight(cap) + pad, 0)
+  gt <- gtable_add_grob(gt, cap, 1, 1, 1, ncol(gt), Inf, 'off')
+  
+  if (newpage)
+    grid.newpage()
+  grid.draw(gt)
 }
