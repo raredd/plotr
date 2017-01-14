@@ -551,7 +551,7 @@ click_text <- function(expr, ...) {
 #' be drawn
 #' @param ... ignored
 #' 
-#' @seealso \code{\link{click_text}}, \code{link{tcol}}, \code{\link{rect}},
+#' @seealso \code{\link{click_text}}, \code{\link{tcol}}, \code{\link{rect}},
 #' \code{\link{arrows}}, \code{\link{rect}}, \code{\link{rect}},
 #' \code{\link{segments}}, \code{\link{polygon}},
 #' \code{\link[plotrix]{draw.circle}}, \code{\link[plotrix]{cylindrect}}
@@ -575,7 +575,6 @@ click_text <- function(expr, ...) {
 click_shape <- function(shape = 'line', col = 'black', border = col,
                         corners = 5, lty = par('lty'), lwd = par('lwd'), 
                         density = NULL, length = 1, code = 2, ...) {
-  
   op <- par(no.readonly = TRUE) 
   on.exit(par(op))
   par(xpd = NA)

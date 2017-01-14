@@ -52,7 +52,7 @@ click_shape('circle', col = 'orange', border = 'black', lty = 3, lwd = 3)
 
 }
 \seealso{
-\code{\link{click_text}}, \code{link{tcol}}, \code{\link{rect}},
+\code{\link{click_text}}, \code{\link{tcol}}, \code{\link{rect}},
 \code{\link{arrows}}, \code{\link{rect}}, \code{\link{rect}},
 \code{\link{segments}}, \code{\link{polygon}},
 \code{\link[plotrix]{draw.circle}}, \code{\link[plotrix]{cylindrect}}
