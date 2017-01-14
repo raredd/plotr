@@ -17,7 +17,7 @@ x \%inside\% interval
 
 a \%||\% b
 
-tcol(color, trans = 255)
+tcol(color, trans = 255, alpha)
 }
 \arguments{
 \item{x}{vector or \code{NULL}; the values to be matched}
@@ -33,6 +33,9 @@ tcol(color, trans = 255)
 \item{trans}{transparency defined as an integer in the range 
 \code{[0, 255]} where \code{0} is fully transparent and \code{255} is fully
 visible}
+
+\item{alpha}{the alpha transparency in \code{[0,1]}; \code{trans} is
+ignored if \code{alpha} is given}
 }
 \description{
 Some utilities for \code{plotr}.

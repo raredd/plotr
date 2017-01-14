@@ -28,6 +28,8 @@
 #' @param trans transparency defined as an integer in the range 
 #' \code{[0, 255]} where \code{0} is fully transparent and \code{255} is fully
 #' visible
+#' @param alpha the alpha transparency in \code{[0,1]}; \code{trans} is
+#' ignored if \code{alpha} is given
 #' 
 #' @aliases oror %||% notin %ni% inside %inside% tcol
 #' @seealso \code{\link{\%in\%}}, \code{\link{||}}
@@ -77,19 +79,31 @@ NULL
 
 #' @rdname plotr_utils
 #' @export
-tcol <- function(color, trans = 255) {
+tcol <- function(color, trans = 255, alpha) {
+  stopifnot(trans %inside% c(0,255) | is.na(trans))
+  if (!missing(alpha)) {
+    stopifnot(alpha %inside% 0:1 | is.na(alpha))
+    trans <- round(rescaler(alpha, to = c(0,255), from = 0:1))
+  }
   if (length(color) != length(trans) & 
-        !any(c(length(color), length(trans)) == 1)) 
-    stop('Vector lengths not correct')
-  if (length(color) == 1 & length(trans) > 1) 
+      !any(c(length(color), length(trans)) == 1))
+    stop('Vector lengths are not comformable')
+  if (length(color) == 1L & length(trans) > 1L)
     color <- rep(color, length(trans))
-  if (length(trans) == 1 & length(color) > 1) 
+  if (length(trans) == 1L & length(color) > 1L)
     trans <- rep(trans, length(color))
-  res <- paste0('#', apply(apply(rbind(col2rgb(color)), 2, function(x) 
+  
+  if (length(nocol <- which(color == 0))) {
+    color[nocol] <- 1
+    trans[nocol] <- NA
+  }
+  
+  res <- paste0('#', apply(apply(rbind(col2rgb(color)), 2, function(x)
     format(as.hexmode(x), 2)), 2, paste, collapse = ''))
-  res <- unlist(unname(Map(paste0, res, as.character(as.hexmode(trans)))))
-  res[is.na(color)] <- NA
-  return(res)
+  res <- unlist(Map(paste0, res, as.character(try(as.hexmode(trans)))))
+  res[is.na(color) | is.na(trans)] <- NA
+  res[color %in% 'transparent'] <- 'transparent'
+  unname(res)
 }
 
 ## rawr::rescaler
