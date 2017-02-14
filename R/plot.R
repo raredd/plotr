@@ -1,5 +1,6 @@
 ## some random plot things
-# prettybars, prettybars2, zoomin, prettypie, widebars, waffle, bump, histr
+# prettybars, prettybars2, zoomin, prettypie, prettypie2, barmap, widebars,
+# waffle, bump, histr
 ##
 
 
@@ -283,7 +284,7 @@ prettybars2 <- function(x,
 
 #' prettypie
 #' 
-#' A pie chart
+#' A pie chart. \code{prettypie} is stupid, ignore it; use \code{prettypie2},
 #' 
 #' @param dat data
 #' @param file path to output file
@@ -384,6 +385,47 @@ prettypie <- function(dat, file, dev = 'pdf', width = 15, height = 11,
   mtext(sub, side = 3, line = -3.5, adj = 0, cex = 1.75, outer = TRUE, font = 3)
   mtext(note, side = 1, line = 0, adj = 1, cex = 1.2, outer = TRUE, font = 3)
   dev.off()
+}
+
+
+#' @param x numeric vector representing the size for each slice
+#' @param group vector identifying groups of slices (used by \code{col})
+#' @param labels vector of labels for individual slices; if \code{NA}, no
+#' labels will be drawn; if \code{NULL}, slices will be labeled sequentially
+#' @param col colors for each group of slices
+#' @param radius radius for inner and outer pie (usually in [0,1])
+#' 
+#' @examples
+#' ## basic usage
+#' prettypie2(mtcars$mpg)
+#' 
+#' with(mtcars, prettypie2(mpg, interaction(gear, cyl), rownames(mtcars)))
+#' 
+#' @rdname prettypie
+#' @export
+
+prettypie2 <- function(x, group = 1, labels = NA, col = NULL, radius = c(.7, 1)) {
+  group <- rep_len(group, length(x))
+  ug  <- unique(group)
+  tbl <- table(group)[order(ug)]
+  
+  col <- if (is.null(col))
+    seq_along(ug) else rep_len(col, length(ug))
+  col.main <- Map(rep, col[seq_along(tbl)], tbl)
+  col.sub <- lapply(col.main, function(x) {
+    trans <- head(seq(0, 1, length.out = length(x) + 2L)[-1L], -1L)
+    Vectorize(adjustcolor)(x, alpha.f = trans)
+  })
+  
+  plot.new()
+  
+  par(new = TRUE)
+  pie(x, border = NA, radius = radius[2L],
+      col = unlist(col.sub), labels = labels)
+  
+  par(new = TRUE)
+  pie(x, border = NA, radius = radius[1L],
+      col = unlist(col.main), labels = NA)
 }
 
 #' Map barplot

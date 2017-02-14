@@ -2,10 +2,13 @@
 % Please edit documentation in R/plot.R
 \name{prettypie}
 \alias{prettypie}
+\alias{prettypie2}
 \title{prettypie}
 \usage{
 prettypie(dat, file, dev = "pdf", width = 15, height = 11, main, sub,
   note)
+
+prettypie2(x, group = 1, labels = NA, col = NULL, radius = c(0.7, 1))
 }
 \arguments{
 \item{dat}{data}
@@ -23,9 +26,20 @@ prettypie(dat, file, dev = "pdf", width = 15, height = 11, main, sub,
 \item{sub}{sub-title for plot}
 
 \item{note}{note for plot}
+
+\item{x}{numeric vector representing the size for each slice}
+
+\item{group}{vector identifying groups of slices (used by \code{col})}
+
+\item{labels}{vector of labels for individual slices; if \code{NA}, no
+labels will be drawn; if \code{NULL}, slices will be labeled sequentially}
+
+\item{col}{colors for each group of slices}
+
+\item{radius}{radius for inner and outer pie (usually in [0,1])}
 }
 \description{
-A pie chart
+A pie chart. \code{prettypie} is stupid, ignore it; use \code{prettypie2},
 }
 \examples{
 \dontrun{
@@ -49,5 +63,10 @@ prettypie(dat = disease,
           sub = 'Inside: Personal Costs, outside: Insurer Costs',
           note = 'visualization.geblogs.com/visualization/health_costs/')
 }
+## basic usage
+prettypie2(mtcars$mpg)
+
+with(mtcars, prettypie2(mpg, interaction(gear, cyl), rownames(mtcars)))
+
 }
 
