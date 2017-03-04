@@ -1324,7 +1324,7 @@ facet_limits <- function(pl, limits, useNA = c('ifany','no','always')) {
   
   xvar <- tail(as.character(pl$mapping$x), 1L)
   yvar <- tail(as.character(pl$mapping$y), 1L)
-  fvar <- as.character(pl$facet$facets)
+  fvar <- as.character(pl$facet$facets %||% names(pl$facet$params$facets))
   
   data <- pl$data
   lvl  <- unique(data[, fvar])
