@@ -35,4 +35,3 @@ with(voteGermany2013,
             labels = sprintf('\%s (\%s\%\%)', Party, Result)))
 
 }
-

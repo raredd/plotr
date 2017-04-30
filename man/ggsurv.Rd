@@ -172,4 +172,3 @@ dev.off()
 \seealso{
 \code{\link[rawr]{kmplot}}; \code{survival:::plot.survfit}
 }
-

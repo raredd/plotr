@@ -55,4 +55,3 @@ ggplot(mt, aes(vs, fill = gear)) +
              fontface = 'bold.italic')
 
 }
-

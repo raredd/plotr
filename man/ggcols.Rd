@@ -26,4 +26,3 @@ plot(rnorm(1000), col = ggcols(1000), pch = 19)
 \seealso{
 \code{\link{hcl}}
 }
-

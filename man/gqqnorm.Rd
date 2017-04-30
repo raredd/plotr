@@ -22,7 +22,13 @@ gqqplot(x, y, plot.it = TRUE, xlab = deparse(substitute(x)),
 
 \item{ylim}{graphical parameters.}
 
+\item{main}{plot labels.  The \code{xlab} and \code{ylab}
+    refer to the y and x axes respectively if \code{datax = TRUE}.}
+
 \item{xlab}{plot labels.  The \code{xlab} and \code{ylab}
+    refer to the y and x axes respectively if \code{datax = TRUE}.}
+
+\item{ylab}{plot labels.  The \code{xlab} and \code{ylab}
     refer to the y and x axes respectively if \code{datax = TRUE}.}
 
 \item{plot.it}{logical. Should the result be plotted?}
@@ -48,4 +54,3 @@ through the \code{probs} quantiles, by default the first and third quartiles.
 Graphical parameters may be given as arguments to \code{gqqnorm}, 
 \code{gqqplot} and \code{qqline}.
 }
-

@@ -31,4 +31,3 @@ facet_adjust(tmp)
 facet_adjust(tmp, pos = 'down')
 
 }
-

@@ -29,4 +29,3 @@ ggtable(head(mtcars), row.names = FALSE)
 \seealso{
 \code{\link[gridExtra]{grid.table}}
 }
-

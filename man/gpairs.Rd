@@ -40,6 +40,9 @@ gpairs(x, ...)
 \item{lower.panel}{separate panel functions (or
     \code{NULL}) to be used below and above the diagonal respectively.}
 
+\item{upper.panel}{separate panel functions (or
+    \code{NULL}) to be used below and above the diagonal respectively.}
+
 \item{diag.panel}{optional \code{function(x, \dots)} to be
     applied on the diagonals.}
 
@@ -53,6 +56,8 @@ gpairs(x, ...)
     title.  You may want to specify \code{oma} when changing \code{line.main}.}
 
 \item{cex.labels}{graphics parameters for the text panel.}
+
+\item{font.labels}{graphics parameters for the text panel.}
 
 \item{row1attop}{logical. Should the layout be matrix-like with row 1
     at the top, or graph-like with row 1 at the bottom?}
@@ -89,4 +94,3 @@ gpairs(x, ...)
 \description{
 A matrix of scatterplots is produced.
 }
-

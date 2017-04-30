@@ -13,6 +13,12 @@
 
 \item{main}{plotting parameters with useful defaults.}
 
+\item{xlab}{plotting parameters with useful defaults.}
+
+\item{ylab}{plotting parameters with useful defaults.}
+
+\item{type}{plotting parameters with useful defaults.}
+
 \item{zero.line}{logical; if \code{TRUE}, add a base line at \eqn{y = 0}}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}
@@ -26,4 +32,3 @@
 \description{
 The \code{gplot} method for density objects
 }
-

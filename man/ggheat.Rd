@@ -45,4 +45,3 @@ ggheat(cors = tmp, gradn = NULL, gradc = c('white','red'))
 \seealso{
 \code{\link{cor}}, \code{\link{ggheat2}}, \code{\link[iplotr]{icorr}}
 }
-

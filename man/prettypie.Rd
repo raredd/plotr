@@ -69,4 +69,3 @@ prettypie2(mtcars$mpg)
 with(mtcars, prettypie2(mpg, interaction(gear, cyl), rownames(mtcars)))
 
 }
-

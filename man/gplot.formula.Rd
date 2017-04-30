@@ -33,4 +33,3 @@
 \description{
 Specify a \code{\link{gplot}} via a formula
 }
-

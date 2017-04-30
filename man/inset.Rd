@@ -52,4 +52,3 @@ Map(function(x) {
       "topleft", "top", "topright", "right", "center"))
 
 }
-

@@ -75,6 +75,16 @@ ghist(x, ...)
     Note that \code{xlim} is \emph{not} used to define the histogram (breaks),
     but only for plotting (when \code{plot = TRUE}).}
 
+\item{ylim}{the range of x and y values with sensible defaults.
+    Note that \code{xlim} is \emph{not} used to define the histogram (breaks),
+    but only for plotting (when \code{plot = TRUE}).}
+
+\item{xlab}{these arguments to \code{title} have useful
+    defaults here.}
+
+\item{ylab}{these arguments to \code{title} have useful
+    defaults here.}
+
 \item{axes}{logical.  If \code{TRUE} (default), axes are draw if the
     plot is drawn.}
 
@@ -106,4 +116,3 @@ data values. If \code{plot = TRUE}, the resulting object of
 \code{\link{class}} "\code{histogram}" is plotted by \code{\link{gplot.histogram}}
 before it is returned.
 }
-

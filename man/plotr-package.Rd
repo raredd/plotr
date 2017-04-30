@@ -2,10 +2,9 @@
 % Please edit documentation in R/plotr-package.R
 \docType{package}
 \name{plotr-package}
-\alias{plotr}
 \alias{plotr-package}
+\alias{plotr}
 \title{plotr}
 \description{
 Miscellaneous plotting functions and examples.
 }
-

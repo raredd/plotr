@@ -25,4 +25,3 @@
 Interpreting the columns (or rows) of a matrix as different groupd, draw a 
 gboxplot for each.
 }
-

@@ -34,4 +34,3 @@ ggcaterpillar(ranef(fit, condVar = TRUE))
 lattice::qqmath(ranef(fit, condVar = TRUE))
 }
 }
-

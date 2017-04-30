@@ -145,4 +145,3 @@ gbarplot(height, ...)
 \description{
 Creates a gbarplot with vertical or horizontal bars
 }
-

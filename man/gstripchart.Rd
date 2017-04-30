@@ -59,16 +59,28 @@ gstripchart(x, ...)
 
 \item{xlim}{plot limits: see \code{\link{plot.window}}.}
 
+\item{ylim}{plot limits: see \code{\link{plot.window}}.}
+
 \item{ylab}{labels: see \code{\link{title}}.}
 
+\item{xlab}{labels: see \code{\link{title}}.}
+
 \item{dlab}{alternate way to specify axis labels: see \sQuote{Details}.}
+
+\item{glab}{alternate way to specify axis labels: see \sQuote{Details}.}
 
 \item{log}{on which axes to use a log scale:  see
     \code{\link{plot.default}}}
 
 \item{pch}{Graphical parameters: see \code{\link{par}}.}
 
+\item{col}{Graphical parameters: see \code{\link{par}}.}
+
+\item{cex}{Graphical parameters: see \code{\link{par}}.}
+
 \item{axes}{Axis control:  see \code{\link{plot.default}}.}
+
+\item{frame.plot}{Axis control:  see \code{\link{plot.default}}.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}
 
@@ -91,4 +103,3 @@ gstripchart(x, ...)
 the given data. These plots are a good alternative to \code{\link{gboxplot}s}
 when the sample sizes are small.
 }
-

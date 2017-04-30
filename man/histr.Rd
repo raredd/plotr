@@ -39,4 +39,3 @@ histr(x + 50, main = 'Age at diagnosis', xlab = 'Age',
       rug.pars = list(side = 3, col = 'red'))
 
 }
-

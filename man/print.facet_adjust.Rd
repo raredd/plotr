@@ -20,4 +20,3 @@ facet_adjust print method
 \seealso{
 \code{\link{facet_adjust}}
 }
-

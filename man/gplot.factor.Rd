@@ -10,6 +10,8 @@
 \arguments{
 \item{x}{numeric or factor. \code{y} may be missing.}
 
+\item{y}{numeric or factor. \code{y} may be missing.}
+
 \item{legend.text}{character vector for annotation of y axis in the
       case of a factor \code{y}: defaults to \code{levels(y)}.  This
       sets the \code{yaxlabels} argument of \code{\link{spineplot}}.}
@@ -37,4 +39,3 @@ If \code{y} is missing \code{\link{gbarplot}} is produced; for numeric
 \code{\link{gspineplot}} is shown; and for any other type of \code{y}, the
 next \code{gplot} method is called, normally \code{\link{gplot.default}}.
 }
-

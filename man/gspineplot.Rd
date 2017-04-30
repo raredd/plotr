@@ -48,12 +48,23 @@ gspineplot(x, ...)
 
 \item{main}{character strings for annotation}
 
+\item{xlab}{character strings for annotation}
+
+\item{ylab}{character strings for annotation}
+
 \item{xaxlabels}{character vectors for annotation of x and y axis.
     Default to \code{levels(y)} and \code{levels(x)}, respectively for the
     spine plot. For \code{xaxlabels} in the spinogram, the breaks are
     used.}
 
+\item{yaxlabels}{character vectors for annotation of x and y axis.
+    Default to \code{levels(y)} and \code{levels(x)}, respectively for the
+    spine plot. For \code{xaxlabels} in the spinogram, the breaks are
+    used.}
+
 \item{xlim}{the range of x and y values with sensible defaults.}
+
+\item{ylim}{the range of x and y values with sensible defaults.}
 
 \item{axes}{logical.  If \code{FALSE} all axes (including those giving
     level names) are suppressed.}
@@ -77,4 +88,3 @@ Spine plots are a special case of mosaic plots and can be seen as a
 generalization of stacked (or highlighted) bar plots. Analogously, spinograms
 are an extension of histograms.
 }
-

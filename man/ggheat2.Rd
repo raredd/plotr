@@ -92,4 +92,3 @@ ggheat2(data = NULL, corr = cor(mtcars, use = 'pairwise'),
 \code{\link{cor}}, \code{\link{ggheat}}, \code{\link[iplotr]{icorr}},
 \code{\link[arm]{corrplot}}, \url{https://github.com/briatte/ggcorr}
 }
-

@@ -19,6 +19,8 @@
 
 \item{xlab}{x- and y-axis labels.}
 
+\item{ylab}{x- and y-axis labels.}
+
 \item{frame.plot}{logical indicating if a frame (\code{\link{box}})
     should be drawn in the 1D case.  Defaults to true when \code{x} has
     \code{\link{dimnames}} coerce-able to numbers.}
@@ -38,4 +40,3 @@ This is a method of the generic \code{gplot} function for (contingency)
 a \code{\link{mosaicplot}} is drawn, one-dimensional ones are plotted as
 bars.
 }
-

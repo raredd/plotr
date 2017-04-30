@@ -103,4 +103,3 @@ par(op)
 \code{TeachingDemos::subplot}; \url{http://sickel.net/blogg/?p=688};
 \code{\link{inset}}
 }
-

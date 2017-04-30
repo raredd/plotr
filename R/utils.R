@@ -1,7 +1,7 @@
 ### utils
-# plotr_utils, %ni%, %inside%, %||%, tcol, rescaler
+# plotr_utils, %ni%, %inside%, %||%, tcol, rescaler, assert_class
 #
-# polar-cartesian utils: d2r, r2d, p2c, c2p, p2r, p2d
+# coordinate systems: d2r, r2d, p2c, c2p, p2r, p2d
 ###
 
 
@@ -70,7 +70,7 @@ NULL
 #' @export
 '%inside%' <- function(x, interval) {
   interval <- sort(interval)
-  x >= interval[1] & x <= interval[2]
+  x >= interval[1L] & x <= interval[2L]
 }
 
 #' @rdname plotr_utils
@@ -122,6 +122,25 @@ rescaler <- function(x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
     return(rep(mean(to), length(x)))
   (x - from[1]) / diff(from) * diff(to) + to[1]
 }
+
+assert_class <- function(x, class, which = FALSE,
+                         message = NULL, warn = FALSE) {
+  name <- substitute(x)
+  FUN <- if (warn)
+    function(...) warning(..., call. = FALSE)
+  else function(...) stop(..., call. = FALSE)
+  
+  if (is.null(message))
+    message <- paste(shQuote(name), 'is not of class',
+                     toString(shQuote(class)))
+  
+  if (!all(inherits(x, class, which)))
+    FUN(message)
+  invisible(TRUE)
+}
+
+
+## coordinate systems
 
 ## convert degrees to radians or vice versa
 d2r <- function(degrees = 1) degrees * (pi / 180)

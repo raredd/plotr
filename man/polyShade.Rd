@@ -42,4 +42,3 @@ polyShade(xx$x, xx$y, 0, 4, col = 'blue', density = 20, lty = 4,
 \seealso{
 \url{http://www.fromthebottomoftheheap.net/2013/01/11/shading-regions-under-a-curve/}
 }
-

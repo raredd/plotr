@@ -63,4 +63,3 @@ mtext("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1",
       side = 1, at = par('usr')[2], line = 2, adj = 1, cex = .8, font = 3)
 
 }
-

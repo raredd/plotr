@@ -41,4 +41,3 @@ cbind(x = x[p], y = y[p])
 \references{
 \url{http://www.r-bloggers.com/data-point-locator-function/}
 }
-

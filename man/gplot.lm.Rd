@@ -21,7 +21,8 @@
     \code{\link{glm}}.}
 
 \item{which}{if a subset of the plots is required, specify a subset of
-    the numbers \code{1:6}.}
+    the numbers \code{1:6}, see \code{caption} below (and the
+    \sQuote{Details}) for the different kinds.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}
 
@@ -82,4 +83,3 @@ plot of Cook's distances versus row labels, a plot of residuals against
 leverages, and a plot of Cook's distances against leverage/(1-leverage). 
 By default, the first three and 5 are provided.
 }
-

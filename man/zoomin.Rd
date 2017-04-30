@@ -27,4 +27,3 @@ plot(x, y, xlab = 'mean', ylab = 'sd')
 zoomin(x, y)
 ## ESC to quit
 }
-

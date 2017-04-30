@@ -79,4 +79,3 @@ prettybars2(mydata, lab.y = paste('Question #', 1:7), extra.margin = 3,
 \seealso{
 \code{\link{prettybars}}
 }
-

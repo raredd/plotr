@@ -57,4 +57,3 @@ click_shape('circle', col = 'orange', border = 'black', lty = 3, lwd = 3)
 \code{\link{segments}}, \code{\link{polygon}},
 \code{\link[plotrix]{draw.circle}}, \code{\link[plotrix]{cylindrect}}
 }
-

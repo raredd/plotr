@@ -53,4 +53,3 @@
 \description{
 Method for \code{\link{ghist}} applied to date or date-time objects.
 }
-

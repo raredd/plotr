@@ -112,4 +112,3 @@ gbxp(z, notch = FALSE, width = NULL, varwidth = FALSE, outline = TRUE,
 usually called from within \code{\link{gboxplot}} but can be invoked 
 directly.
 }
-

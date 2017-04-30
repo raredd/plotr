@@ -23,4 +23,3 @@ dimnames(mat) <- list(rownames(mtcars)[1:nrow(mat)], paste0('time', 1:ncol(mat))
 bump(mat, mar = c(2,4,2,9), adj = .1, bg = 'cornsilk')
 
 }
-

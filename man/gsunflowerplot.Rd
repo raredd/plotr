@@ -43,7 +43,12 @@ gsunflowerplot(x, ...)
 
 \item{xlab}{character label for x-, or y-axis, respectively.}
 
+\item{ylab}{character label for x-, or y-axis, respectively.}
+
 \item{xlim}{\code{numeric(2)} limiting the extents of the x-,
+    or y-axis.}
+
+\item{ylim}{\code{numeric(2)} limiting the extents of the x-,
     or y-axis.}
 
 \item{add}{logical; should the plot be added on a previous one ?
@@ -63,6 +68,9 @@ gsunflowerplot(x, ...)
     i.e., \code{cex / cex.fact} is used for these.}
 
 \item{col}{colors for the plot symbols, passed to
+    \code{\link{plot.default}}.}
+
+\item{bg}{colors for the plot symbols, passed to
     \code{\link{plot.default}}.}
 
 \item{size}{of sunflower leaves in inches, 1[in] := 2.54[cm].
@@ -96,4 +104,3 @@ gsunflowerplot(x, ...)
 Multiple points are plotted as "sunflowers" with multiple leaves ("petals")
 such that overplotting is visualised instead of accidental and invisible.
 }
-

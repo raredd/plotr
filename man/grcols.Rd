@@ -31,4 +31,3 @@ rect(1:5, 0, 2:6, 1, col = grcols(5), border = NA)
 \seealso{
 \code{\link{hsv}}
 }
-

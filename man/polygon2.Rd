@@ -58,4 +58,3 @@ polygon2(x, y + 1, srt = 30, lty = 'dotted', col = 'transparent')
 polygon2(x, y + -2, radius = .5, sides = 5)
 
 }
-

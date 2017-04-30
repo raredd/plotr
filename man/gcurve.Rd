@@ -19,6 +19,8 @@ gcurve(expr, from = NULL, to = NULL, n = 101, add = FALSE, type = "l",
 
 \item{from}{the range over which the function will be plotted.}
 
+\item{to}{the range over which the function will be plotted.}
+
 \item{n}{integer; the number of x values at which to evaluate.}
 
 \item{add}{logical; if \code{TRUE} add to an already existing plot; if
@@ -32,6 +34,24 @@ gcurve(expr, from = NULL, to = NULL, n = 101, add = FALSE, type = "l",
 \item{xname}{character string giving the name to be used for the x axis.}
 
 \item{xlab}{labels and \link{graphical parameters}
+    can also be specified as arguments.  See \sQuote{Details} for the
+    interpretation of the default for \code{log}.
+
+    For the \code{"function"} method of \code{plot}, \code{\dots} can
+    include any of the other arguments of \code{curve}, except
+    \code{expr}.
+  }
+
+\item{ylab}{labels and \link{graphical parameters}
+    can also be specified as arguments.  See \sQuote{Details} for the
+    interpretation of the default for \code{log}.
+
+    For the \code{"function"} method of \code{plot}, \code{\dots} can
+    include any of the other arguments of \code{curve}, except
+    \code{expr}.
+  }
+
+\item{log}{labels and \link{graphical parameters}
     can also be specified as arguments.  See \sQuote{Details} for the
     interpretation of the default for \code{log}.
 
@@ -60,4 +80,3 @@ Draws a curve corresponding to a function over the interval \code{[from, to]}.
 \code{gcurve} can plot also an expression in the variable \code{xname}, 
 default \code{x}.
 }
-

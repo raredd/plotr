@@ -22,6 +22,9 @@
     (probabilities), i.e., \code{x$density}, are plotted.  The
     default is true for equidistant \code{breaks} and false otherwise.}
 
+\item{density}{select shading of bars by lines:
+    see \code{\link{rect}}.}
+
 \item{angle}{select shading of bars by lines:
     see \code{\link{rect}}.}
 
@@ -35,7 +38,18 @@
 \item{main}{these arguments to \code{title} have useful
     defaults here.}
 
+\item{sub}{these arguments to \code{title} have useful
+    defaults here.}
+
+\item{xlab}{these arguments to \code{title} have useful
+    defaults here.}
+
+\item{ylab}{these arguments to \code{title} have useful
+    defaults here.}
+
 \item{xlim}{the range of x and y values with sensible defaults.}
+
+\item{ylim}{the range of x and y values with sensible defaults.}
 
 \item{axes}{logical, indicating if axes should be drawn.}
 
@@ -61,4 +75,3 @@
 These are methods for objects of class "\code{histogram}", typically 
 produced by \code{\link{ghist}}.
 }
-

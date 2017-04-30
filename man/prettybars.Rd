@@ -77,4 +77,3 @@ prettybars(mtcars$mpg, y = rownames(mtcars), col.bg = 'snow',
 \seealso{
 \code{\link{prettybars2}}
 }
-
