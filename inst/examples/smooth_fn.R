@@ -4,8 +4,8 @@
 
 
 do_poly <- function(x, y1, y2) {
-  polygon(c(x, rev(x)), c(y1, rev(y2)),
-          border = NA, col = adjustcolor(2, alpha.f = 0.2))
+  polygon(c(x, rev(x)), c(y1, rev(y2)), border = NA,
+          col = adjustcolor(2, alpha.f = 0.2))
 }
 
 bezier <- function(x, y, n = 10L) {

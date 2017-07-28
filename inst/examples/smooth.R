@@ -32,7 +32,6 @@ abline(lf, col = 2, lwd = 2, lty = 2)
 do_poly(nx, pr$LCI, pr$UCI)
 
 
-
 ## loess
 lo <- loess(y ~ x2, dd)
 pr <- predict(lo, data.frame(x2 = nx), se = TRUE)
