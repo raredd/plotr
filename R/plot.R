@@ -703,12 +703,15 @@ bump <- function(mat, adj = .5, ...) {
 #' @param x a vector of values for which the histogram is desired
 #' @param ... additional parameters passed to \code{\link{hist}} or graphical
 #' parameters passed to \code{\link{par}}
-#' @param line.pars optional list of additional parameters passed to
+#' @param lines.pars optional list of additional parameters passed to
 #' \code{\link{line}}
 #' @param rug.pars optional list of additional parameters passed to
 #' \code{\link{rug}}
 #' @param poly.pars optional list of additional parameters passed to
 #' \code{\link{polygon}}
+#' @param reset_par logical; if \code{TRUE}, resets par settings to state
+#' before function call; setting \code{reset_par = FALSE} is useful for adding
+#' to a plot
 #' 
 #' @return
 #' A list of length two containing the return value of \code{\link{hist}}
@@ -726,14 +729,17 @@ bump <- function(mat, adj = .5, ...) {
 #' 
 #' @export
 
-histr <- function(x, ..., lines.pars, rug.pars, poly.pars) {
+histr <- function(x, ..., lines.pars, rug.pars, poly.pars, reset_par = TRUE) {
   op <- par(no.readonly = TRUE)
-  on.exit(par(op))
+  if (reset_par)
+    on.exit(par(op))
+  
   m <- match.call()
+  
   if (length(xx <- grep('pars', names(m))))
     m[xx] <- lapply(m[xx], function(ii) as.list(ii)[-1L])
   
-  par(las = 1, mar = c(5,4,4,4.5) + .1, tcl = .2)
+  par(mar = par('mar')[c(1,2,3,2)])
   d <- density(x)
   h <- if (is.null(match.call()$xlab))
     hist(x, ..., xlab = sprintf('N = %s  Bandwidth = %.3f', d$n, d$bw)) else
@@ -744,16 +750,18 @@ histr <- function(x, ..., lines.pars, rug.pars, poly.pars) {
   do.call('rug', c(list(x = x), m$rug.pars))
   do.call('polygon', 
           c(list(x = c(d$x, rev(d$x)),
-                 y = c(d$y * rs, rep(par('usr')[3], length(d$y))),
-                 col = adjustcolor(m$poly.pars$col %||% NA, alpha.f = .25),
+                 y = c(d$y * rs, rep(par('usr')[3L], length(d$y))),
+                 col = adjustcolor(m$poly.pars$col %||% NA, alpha.f = 0.25),
                  border = NA),
             m$poly.pars[-which(names(m$poly.pars) == 'col')]))
   
   par(new = TRUE)
   plot(d, type = 'n', ann = FALSE, axes = FALSE)
-  p <- par('usr')
-  text(p[2] + .15 * diff(p[1:2]), mean(p[3:4]), labels = 'Density',
-       srt = -90, xpd = NA)
-  axis(4)
+  
+  text(coords(side = 4L, line = par('mgp')[1L]),
+       mean(par('usr')[3:4]),
+       labels = 'Density', srt = -90, xpd = NA)
+  axis(4L)
+  
   invisible(list(h = h, d = d))
 }

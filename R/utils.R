@@ -1,5 +1,5 @@
 ### utils
-# plotr_utils, %ni%, %inside%, %||%, tcol, rescaler, assert_class
+# plotr_utils, %ni%, %inside%, %||%, tcol, rescaler, assert_class, coords
 #
 # coordinate systems: d2r, r2d, p2c, c2p, p2r, p2d
 ###
@@ -169,4 +169,29 @@ p2r <- function(x, y, cx = 0, cy = 0) {
 p2d <- function(x, y, cx = 0, cy = 0) {
   # p2d(0,1)
   r2d(atan2(y - cy, x - cx))
+}
+
+## rawr::coords
+coords <- function(x = 0:1, y = x, to = 'user', line, side) {
+  xy <- cbind(x, y)
+  x  <- xy[, 1L]
+  y  <- xy[, 2L]
+  
+  if (!missing(line) | !missing(side)) {
+    lh <- par('cin')[2L] * par('cex') * par('lheight')
+    
+    sapply(line, function(li) {
+      li <- li + 0.5
+      x  <- diff(grconvertX(x, 'in', 'user')) * lh * li
+      y  <- diff(grconvertY(y, 'in', 'user')) * lh * li
+      
+      (par('usr')[c(3, 1, 4, 2)] + c(-y, -x, y, x))[match(side, 1:4)]
+    })
+  } else
+    list(
+      plot   = list(x = grconvertX(x, 'npc', to), y = grconvertY(y, 'npc', to)),
+      figure = list(x = grconvertX(x, 'nfc', to), y = grconvertY(y, 'nfc', to)),
+      inner  = list(x = grconvertX(x, 'nic', to), y = grconvertY(y, 'nic', to)),
+      device = list(x = grconvertX(x, 'ndc', to), y = grconvertY(y, 'ndc', to))
+    )
 }

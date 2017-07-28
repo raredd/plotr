@@ -4,7 +4,7 @@
 \alias{histr}
 \title{histr}
 \usage{
-histr(x, ..., lines.pars, rug.pars, poly.pars)
+histr(x, ..., lines.pars, rug.pars, poly.pars, reset_par = TRUE)
 }
 \arguments{
 \item{x}{a vector of values for which the histogram is desired}
@@ -12,14 +12,18 @@ histr(x, ..., lines.pars, rug.pars, poly.pars)
 \item{...}{additional parameters passed to \code{\link{hist}} or graphical
 parameters passed to \code{\link{par}}}
 
+\item{lines.pars}{optional list of additional parameters passed to
+\code{\link{line}}}
+
 \item{rug.pars}{optional list of additional parameters passed to
 \code{\link{rug}}}
 
 \item{poly.pars}{optional list of additional parameters passed to
 \code{\link{polygon}}}
 
-\item{line.pars}{optional list of additional parameters passed to
-\code{\link{line}}}
+\item{reset_par}{logical; if \code{TRUE}, resets par settings to state
+before function call; setting \code{reset_par = FALSE} is useful for adding
+to a plot}
 }
 \value{
 A list of length two containing the return value of \code{\link{hist}}
