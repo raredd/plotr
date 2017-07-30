@@ -1,6 +1,6 @@
 ## some random plot things
 # prettybars, prettybars2, zoomin, prettypie, prettypie2, barmap, widebars,
-# waffle, bump, histr
+# waffle, bump, histr, shist
 ##
 
 
@@ -764,4 +764,203 @@ histr <- function(x, ..., lines.pars, rug.pars, poly.pars, reset_par = TRUE) {
   axis(4L)
   
   invisible(list(h = h, d = d))
+}
+
+#' shist
+#' 
+#' A stacked histogram with density curve.
+#' 
+#' @param x a list of numeric vectors for which the histogram is desired
+#' @param ... additional parameters passed to \code{\link{hist}} or graphical
+#' parameters passed to \code{\link{par}}
+#' @param col a vector of colors for each histogram
+#' @param loess logical; if \code{TRUE}, a \code{\link{loess}} curve is
+#' fit to each histogram
+#' @param total logical; if \code{TRUE}, an aggregate histogram of \code{x}
+#' is plotted first, and each element of \code{x} is plotted below
+#' @param xlim,ylim the x- and y-axis limits (if given, applied to all plots)
+#' @param heights an optional vector of values, usually in \code{(0,1)}, for
+#' the heights of each plot on the device; see \code{\link{layout}}
+#' @param heights.main if \code{total = TRUE}, the height of the aggregate
+#' histogram plot relative to the device, usually in \code{(0,1)}
+#' @param reset_par logical; if \code{TRUE}, resets par settings to state
+#' before function call; setting \code{reset_par = FALSE} is useful for adding
+#' to a plot
+#' 
+#' @return
+#' A list of length \code{length(x)} containing the return value of
+#' \code{\link{hist}} for each element of \code{x}.
+#' 
+#' @examples
+#' set.seed(1)
+#' x <- lapply(sample(1:10, 4), rpois, n = 500)
+#' 
+#' shist(x)
+#' shist(x, heights.main = 0.75)
+#' shist(x, heights = c(5,1,1,1,3))
+#' shist(x, col = rainbow(5), total = FALSE,
+#'       ylim = c(0, 150), las = 1L, breaks = 10)
+#' 
+#' @export
+
+shist <- function(x, ..., col = grey.colors(length(x) + 1L),
+                  loess = TRUE, total = TRUE,
+                  xlim = NULL, ylim = NULL,
+                  heights = NULL, heights.main = 0.5,
+                  reset_par = TRUE) {
+  op <- par(mar = c(0,0,0,0), oma = par('mar'))
+  if (reset_par)
+    on.exit(par(op))
+  
+  x <- as.list(x)
+  if (is.null(names(x)))
+    names(x) <- seq_along(x)
+  
+  x <- if (total)
+    c(list(total = unname(unlist(x))), x)
+  else {
+    heights <- 1L
+    x
+  }
+  
+  h <- hist(unlist(x), plot = FALSE)
+  col  <- rep_len(col, length(x))
+  xlim <- xlim %||% range(h$breaks)
+  # ylim <- ylim %||% range(h$counts)
+  
+  heights <- heights %||%
+    c(heights.main, rep((1 - heights.main) / (length(x) - 1L), length(x) - 1L))
+  heights <- rep_len(heights, length(x))
+  
+  layout(seq_along(x), heights = heights)
+  
+  res <- vector('list', length(x))
+  for (ii in seq_along(x)) {
+    xii <- x[[ii]]
+    
+    res[[ii]] <- h <- hist(
+      xii, ..., xpd = NA,
+      main = '', xlab = '', ylab = '',
+      xlim = xlim, ylim = ylim,
+      axes = FALSE, col = col[ii]
+    )
+    
+    axis(2L)
+    
+    if (ii == length(x))
+      axis(1L)
+    
+    if (loess) {
+      nx <- seq(min(xii), max(xii), length.out = 1000L)
+      lo <- data.frame(counts = h$counts, mids = h$mids)
+      
+      lo <- loess(counts ~ mids, lo)
+      pr <- predict(lo, data.frame(mids = nx), se = TRUE)
+      
+      lines(pr$fit ~ nx, col = col[ii], lwd = 2, xpd = NA)
+    }
+  }
+  
+  invisible(setNames(res, names(x)))
+}
+
+#' propfall
+#' 
+#' A barplot of proportions.
+#' 
+#' @param data a data frame (or object to be coerced)
+#' @param group a vector with length \code{nrow(data)} defining the group to
+#' which each row of \code{data} belongs
+#' @param order a vector of column names of \code{data} defining how numeric
+#' values should be sorted
+#' @param group.order an optional vector of unique values of \code{group}
+#' giving the desired order for groups
+#' @param col a vector of colors for each of \code{order}, recycled as needed
+#' @param ... additional parameters passed to \code{\link{barplot}} or
+#' graphical parameters passed to \code{\link{par}}
+#' 
+#' @return
+#' A list of length two with the result of the call to \code{\link{barplot}}
+#' (\code{bp}) giving the x-axis positions for each bar and the \code{o}rder
+#' that each observation has been sorted in the barplot.
+#' 
+#' @seealso
+#' \code{\link[rawr]{waterfall}}
+#' 
+#' @examples
+#' dat <- within(mtcars, {
+#'   disp <- disp / 10
+#'   wt <- wt * 10
+#' })
+#' 
+#' vars <- c('mpg', 'disp', 'wt')
+#' dat[, vars] <- t(apply(dat[, vars], 1L, function(x) x / sum(x)))
+#' 
+#' dat <- dat[, vars]
+#' dat$group <- colnames(dat)[max.col(dat)]
+#' 
+#' cols <- c('grey', 'lightpink', 'indianred1', 'indianred3')
+#' waterfall2(dat[, 1:3])
+#' waterfall2(dat[, 1:3], group = dat$group, col = cols)
+#' 
+#' ## use the return value to add labels or identify observations
+#' bp <- waterfall2(
+#'   dat[, 1:3], col = cols, group = dat$group, order = c('disp', 'wt', 'mpg'),
+#'   group.order = c('mpg', 'wt', 'disp')
+#' )
+#' text(bp$bp, 0, labels = rownames(dat)[bp$o], srt = 90, col = 0, adj = 0)
+#' 
+#' 
+#' 
+#' @export
+
+waterfall2 <- function(data, group, order, group.order = unique(group),
+                       col = NULL, ...) {
+  if (missing(order))
+    order <- colnames(data)
+  col <- if (is.null(col))
+    gray.colors(length(order))
+  else rep_len(col, length(order))
+  
+  group <- if (missing(group))
+    rep_len(1L, nrow(data))
+  else if (is.character(group) & length(group) == 1L)
+    data[, group]
+  else rep_len(group, nrow(data))
+  
+  data <- as.data.frame(data)
+  data <- data[, order, drop = FALSE]
+  
+  f <- function(x) do.call('order', as.list(x))
+  
+  sp <- split(data, group)[group.order]
+  
+  sp <- lapply(seq_along(sp), function(x) {
+    rbind(sp[[x]][f(sp[[x]][, order]), ], NA)
+  })
+  
+  sp <- do.call('rbind', sp)
+  # o <- rownames(sp[-cumsum(lengths(sp)), ])
+  o <- match(rownames(sp), rownames(data))
+  rownames(sp) <- NULL
+  
+  mm <- t(as.matrix(sp[, seq_along(col)]))
+  
+  tt <- table(factor(group, group.order))
+  times <- rawr::interleave(which = 'rbind',
+                            matrix(tt), matrix(1L, length(tt))
+  )
+  
+  mm[is.na(mm)] <- 0
+  
+  par(mar = c(3,4.5,2,1))
+  bp <- barplot(mm, col = col, space = 0, ..., border = NA)
+  
+  text(c(0, head(cumsum(tt), -1L)) + seq_along(group.order), par('usr')[4L],
+       group.order, xpd = NA, adj = 0, pos = 3L)
+  legend(0, par('usr')[3L], xpd = NA, horiz = TRUE,
+         bty = 'n', lty = 1, lwd = 7,
+         legend = order, col = col)
+  
+  invisible(list(bp = bp, o = o))
 }
