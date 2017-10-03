@@ -29,12 +29,14 @@ Color or shade the area under a curve.
 \examples{
 set.seed(1)
 x <- c(rnorm(75), rnorm(25, 5))
+
 plot(xx <- density(x), panel.first = {
   polyShade(xx$x, xx$y, from = c(min(xx$x), 6), to = c(-2, max(xx$x)),
             col = adjustcolor('red', .3), border = NA)
 })
 
 polyShade(xx$x, xx$y, -1, 2, col = 'red', border = NA)
+
 polyShade(xx$x, xx$y, 0, 4, col = 'blue', density = 20, lty = 4, 
           miny = par('usr')[1], border = NA)
 

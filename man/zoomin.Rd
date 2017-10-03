@@ -12,7 +12,7 @@ zoomin(x, y, ...)
 \item{...}{additional arguments passed to \code{\link{identify}}}
 }
 \description{
-Provides a summary statistic for sample points in a plot (in progress).
+Provides a summary statistic for sample points in a plot.
 }
 \examples{
 set.seed(1)

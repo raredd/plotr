@@ -6,7 +6,7 @@
 
 #' Color legend
 #' 
-#' Continuous color bar legend
+#' Continuous color bar legend.
 #' 
 #' @param cols vector of color names (or hexadecimal) from low to high
 #' @param x numeric vector of data
@@ -32,81 +32,79 @@
 #' text(x = 0, y = seq(0, par('usr')[4], length = 6), pos = 4, xpd = TRUE,
 #'      labels = pretty(seq(0, par('usr')[4]), n = 6), cex = .8, offset = .75)
 #' 
-#' \dontrun{
+#' 
 #' ## calling color_bar once in the col argument will color x accordingly
-#' # and plot the legend simultaneously
+#' ## and plot the legend simultaneously
 #' 
-#' ## compare:
-#' png('/users/rawr/desktop/tmp.png')
-#' par(mfrow = c(2,1))
+#' ## compare
 #' plot(mtcars$mpg, pch = 19, cex = 2, 
-#'      col = colorRampPalette(c('yellow','red'))(1000)[rescaler(mtcars$mpg, c(1, 1000))])
-#' plot(mtcars$mpg, pch = 19, cex = 2, bty = 'l',
+#'      col = plotr:::col_scaler(mtcars$mpg, c('yellow','red')))
+#' plot(mtcars$mpg, pch = 19, cex = 2,
 #'      col = color_bar(c('yellow','red'), mtcars$mpg, labels = mtcars$mpg))
-#' dev.off()
-#'
-#' ## plot a color_bar legend by a variable other than x
-#' # use y argument to match the variable in the original plot call
-#' # and x as the variable to color and label
 #' 
-#' ## compare:
-#' png('/users/rawr/desktop/tmp.png')
-#' par(mfrow = c(2,1))
-#' with(mtcars,
-#'      plot(mpg, pch = 19, cex = 2, main = 'color by weight (red = heavier)',
-#'      col = colorRampPalette(c('yellow','red'))(1000)[rescaler(wt, c(1, 1000))]))
-#' with(mtcars,
-#'      plot(mpg, pch = 19, cex = 2, bty = 'l', main = 'color by weight (red = heavier)',
-#'      col = color_bar(c('yellow','red'), x = wt, y = mpg, labels = wt)))
-#' dev.off()
-#'}
+#' 
+#' ## plot a color_bar legend by a variable other than x
+#' ##   use y argument to match the variable in the original plot call
+#' ##   and x as the variable to color and label
+#' 
+#' ## compare
+#' with(mtcars, {
+#'   plot(mpg, pch = 19, cex = 2,
+#'        main = 'color by weight (red = heavier)',
+#'        col = plotr:::col_scaler(wt, c('yellow','red')))
+#' })
+#' 
+#' with(mtcars, {
+#'   plot(mpg, pch = 19, cex = 2,
+#'        main = 'color by weight (red = heavier)',
+#'        col = color_bar(c('yellow','red'), x = wt, y = mpg, labels = wt))
+#' })
 #'
 #' @export
 
-color_bar <- function(cols, 
+color_bar <- function(colors, 
                       x = NULL, 
                       y = x,
                       labels = NULL,
-                      at.x = par('usr')[2], 
-                      at.y = par('usr')[3], 
+                      at.x = par('usr')[2L],
+                      at.y = par('usr')[3L],
                       cex.x = 1, 
                       cex.y = 1,
                       ...) {
-  
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
   par(list(...))
   
-  par(mar = c(5, 4, 4, 4) + .1, xpd = TRUE)
+  par(mar = c(5, 4, 4, 4) + .1, xpd = TRUE, new = TRUE)
   bx <- par('usr')
   nc <- 1000
-  cols <- colorRampPalette(cols)(nc)
+  colors <- colorRampPalette(colors)(nc)
   
-  bx.y <- c(bx[3], bx[4])
+  bx.y <- c(bx[3L], bx[4L])
   sapply(0:nc, function(x) {
     segments(at.x, 
              at.y + x * diff(bx.y) / nc * cex.y, 
              at.x + diff(bx[1:2]) / nc * 20 * cex.x, 
              at.y + x * diff(bx.y) / nc * cex.y, 
-             col = cols[x], lwd = 1, xpd = TRUE)
+             col = colors[x], lwd = 1, xpd = TRUE)
   })
   if (!is.null(labels))
     text(x = at.x, y = pretty(y), labels = pretty(labels), 
-         pos = 4, cex = .8, offset = .75)
+         pos = 4L, cex = 0.8, offset = 0.75)
+  
   if (!is.null(x))
-    invisible(cols[rescaler(x, c(1, nc))])
+    invisible(colors[rescaler(x, c(1, nc))])
 }
 
 #' Zoom for points in base \code{R} plot
 #' 
-#' Provides a summary statistic for sample points in a plot (in progress).
+#' Provides a summary statistic for sample points in a plot.
 #' 
-#' @param x x-coordinates
-#' @param y y-coordinates
-#' @param ... other options passed to \code{\link{identify}}
+#' @param x,y x- and y-coordinates
+#' @param ... additional arguments passed to \code{\link{identify}}
 #' 
 #' @examples
-#' set.seed(1618)
+#' set.seed(1)
 #' x <- runif(10)
 #' y <- rnorm(10, mean = 5)
 #' 
@@ -118,14 +116,24 @@ color_bar <- function(cols,
 #' @export
 
 zoomin <- function(x, y, ...) {
-  
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
   
-  ans <- identify(x, y, n = 1, plot = FALSE, ...)
+  ans <- tryCatch(
+    identify(x, y, n = 1L, plot = FALSE, ...),
+    
+    error = function(e) {
+      if (grepl('plot.new has not been called yet', e$message, fixed = TRUE)) {
+        par(mfrow = c(1, 2))
+        plot(x, y)
+        op <- par(no.readonly = TRUE)
+      } else return(e)
+      
+      identify(x, y, n = 1L, plot = FALSE, ...)
+    }
+  )
   
   zoom <- function (x, y, xlim, ylim, xd, yd) {
-    
     rxlim <- x + c(-1, 1) * (diff(range(xd)) / 20)
     rylim <- y + c(-1, 1) * (diff(range(yd)) / 20)
     
@@ -135,50 +143,53 @@ zoomin <- function(x, y, ...) {
     xext <- yext <- rxext <- ryext <- 0
     
     if (par('xaxs') == 'r') {
-      xext <- diff(xlim) * 0.04
+      xext  <- diff(xlim) * 0.04
       rxext <- diff(rxlim) * 0.04
     }
     if (par('yaxs') == 'r') {
-      yext <- diff(ylim) * 0.04
+      yext  <- diff(ylim) * 0.04
       ryext <- diff(rylim) * 0.04
     }
     
-    rect(rxlim[1] - rxext, rylim[1] - ryext, rxlim[2] + rxext, rylim[2] + ryext)
+    rect(rxlim[1L] - rxext, rylim[1L] - ryext,
+         rxlim[2L] + rxext, rylim[2L] + ryext)
     xylim <- par('usr')
     xypin <- par('pin')
     
-    rxi0 <- xypin[1] * (xylim[2] - (rxlim[1] - rxext)) / diff(xylim[1:2])
-    rxi1 <- xypin[1] * (xylim[2] - (rxlim[2] + rxext)) / diff(xylim[1:2])
-    y01i <- xypin[2] * (xylim[4] - (rylim[2] + ryext)) / diff(xylim[3:4])
-    y02i <- xypin[2] * ((rylim[1] - ryext) - xylim[3]) / diff(xylim[3:4])
+    rxi0 <- xypin[1L] * (xylim[2L] - (rxlim[1L] - rxext)) / diff(xylim[1:2])
+    rxi1 <- xypin[1L] * (xylim[2L] - (rxlim[2L] + rxext)) / diff(xylim[1:2])
+    y01i <- xypin[2L] * (xylim[4L] - (rylim[2L] + ryext)) / diff(xylim[3:4])
+    y02i <- xypin[2L] * ((rylim[1L] - ryext) - xylim[3L]) / diff(xylim[3:4])
     mu <- x
     
-    curve(dnorm(x, mean = mu, sd = y), from = -4 * y + mu, to = 4 * y + mu, 
-          xlab = paste('mean:', round(mu, 2), ', sd: ', round(y, 2)), ylab = '')
+    curve(dnorm(x, mean = mu, sd = y), from = -4 * y + mu, to = 4 * y + mu,
+          xlab = sprintf('mean: %.2f, sd: %.2f', mu, y), ylab = '')
     
     xypin <- par('pin')
     par(xpd = NA)
     xylim <- par('usr')
     xymai <- par('mai')
     
-    x0 <- xylim[1] - diff(xylim[1:2]) * (xymai[2] + xymai[4] + rxi0)/xypin[1]
-    x1 <- xylim[1] - diff(xylim[1:2]) * (xymai[2] + xymai[4] + rxi1)/xypin[1]
-    y01 <- xylim[4] - diff(xylim[3:4]) * y01i/xypin[2]
-    y02 <- xylim[3] + diff(xylim[3:4]) * y02i/xypin[2]
+    x0 <- xylim[1L] - diff(xylim[1:2]) *
+      (xymai[2L] + xymai[4L] + rxi0) / xypin[1L]
+    x1 <- xylim[1L] - diff(xylim[1:2]) *
+      (xymai[2L] + xymai[4L] + rxi1) / xypin[1L]
+    y01 <- xylim[4L] - diff(xylim[3:4]) * y01i / xypin[2L]
+    y02 <- xylim[3L] + diff(xylim[3:4]) * y02i / xypin[2L]
     
     par(xpd = TRUE)
+    xend <- xylim[1L] - diff(xylim[1:2]) * xymai[2L] / (2 * xypin[1L])
+    xprop0 <- (xylim[1L] - xend) / (xylim[1L] - x0)
+    xprop1 <- (xylim[2L] - xend) / (xylim[2L] - x1)
     
-    xend <- xylim[1] - diff(xylim[1:2]) * xymai[2] / (2 * xypin[1])
-    xprop0 <- (xylim[1] - xend) / (xylim[1] - x0)
-    xprop1 <- (xylim[2] - xend) / (xylim[2] - x1)
     par(xpd = NA)
-    segments(c(x0, x0, x1, x1), 
-             c(y01, y02, y01, y02), 
-             c(xend, xend, xend, xend), 
-             c(xylim[4] - (xylim[4] - y01) * xprop0, 
-               xylim[3] + (y02 - xylim[3]) * xprop0, 
-               xylim[4] - (xylim[4] - y01) * xprop1, 
-               xylim[3] + (y02 - xylim[3]) * xprop1))
+    segments(c(x0, x0, x1, x1),
+             c(y01, y02, y01, y02),
+             c(xend, xend, xend, xend),
+             c(xylim[4L] - (xylim[4L] - y01) * xprop0,
+               xylim[3L] + (y02 - xylim[3L]) * xprop0,
+               xylim[4L] - (xylim[4L] - y01) * xprop1,
+               xylim[3L] + (y02 - xylim[3L]) * xprop1))
     par(mfg = c(1, 1))
     
     plot(xd, yd, xlab = 'mean', ylab = 'sd')
@@ -186,18 +197,18 @@ zoomin <- function(x, y, ...) {
   
   if (length(ans)) {
     zoom(x[ans], y[ans], range(x), range(y), x, y)
-    points(x[ans], y[ans], pch = 19)
+    points(x[ans], y[ans], pch = 19L)
     zoomin(x, y)
   }
 }
 
 #' Point locator
 #' 
-#' Interactive point locator
+#' Interactively select points on an existing figure and annotated with new
+#' plotting characters.
 #' 
 #' @param n the maximum number of points to locate
-#' @param x x-coordinates
-#' @param y y-coordinates
+#' @param x,y x- and y-coordinates
 #' @param col color for points
 #' @param pch plotting character
 #' @param ... additional graphical arguments passed to \code{\link{points}}
@@ -222,25 +233,28 @@ zoomin <- function(x, y, ...) {
 #' 
 #' @export
 
-ptlocator <- function(n = 512, x, y, col = tcol('red', 80), pch = 20, ...) {
+ptlocator <- function(n = 512L, x, y, col = tcol('red', 80), pch = 20, ...) {
   xsc <- scale(x)
   ysc <- scale(y)
-  #   pos <- numeric(n)
+  # pos <- numeric(n)
   pos <- NULL
+  
   for(i in seq(n)) {
     pt <- locator(1)
-    if (!is.null(pt)){
-      ptxsc <- scale(pt$x, center = attr(xsc, "scaled:center"),
-                     scale = attr(xsc, "scaled:scale"))
-      ptysc <- scale(pt$y, center = attr(ysc, "scaled:center"),
-                     scale = attr(ysc, "scaled:scale"))
-      pos.i <- which.min(sqrt((c(ptxsc) - c(xsc)) ^ 2 + (c(ptysc) - c(ysc)) ^ 2))
+    if (!is.null(pt)) {
+      ptxsc <- scale(pt$x, center = attr(xsc, 'scaled:center'),
+                     scale = attr(xsc, 'scaled:scale'))
+      ptysc <- scale(pt$y, center = attr(ysc, 'scaled:center'),
+                     scale = attr(ysc, 'scaled:scale'))
+      pos.i <- which.min(sqrt((c(ptxsc) - c(xsc)) ^ 2 +
+                                (c(ptysc) - c(ysc)) ^ 2))
       points(x[pos.i], y[pos.i], col = col, pch = pch, ...)
-      #       pos[i] <- pos.i
+      # pos[i] <- pos.i
       pos <- c(pos, pos.i)
     } else return(invisible(pos))
   }
-  return(invisible(pos))
+  
+  invisible(pos)
 }
 
 #' Polygon shading
@@ -264,12 +278,14 @@ ptlocator <- function(n = 512, x, y, col = tcol('red', 80), pch = 20, ...) {
 #' @examples
 #' set.seed(1)
 #' x <- c(rnorm(75), rnorm(25, 5))
+#' 
 #' plot(xx <- density(x), panel.first = {
 #'   polyShade(xx$x, xx$y, from = c(min(xx$x), 6), to = c(-2, max(xx$x)),
 #'             col = adjustcolor('red', .3), border = NA)
 #' })
 #' 
 #' polyShade(xx$x, xx$y, -1, 2, col = 'red', border = NA)
+#' 
 #' polyShade(xx$x, xx$y, 0, 4, col = 'blue', density = 20, lty = 4, 
 #'           miny = par('usr')[1], border = NA)
 #' 
@@ -285,24 +301,26 @@ polyShade <- function(x, y, from, to, n = 50, miny, ...) {
     Sq <- seq(from = from, to = to, length = n)
     polygon(x = c(Sq[1], Sq, Sq[n]), y = c(miny, fun(Sq), miny), ...)
   }
+  
   interp <- approxfun(x = x, y = y)
   mapply(drawPoly, from = from, to = to, ...,
          MoreArgs = list(fun = interp, n = n, miny = miny))
-  invisible()
+  
+  invisible(NULL)
 }
 
 #' Barplot confidence intervals
 #' 
 #' Add confidence intervals (error bars) and group comparisons to barplots.
 #' 
-#' @param bp the return value of \code{\link{barplot}}, i.e., a vector or
+#' @param x the return value of \code{\link{barplot}}, i.e., a vector or
 #' matrix (when \code{beside = TRUE}) of all bar (or group) midpoints
 #' @param horiz logical; if \code{TRUE}, \code{bpCI} assumes horizontal bars
 #' @param ci logical; draw error bars (must give \code{ci.u}, \code{ci.l})
 #' @param ci.u,ci.l a numeric vector or matrix having the same dimensions as
-#' \code{bp} giving the upper and lower intervals, respectively
+#' \code{x} giving the upper and lower intervals, respectively
 #' @param ci.width width of the ends of the error bars, will depend on 
-#' \code{range(bp)}
+#' \code{range(x)}
 #' @param sig logical; if \code{TRUE}, draws group comparisons (must give
 #' \code{pvals} to plot sig stars)
 #' @param pvals p-values of group comparisons to be displayed as sig stars
@@ -317,8 +335,10 @@ polyShade <- function(x, y, from, to, n = 50, miny, ...) {
 #' ci.u <- hh * 1.15
 #' pvals <- pt(apply(hh, 2, diff), 1) / 5:1
 #' 
-#' bp <- barplot(hh, beside = TRUE, ylim = c(0,100))
-#' bpCI(bp, ci.u = ci.u, ci.l = ci.l, sig = TRUE, pvals = pvals, pch = "+")
+#' bp <- barplot(hh, beside = TRUE, ylim = c(0, 100))
+#' bpCI(bp, ci.u = ci.u, ci.l = ci.l, sig = TRUE, pvals = pvals)
+#' bpCI(bp, ci.u = ci.u, ci.l = ci.l, sig = TRUE, pvals = pvals,
+#'      show.p = TRUE, pch = FALSE)
 #' mtext("Signif. codes:  0 '+++' 0.001 '++' 0.01 '+' 0.05 '.' 0.1 ' ' 1",
 #'       side = 1, at = par('usr')[2], line = 2, adj = 1, cex = .8, font = 3)
 #' 
@@ -340,46 +360,51 @@ polyShade <- function(x, y, from, to, n = 50, miny, ...) {
 #' 
 #' @export
 
-bpCI <- function(bp, horiz = FALSE, ci = TRUE, ci.u, ci.l, ci.width = .5,
-                 sig = FALSE, pvals, pch, ...) {
-  op <- par(no.readonly = TRUE)
+bpCI <- function(x, horiz = FALSE, ci = TRUE, ci.u, ci.l, ci.width = 0.5,
+                 sig = FALSE, pvals, pch = '*', show.p = FALSE, ...) {
+  op <- par(..., no.readonly = TRUE)
   on.exit(par(op))
-  par(...)
+  
   if (ci) {
     ci.width <- ci.width / 2
     if (horiz) {
       ci.l <- t(ci.l)
       ci.u <- t(ci.u)
-      segments(ci.l, t(bp), ci.u, t(bp))
-      segments(ci.u, t(bp - ci.width), ci.u, t(bp + ci.width))
-      segments(ci.l, t(bp - ci.width), ci.l, t(bp + ci.width))
+      segments(ci.l, t(x), ci.u, t(x))
+      segments(ci.u, t(x - ci.width), ci.u, t(x + ci.width))
+      segments(ci.l, t(x - ci.width), ci.l, t(x + ci.width))
     } else {
-      segments(bp, ci.l, bp, ci.u)
-      segments(bp - ci.width, ci.u, bp + ci.width, ci.u)
-      segments(bp - ci.width, ci.l, bp + ci.width, ci.l)
+      segments(x, ci.l, x, ci.u)
+      segments(x - ci.width, ci.u, x + ci.width, ci.u)
+      segments(x - ci.width, ci.l, x + ci.width, ci.l)
     }
     if (sig) {
       if (horiz)
         stop('\'sig\' is not supported when \'horiz = TRUE\'')
-      if (nrow(bp) > 2)
+      if (nrow(x) > 2L)
         stop('\'sig\' is not supported for > 2 bars per group')
-      if (missing(pch))
-        pch <- '*'
-      yy <- rbind(c(ci.u[1, ] + 3), c(apply(ci.u, 2 , max) + 5),
-                  c(apply(ci.u, 2, max) + 5), c(ci.u[2, ] + 3))
-      xx <- apply(bp, 2, function(x) rep(x, each = nrow(bp)))
-      sapply(1:ncol(bp), function(x) lines(xx[, x], yy[, x]))
-      xt <- colMeans(bp)
-      yt <- apply(ci.u, 2, max) + 7
-      text(pstar_(pvals, pch), x = xt, y = yt)
+      
+      yy <- rbind(c(ci.u[1L, ] + 3L), c(apply(ci.u, 2L, max) + 5L),
+                  c(apply(ci.u, 2L, max) + 5L), c(ci.u[2L, ] + 3L))
+      xx <- apply(x, 2L, function(y) rep(y, each = nrow(x)))
+      sapply(seq.int(ncol(x)), function(ii) lines(xx[, ii], yy[, ii]))
+      xt <- colMeans(x)
+      yt <- apply(ci.u, 2L, max)
+      
+      if (!(is.null(pch) | identical(pch, FALSE) | is.na(pch)))
+        text(xt, yt, pstar_(pvals, pch), pos = 3L)
+      if (show.p)
+        text(xt, yt, rawr::pvalr(pvals), pos = 3L, offset = 1.5)
     }
   }
 }
 
-pstar_ <- function(pv, pch) {
-  symnum(pv, corr = FALSE, na = FALSE, 
-         cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
-         symbols = gsub('\\*', pch, c("***", "**", "*", ".", "NS")))
+pstar_ <- function(pv, pch, non_sig = 'NS') {
+  symnum(
+    pv, corr = FALSE, na = FALSE,
+    cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
+    symbols = chartr('*', pch, c('***' , '**' , '*', '.', non_sig))
+  )
 }
 
 #' Inset plots
@@ -406,22 +431,24 @@ pstar_ <- function(pv, pch) {
 #' 
 #' @examples
 #' op <- par(no.readonly = TRUE)
+#' 
 #' plot(mpg ~ wt, data = mtcars, col = 'blue')
 #' abline(lm(mpg ~ wt, data = mtcars), col = 'red')
 #' inset('topright', pct = .4)
 #' hist(mtcars$mpg, ann = FALSE, panel.last = box(),
 #'      col = 'dodgerblue2', las = 1)
-#' 
 #' par(op)
-#' plot(1:10)
+#' 
+#' plot(1:10, type = 'n')
 #' op <- par(no.readonly = TRUE)
 #' Map(function(x) {
 #'  inset(x, las = 1, col = 'red', pct = 1/3)
 #'  plot(rnorm(10), ann = FALSE, axes = FALSE, panel.last = box())
 #'  par(op)
-#'  Sys.sleep(.5)
-#'  }, c("bottomright", "bottom", "bottomleft", "left",
-#'       "topleft", "top", "topright", "right", "center"))
+#'  Sys.sleep(0.5)
+#'  }, c('bottomright', 'bottom', 'bottomleft', 'left',
+#'       'topleft', 'top', 'topright', 'right', 'center'))
+#' 
 #' 
 #' @export
 
@@ -436,23 +463,23 @@ inset <- function(x, y = NULL, pct = .25, ...) {
     match.arg(x, c("bottomright", "bottom", "bottomleft", "left",
                    "topleft", "top", "topright", "right", "center")) else NA
   
-  xx <- switch(auto, bottomright = c(plt[2] - pctx, plt[2]),
+  xx <- switch(auto, bottomright = c(plt[2L] - pctx, plt[2L]),
                bottom = mean(plt[1:2]) + c(-1, 1) * pctx / 2,
-               bottomleft = c(plt[1], plt[1] + pctx),
-               left = c(plt[1], plt[1] + pctx),
-               topleft = c(plt[1], plt[1] + pctx),
+               bottomleft = c(plt[1L], plt[1L] + pctx),
+               left = c(plt[1L], plt[1L] + pctx),
+               topleft = c(plt[1L], plt[1L] + pctx),
                top = mean(plt[1:2]) + c(-1, 1) * pctx / 2,
-               topright = c(plt[2] - pctx, plt[2]),
-               right = c(plt[2] - pctx, plt[2]),
+               topright = c(plt[2L] - pctx, plt[2L]),
+               right = c(plt[2L] - pctx, plt[2L]),
                center = mean(plt[1:2]) + c(-1, 1) * pctx / 2)
   
-  yy <- switch(auto, bottomright = c(plt[3], plt[3] + pcty),
-               bottom = c(plt[3], plt[3] + pcty),
-               bottomleft = c(plt[3], plt[3] + pcty),
+  yy <- switch(auto, bottomright = c(plt[3L], plt[3L] + pcty),
+               bottom = c(plt[3L], plt[3L] + pcty),
+               bottomleft = c(plt[3L], plt[3L] + pcty),
                left = mean(plt[3:4]) + c(-1, 1) * pcty / 2,
-               topleft = c(plt[4] - pcty, plt[4]),
-               top = c(plt[4] - pcty, plt[4]),
-               topright = c(plt[4] - pcty, plt[4]),
+               topleft = c(plt[4L] - pcty, plt[4L]),
+               top = c(plt[4L] - pcty, plt[4L]),
+               topright = c(plt[4L] - pcty, plt[4L]),
                right = mean(plt[3:4]) + c(-1, 1) * pcty / 2,
                center = mean(plt[3:4]) + c(-1, 1) * pcty / 2)
   
@@ -462,9 +489,11 @@ inset <- function(x, y = NULL, pct = .25, ...) {
     xx <- grconvertX(x, 'user', 'ndc')
     yy <- grconvertY(y, 'user', 'ndc')
   }
+  
   if ('mar' %ni% names(m))
     par(fig = c(xx, yy), new = TRUE, mar = c(0,0,0,0), ...)
   else par(fig = c(xx, yy), new = TRUE, ...)
+  
   invisible(c(xx, yy))
 }
 

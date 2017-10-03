@@ -21,7 +21,8 @@ ptlocator(n = 512L, x, y, col = tcol("red", 80), pch = 20, ...)
 Returns (invisibly) the indices of selected points.
 }
 \description{
-Interactive point locator
+Interactively select points on an existing figure and annotated with new
+plotting characters.
 }
 \examples{
 \dontrun{

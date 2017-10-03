@@ -34,21 +34,23 @@ adjust the size.
 }
 \examples{
 op <- par(no.readonly = TRUE)
+
 plot(mpg ~ wt, data = mtcars, col = 'blue')
 abline(lm(mpg ~ wt, data = mtcars), col = 'red')
 inset('topright', pct = .4)
 hist(mtcars$mpg, ann = FALSE, panel.last = box(),
      col = 'dodgerblue2', las = 1)
-
 par(op)
-plot(1:10)
+
+plot(1:10, type = 'n')
 op <- par(no.readonly = TRUE)
 Map(function(x) {
  inset(x, las = 1, col = 'red', pct = 1/3)
  plot(rnorm(10), ann = FALSE, axes = FALSE, panel.last = box())
  par(op)
- Sys.sleep(.5)
- }, c("bottomright", "bottom", "bottomleft", "left",
-      "topleft", "top", "topright", "right", "center"))
+ Sys.sleep(0.5)
+ }, c('bottomright', 'bottom', 'bottomleft', 'left',
+      'topleft', 'top', 'topright', 'right', 'center'))
+
 
 }
