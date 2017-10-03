@@ -1,7 +1,7 @@
-## some random plot things
+### some random plot things
 # prettybars, prettybars2, zoomin, prettypie, prettypie2, barmap, widebars,
 # waffle, bump, histr, shist
-##
+###
 
 
 #' prettybars

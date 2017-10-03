@@ -4,11 +4,11 @@
 \alias{bpCI}
 \title{Barplot confidence intervals}
 \usage{
-bpCI(bp, horiz = FALSE, ci = TRUE, ci.u, ci.l, ci.width = 0.5,
-  sig = FALSE, pvals, pch, ...)
+bpCI(x, horiz = FALSE, ci = TRUE, ci.u, ci.l, ci.width = 0.5,
+  sig = FALSE, pvals, pch = "*", show.p = FALSE, ...)
 }
 \arguments{
-\item{bp}{the return value of \code{\link{barplot}}, i.e., a vector or
+\item{x}{the return value of \code{\link{barplot}}, i.e., a vector or
 matrix (when \code{beside = TRUE}) of all bar (or group) midpoints}
 
 \item{horiz}{logical; if \code{TRUE}, \code{bpCI} assumes horizontal bars}
@@ -16,10 +16,10 @@ matrix (when \code{beside = TRUE}) of all bar (or group) midpoints}
 \item{ci}{logical; draw error bars (must give \code{ci.u}, \code{ci.l})}
 
 \item{ci.u, ci.l}{a numeric vector or matrix having the same dimensions as
-\code{bp} giving the upper and lower intervals, respectively}
+\code{x} giving the upper and lower intervals, respectively}
 
 \item{ci.width}{width of the ends of the error bars, will depend on 
-\code{range(bp)}}
+\code{range(x)}}
 
 \item{sig}{logical; if \code{TRUE}, draws group comparisons (must give
 \code{pvals} to plot sig stars)}
@@ -41,8 +41,10 @@ ci.l <- hh * 0.85
 ci.u <- hh * 1.15
 pvals <- pt(apply(hh, 2, diff), 1) / 5:1
 
-bp <- barplot(hh, beside = TRUE, ylim = c(0,100))
-bpCI(bp, ci.u = ci.u, ci.l = ci.l, sig = TRUE, pvals = pvals, pch = "+")
+bp <- barplot(hh, beside = TRUE, ylim = c(0, 100))
+bpCI(bp, ci.u = ci.u, ci.l = ci.l, sig = TRUE, pvals = pvals)
+bpCI(bp, ci.u = ci.u, ci.l = ci.l, sig = TRUE, pvals = pvals,
+     show.p = TRUE, pch = FALSE)
 mtext("Signif. codes:  0 '+++' 0.001 '++' 0.01 '+' 0.05 '.' 0.1 ' ' 1",
       side = 1, at = par('usr')[2], line = 2, adj = 1, cex = .8, font = 3)
 

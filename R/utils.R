@@ -107,20 +107,57 @@ tcol <- function(color, trans = 255, alpha) {
 }
 
 ## rawr::rescaler
-rescaler <- function(x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
-  zero_range <- function (x, tol = .Machine$double.eps * 100) {
-    if (length(x) == 1) return(TRUE)
-    if (length(x) != 2) stop('\'x\' must be length one or two')
-    if (any(is.na(x)))  return(NA)
-    if (x[1] == x[2])   return(TRUE)
+rescaler <- function (x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
+  zero_range <- function(x, tol = .Machine$double.eps * 100) {
+    if (length(x) == 1L)  return(TRUE)
+    if (length(x) != 2L)  stop('\'x\' must be length one or two')
+    if (any(is.na(x)))    return(NA)
+    if (x[1L] == x[2L])   return(TRUE)
     if (all(is.infinite(x))) return(FALSE)
     m <- min(abs(x))
     if (m == 0) return(FALSE)
-    abs((x[1] - x[2]) / m) < tol
+    abs((x[1L] - x[2L]) / m) < tol
   }
+  
   if (zero_range(from) || zero_range(to))
     return(rep(mean(to), length(x)))
-  (x - from[1]) / diff(from) * diff(to) + to[1]
+  
+  (x - from[1L]) / diff(from) * diff(to) + to[1L]
+}
+
+## rawr::col_scaler
+col_scaler <- function(x, colors, alpha = 1,
+                       alpha.min = min(0.1, x[x >= 0], na.rm = TRUE),
+                       to = c(0, 1), from = range(x, na.rm = TRUE)) {
+  pals <- c('rainbow', paste0(c('heat', 'terrain', 'topo', 'cm'), '.colors'))
+  colors <- if (is.numeric(colors))
+    rep_len(palette(), max(colors, na.rm = TRUE))[as.integer(colors)]
+  else if (inherits(colors, 'function'))
+    colors
+  else if (colors[1L] %in% pals)
+    get(colors, mode = 'function')
+  else as.character(colors)
+  
+  x <- if (is.factor(x) || is.character(x) || is.integer(x))
+    as.integer(as.factor(x)) else as.numeric(x)
+  
+  ## add alpha
+  if (is.character(colors) & length(colors) == 1L)
+    return(tcol(colors, alpha = rescaler(x, c(alpha.min, to[2L]), from)))
+  
+  ## use interpolation
+  n  <- 10000L
+  to <- to * n
+  x  <- rescaler(x, to, from)
+  x  <- as.integer(x) + 1L
+  
+  colors <- if (inherits(colors, 'function'))
+    colors(n + 1L)[x]
+  else colorRampPalette(colors)(n + 1L)[x]
+  
+  if (!all(alpha == 1))
+    tcol(colors, alpha = rep_len(alpha, length(colors)))
+  else tolower(colors)
 }
 
 assert_class <- function(x, class, which = FALSE,

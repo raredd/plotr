@@ -4,12 +4,10 @@
 \alias{color_bar}
 \title{Color legend}
 \usage{
-color_bar(cols, x = NULL, y = x, labels = NULL, at.x = par("usr")[2],
-  at.y = par("usr")[3], cex.x = 1, cex.y = 1, ...)
+color_bar(colors, x = NULL, y = x, labels = NULL, at.x = par("usr")[2L],
+  at.y = par("usr")[3L], cex.x = 1, cex.y = 1, ...)
 }
 \arguments{
-\item{cols}{vector of color names (or hexadecimal) from low to high}
-
 \item{x}{numeric vector of data}
 
 \item{y}{optional numeric vector of data; to color by a variable other than
@@ -27,6 +25,8 @@ scale the bar down (or up)}
 \item{cex.x, cex.y}{scaling parameters}
 
 \item{...}{additional graphical parameters passed to \code{\link{par}}}
+
+\item{cols}{vector of color names (or hexadecimal) from low to high}
 }
 \value{
 An \code{\link{invisible}} vector of colors (hexadecimal format)
@@ -35,7 +35,7 @@ only one \code{color_bar} needs to be called in the \code{col} argument for
 both the coloring of points and the generation of the legend; see examples.
 }
 \description{
-Continuous color bar legend
+Continuous color bar legend.
 }
 \examples{
 plot.new()
@@ -43,33 +43,32 @@ color_bar(c('black','red','white','blue'), at.x = 0, at.y = 0)
 text(x = 0, y = seq(0, par('usr')[4], length = 6), pos = 4, xpd = TRUE,
      labels = pretty(seq(0, par('usr')[4]), n = 6), cex = .8, offset = .75)
 
-\dontrun{
-## calling color_bar once in the col argument will color x accordingly
-# and plot the legend simultaneously
 
-## compare:
-png('/users/rawr/desktop/tmp.png')
-par(mfrow = c(2,1))
+## calling color_bar once in the col argument will color x accordingly
+## and plot the legend simultaneously
+
+## compare
 plot(mtcars$mpg, pch = 19, cex = 2, 
-     col = colorRampPalette(c('yellow','red'))(1000)[rescaler(mtcars$mpg, c(1, 1000))])
-plot(mtcars$mpg, pch = 19, cex = 2, bty = 'l',
+     col = plotr:::col_scaler(mtcars$mpg, c('yellow','red')))
+plot(mtcars$mpg, pch = 19, cex = 2,
      col = color_bar(c('yellow','red'), mtcars$mpg, labels = mtcars$mpg))
-dev.off()
+
 
 ## plot a color_bar legend by a variable other than x
-# use y argument to match the variable in the original plot call
-# and x as the variable to color and label
+##   use y argument to match the variable in the original plot call
+##   and x as the variable to color and label
 
-## compare:
-png('/users/rawr/desktop/tmp.png')
-par(mfrow = c(2,1))
-with(mtcars,
-     plot(mpg, pch = 19, cex = 2, main = 'color by weight (red = heavier)',
-     col = colorRampPalette(c('yellow','red'))(1000)[rescaler(wt, c(1, 1000))]))
-with(mtcars,
-     plot(mpg, pch = 19, cex = 2, bty = 'l', main = 'color by weight (red = heavier)',
-     col = color_bar(c('yellow','red'), x = wt, y = mpg, labels = wt)))
-dev.off()
-}
+## compare
+with(mtcars, {
+  plot(mpg, pch = 19, cex = 2,
+       main = 'color by weight (red = heavier)',
+       col = plotr:::col_scaler(wt, c('yellow','red')))
+})
+
+with(mtcars, {
+  plot(mpg, pch = 19, cex = 2,
+       main = 'color by weight (red = heavier)',
+       col = color_bar(c('yellow','red'), x = wt, y = mpg, labels = wt))
+})
 
 }

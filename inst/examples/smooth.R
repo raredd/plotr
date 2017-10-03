@@ -5,6 +5,7 @@
 ## functions for plots
 source(system.file('examples', 'smooth_fn.R', package = 'plotr'))
 
+
 library('mgcv')
 set.seed(1)
 dd <- gamSim(1, n = 200, dist = 'normal', scale = 2)
