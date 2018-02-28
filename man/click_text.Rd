@@ -13,7 +13,7 @@ click_text(expr, ...)
 \code{\link{par}}) such as \code{col}, \code{srt}, \code{family}, etc}
 }
 \value{
-A vector of length two with the x- and y-coordinates of the text position.
+(Invisibly) a vector of length two with the x- and y-coordinates of the text.
 }
 \description{
 Add text and expressions anywhere in a plot (including margins) with mouse

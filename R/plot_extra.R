@@ -539,7 +539,7 @@ grcols <- function(n, s = .5, v = 1, alpha = 1) {
 #' mathematical expressions; \code{link{tcol}}
 #' 
 #' @return
-#' A vector of length two with the x- and y-coordinates of the text position.
+#' (Invisibly) a vector of length two with the x- and y-coordinates of the text.
 #' 
 #' @examples
 #' \dontrun{
@@ -555,9 +555,9 @@ click_text <- function(expr, ...) {
   op <- par(no.readonly = TRUE) 
   on.exit(par(op))
   par(mar = c(0,0,0,0), xpd = NA)
-  co <- locator(1)
-  text(co[[1]], co[[2]], labels = if (missing(expr)) '' else expr, ...)
-  c(x = co[[1]], y = co[[2]])
+  co <- locator(1L)
+  text(co[[1L]], co[[2L]], labels = if (missing(expr)) '' else expr, ...)
+  invisible(c(x = co[[1L]], y = co[[2L]]))
 }
 
 #' Add shapes interactively in base \code{R} graphics
@@ -566,21 +566,11 @@ click_text <- function(expr, ...) {
 #' 
 #' @param shape type of shape; choices are \code{'box'}, \code{'arrow'},
 #' \code{'line'}, \code{'poly'}, \code{'circle'}, and \code{'cyl'}
-#' @param col shape outline color
-#' @param border border colour for shape; defaults to value for \code{col}
-#' @param corners number of corners to draw for a polygon
-#' @param lty,lwd graphical parameters; see \code{\link{par}}
-#' @param density the density of shading lines in lines per inch; the default
-#' value of \code{NULL} means that no shading lines are drawm; a zero value of
-#' \code{density} means no shading or filling, whereas negative values and 
-#' \code{NA} suppress shading (and so allow color filling)
-#' @param length length of the edges of the arrow head (in inches); see 
-#' \code{\link{arrows}}
-#' @param code integer code for 'arrows' determining \emph{kind} of arrows to 
-#' be drawn
-#' @param ... ignored
+#' @param corners number of corners to draw if \code{shape = 'poly'}
+#' @param ... additional arguments or graphical parameters passed to the
+#' shape functions
 #' 
-#' @seealso \code{\link{click_text}}, \code{\link{tcol}}, \code{\link{rect}},
+#' @seealso \code{\link{click_text}}, \code{\link{rect}},
 #' \code{\link{arrows}}, \code{\link{rect}}, \code{\link{rect}},
 #' \code{\link{segments}}, \code{\link{polygon}},
 #' \code{\link[plotrix]{draw.circle}}, \code{\link[plotrix]{cylindrect}}
@@ -588,10 +578,10 @@ click_text <- function(expr, ...) {
 #' @examples
 #' \dontrun{
 #' plot.new()
-#' click_shape() # a line segment
+#' click_shape('line') # a line segment
 #' click_shape('arrow', col = 'blue', code = 2, lwd = 2, length = .15)
-#' click_shape('box', border = 'purple', col = 'pink', lwd = 2)
-#' click_shape('box', col = NULL, border = 'purple', lwd = 2)
+#' click_shape('rect', border = 'purple', col = 'pink', lwd = 2)
+#' click_shape('rect', col = NULL, border = 'purple', lwd = 2)
 #' click_shape('line', col = 'orange', lty = 3, lwd = 3)
 #' click_shape('poly', corners = 5, border = 'green', col = 'orange')
 #' click_shape('poly', corners = 3, border = 'red', col = 'yellow', lty = 1)
@@ -601,55 +591,39 @@ click_text <- function(expr, ...) {
 #' 
 #' @export
 
-click_shape <- function(shape = 'line', col = 'black', border = col,
-                        corners = 5, lty = par('lty'), lwd = par('lwd'), 
-                        density = NULL, length = 1, code = 2, ...) {
-  op <- par(no.readonly = TRUE) 
-  on.exit(par(op))
-  par(xpd = NA)
+click_shape <- function(shape = c('circle', 'arrow', 'rect', 'cyl', 'line', 'poly'),
+                        corners = 3L, ...) {
+  shape  <- match.arg(shape)
+  coords <- if (shape %in% 'poly')
+    locator(as.integer(corners)) else unlist(locator(2L))
   
-  RECT <- function(...) {
-    co <- c(unlist(locator(1)), unlist(locator(1)))
-    rect(co[1], co[2], co[3], co[4], col = col, 
-         density = density, border = border, lty = lty, lwd = lwd,
-         length = NULL)
+  ARROW <- function(...) {
+    arrows(coords[1L], coords[3L], coords[2L], coords[4L], ...)
   }
-  ARRO <- function(...) {
-    co <- c(unlist(locator(1)), unlist(locator(1)))
-    arrows(co[1], co[2], co[3], co[4], code = code,
-           col = col, border = NULL, lty = lty, lwd = lwd, length = length)
+  CIRCLE <- function(...) {
+    rad <- sqrt(((coords[2L] - coords[1L]) ^ 2) + ((coords[4L] - coords[3L]) ^ 2))
+    plotrix::draw.circle(coords[1L], coords[3L], radius = rad, ...)
   }
-  LINE <- function(...){
-    co <- c(unlist(locator(1)), unlist(locator(1)))
-    segments(co[1], co[2], co[3], co[4], col = col, 
-             border = NULL, lty = lty, lwd = lwd, length = NULL)
+  CYL <- function(...) {
+    plotrix::cylindrect(coords[1L], coords[3L], coords[2L], coords[4L], ...)
+  }
+  LINE <- function(...) {
+    segments(coords[1L], coords[3L], coords[2L], coords[4L], ...)
   }
   POLY <- function(...) {
-    locations <- locator(corners)
-    polygon(locations, col = col, density = density,
-            border = border, lty = lty, lwd = lwd, length = NULL)
+    polygon(coords, ...)
   }
-  CIRC <- function(...) {
-    co <- c(unlist(locator(1)), unlist(locator(1)))
-    rad <- sqrt(((co[3] - co[1]) ** 2) + ((co[4] - co[2]) ** 2))
-    draw.circle(co[1], co[2], radius = rad, col = col,
-                border = border, lty = lty, lwd = lwd)
-  }
-  CYLI <- function(...) {
-    coor <- unlist(locator(2))
-    cylindrect(coor[1], coor[3], coor[2], coor[4], col = col, border = border)
+  RECT <- function(...) {
+    rect(coords[1L], coords[3L], coords[2L], coords[4L], ...)
   }
   
   suppressWarnings(
-    switch(shape,
-           box    = RECT(col, border, lty, lwd, density),
-           arrow  = ARRO(col, border, lty, lwd, code, length),
-           line   = LINE(col, border, lty, lwd),
-           poly   = POLY(col, border, lty, lwd, density, corners),
-           circle = CIRC(col, border, lty, lwd),
-           cyl    = CYLI(col, border),
-           stop('Invalid Argumets'))
+    switch(shape, arrow = ARROW(...), circle = CIRCLE(...), cyl = CYL(...),
+           line = LINE(...), poly = POLY(...), rect = RECT(...),
+           stop('Invalid shape'))
   )
+  
+  invisible(coords)
 }
 
 #' Color text

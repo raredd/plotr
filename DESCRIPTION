@@ -15,6 +15,7 @@ Suggests:
     Hmisc,
     igraph,
     knitr,
+    plotrix,
     rawr,
     testthat
 License: GPL-2
