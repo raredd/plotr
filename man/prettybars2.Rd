@@ -53,7 +53,7 @@ axes for user input}
 A barplot.
 }
 \examples{
-set.seed(1618)
+set.seed(1)
 f <- function(...) sample(1:5, 100, replace = TRUE, prob = c(...))
 dat <- data.frame(q1 = f(.1, .2, .3, .3, .1),
                   q2 = f(.1, .4, .1, .3, .1),
@@ -64,18 +64,19 @@ dat <- data.frame(q1 = f(.1, .2, .3, .3, .1),
                   q7 = f(.1, .4, .1, .1, .3))
 dat <- stack(dat)
 dat <- within(dat, {
-  values <- factor(values, levels = 1:5, labels = c('NA','SA','A','D','SD'))})
+  values <- factor(values, levels = 1:5, labels = c('NA','SA','A','D','SD'))
+})
 
-mydata <- table(dat)
-cols <- c(grey(.9), tcol(c('lightblue','lightblue','magenta1','magenta1'), 
+tdat <- table(dat)
+cols <- c(grey(.9), tcol(c('lightblue','lightblue','magenta1','magenta1'),
                c(200, 100, 100, 200)))
                
 ## compare:
-barplot(mydata, horiz = TRUE, las = 1, col = cols, border = NA)
-prettybars2(mydata, lab.y = paste('Question #', 1:7), extra.margin = 3, 
+barplot(tdat, horiz = TRUE, las = 1, col = cols, border = NA)
+prettybars2(tdat, lab.y = paste('Question #', 1:7), extra.margin = 3, 
             col.group = cols)
 
 }
 \seealso{
-\code{\link{prettybars}}
+\code{\link{prettybars}}; \code{\link{bibar}}
 }

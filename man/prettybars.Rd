@@ -6,7 +6,7 @@
 \usage{
 prettybars(x, y = names(x), emph = NULL, col.bar = grey(0.9),
   col.emph = "magenta1", col.y = "black", col.bg = "lightblue",
-  cex.y = 0.5, FUN = mean, ..., fun.lab = "overall mean", digits = 2,
+  cex.y = 0.5, FUN = mean, ..., fun.lab = "overall mean", digits = 2L,
   title = paste0("prettybar of ", m$x), sub = NULL, note = NULL,
   col.note = col.emph, subnote = "source: github.com/raredd/rawr",
   extra.margin = 0, pars = NULL)
@@ -55,9 +55,9 @@ prettybars(x, y = names(x), emph = NULL, col.bar = grey(0.9),
 A barplot.
 }
 \examples{
-set.seed(1618)
-myrandomdata <- setNames(round(runif(10), 2) * 100, LETTERS[1:10])
-prettybars(myrandomdata, FUN = NULL, fun.lab = NULL, cex.y = 1.2, 
+set.seed(1)
+x <- setNames(round(runif(10), 2) * 100, LETTERS[1:10])
+prettybars(x, FUN = NULL, fun.lab = NULL, cex.y = 1.2,
            bg = 'white', emph = 'F', digits = 2)
 
 x <- setNames(mtcars$mpg, rownames(mtcars))
@@ -69,10 +69,11 @@ prettybars(x, emph = rownames(mtcars)[mtcars$hp < 100], extra.margin = 1,
 prettybars(mtcars$mpg, y = rownames(mtcars), col.bg = 'snow',
            emph = rownames(mtcars)[grepl('Merc', rownames(mtcars))],
            extra.margin = 1, col.emph = 'cyan2',
-           FUN = quantile, probs = c(.25, .5, .75), na.rm = TRUE, 
+           FUN = quantile, probs = c(.25, .5, .75), na.rm = TRUE,
            fun.lab = c('lower quartile','median','upper quartile'),
            note = "if you buy a Mercedes,\\nget ready to pay for lots of gas",
            title = 'motor trend cars', sub = '   (miles per gallon)') 
+
 }
 \seealso{
 \code{\link{prettybars2}}
