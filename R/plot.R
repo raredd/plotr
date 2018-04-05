@@ -1,6 +1,6 @@
 ### some random plot things
 # prettybars, prettybars2, zoomin, prettypie, prettypie2, barmap, widebars,
-# waffle, bump, histr, shist
+# waffle, bump, histr, shist, bibar
 ###
 
 
@@ -29,12 +29,13 @@
 #' @param pars additional list of graphical parameters passed to 
 #' \code{\link{par}}
 #' 
-#' @seealso \code{\link{prettybars2}}
+#' @seealso
+#' \code{\link{prettybars2}}
 #' 
 #' @examples
-#' set.seed(1618)
-#' myrandomdata <- setNames(round(runif(10), 2) * 100, LETTERS[1:10])
-#' prettybars(myrandomdata, FUN = NULL, fun.lab = NULL, cex.y = 1.2, 
+#' set.seed(1)
+#' x <- setNames(round(runif(10), 2) * 100, LETTERS[1:10])
+#' prettybars(x, FUN = NULL, fun.lab = NULL, cex.y = 1.2,
 #'            bg = 'white', emph = 'F', digits = 2)
 #' 
 #' x <- setNames(mtcars$mpg, rownames(mtcars))
@@ -46,26 +47,29 @@
 #' prettybars(mtcars$mpg, y = rownames(mtcars), col.bg = 'snow',
 #'            emph = rownames(mtcars)[grepl('Merc', rownames(mtcars))],
 #'            extra.margin = 1, col.emph = 'cyan2',
-#'            FUN = quantile, probs = c(.25, .5, .75), na.rm = TRUE, 
+#'            FUN = quantile, probs = c(.25, .5, .75), na.rm = TRUE,
 #'            fun.lab = c('lower quartile','median','upper quartile'),
 #'            note = "if you buy a Mercedes,\nget ready to pay for lots of gas",
 #'            title = 'motor trend cars', sub = '   (miles per gallon)') 
+#' 
 #' @export
 
-prettybars <- function(x, y = names(x), emph = NULL, 
+prettybars <- function(x, y = names(x), emph = NULL,
                        
-                       # aesthetics
-                       col.bar = grey(.9), col.emph = 'magenta1', col.y = 'black', 
+                       ## aesthetics
+                       col.bar = grey(.9), col.emph = 'magenta1', col.y = 'black',
                        col.bg = 'lightblue', cex.y = 0.5,
                        
-                       # summary line(s)
-                       FUN = mean, ..., fun.lab = 'overall mean', digits = 2, 
+                       ## summary line(s)
+                       FUN = mean, ..., fun.lab = 'overall mean', digits = 2L,
                        
-                       # labels and text
-                       title = paste0('prettybar of ', m$x), sub = NULL, note = NULL, 
-                       col.note = col.emph, subnote = 'source: github.com/raredd/rawr',
+                       ## labels and text
+                       title = paste0('prettybar of ', m$x),
+                       sub = NULL, note = NULL,
+                       col.note = col.emph,
+                       subnote = 'source: github.com/raredd/rawr',
                        
-                       # etc
+                       ## etc
                        extra.margin = 0, pars = NULL) {
   
   m <- match.call()
@@ -103,9 +107,9 @@ prettybars <- function(x, y = names(x), emph = NULL,
   
   ## emphasized bars
   x2 <- x * (y %in% emph)
-  barplot(x2, names.arg = FALSE, horiz = TRUE, border = NA,
-          xlim = range(breaks), col = tcol(col.emph, 200), 
-          cex.names = 0.85, axes = FALSE, add = TRUE, xpd = FALSE)
+  bp <- barplot(x2, names.arg = FALSE, horiz = TRUE, border = NA,
+                xlim = range(breaks), col = tcol(col.emph, 200),
+                cex.names = 0.85, axes = FALSE, add = TRUE, xpd = FALSE)
   
   ## FUN line
   if (!is.null(FUN)) {
@@ -144,6 +148,8 @@ prettybars <- function(x, y = names(x), emph = NULL,
   #   text(x = breaks[length(breaks)], y = max(p0), labels = note, pos = 3,
   #        xpd = TRUE, cex = 0.65, font = 3)
   mtext(text = subnote, side = 1, line = 1, adj = 1, cex = 0.65, font = 3)
+  
+  invisible(bp)
 }
 
 #' prettybars2
@@ -171,10 +177,11 @@ prettybars <- function(x, y = names(x), emph = NULL,
 #' axes for user input
 #' @param ... additional graphical parameters passed to \code{\link{par}}
 #' 
-#' @seealso \code{\link{prettybars}}
+#' @seealso
+#' \code{\link{prettybars}}; \code{\link{bibar}}
 #' 
 #' @examples
-#' set.seed(1618)
+#' set.seed(1)
 #' f <- function(...) sample(1:5, 100, replace = TRUE, prob = c(...))
 #' dat <- data.frame(q1 = f(.1, .2, .3, .3, .1),
 #'                   q2 = f(.1, .4, .1, .3, .1),
@@ -185,15 +192,16 @@ prettybars <- function(x, y = names(x), emph = NULL,
 #'                   q7 = f(.1, .4, .1, .1, .3))
 #' dat <- stack(dat)
 #' dat <- within(dat, {
-#'   values <- factor(values, levels = 1:5, labels = c('NA','SA','A','D','SD'))})
+#'   values <- factor(values, levels = 1:5, labels = c('NA','SA','A','D','SD'))
+#' })
 #' 
-#' mydata <- table(dat)
-#' cols <- c(grey(.9), tcol(c('lightblue','lightblue','magenta1','magenta1'), 
+#' tdat <- table(dat)
+#' cols <- c(grey(.9), tcol(c('lightblue','lightblue','magenta1','magenta1'),
 #'                c(200, 100, 100, 200)))
 #'                
 #' ## compare:
-#' barplot(mydata, horiz = TRUE, las = 1, col = cols, border = NA)
-#' prettybars2(mydata, lab.y = paste('Question #', 1:7), extra.margin = 3, 
+#' barplot(tdat, horiz = TRUE, las = 1, col = cols, border = NA)
+#' prettybars2(tdat, lab.y = paste('Question #', 1:7), extra.margin = 3, 
 #'             col.group = cols)
 #'
 #' @export
@@ -215,7 +223,6 @@ prettybars2 <- function(x,
                         legend = 1,
                         notext = FALSE,
                         ...) {
-  
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
   m <- match.call()
@@ -232,7 +239,7 @@ prettybars2 <- function(x,
   par(mar = c(6, 4 + extra.margin, 4, 2) + .1, bg = 'snow',
       #       lheight = 1.5,
       las = 1)
-  par(list(...))
+  par(...)
   
   ## data bars
   p0 <- barplot(-rep(100, n.y), names.arg = lab.y, cex.names = cex.y, 
@@ -963,4 +970,87 @@ waterfall2 <- function(data, group, order, group.order = unique(group),
          legend = order, col = col)
   
   invisible(list(bp = bp, o = o))
+}
+
+#' Bi-barplot
+#' 
+#' Plot a bi-directional bar plot with optional side bars.
+#' 
+#' @param x a table- or matrix-like object
+#' @param left,right a vector of integers giving the column indices of
+#' \code{x} to draw on the left and right sides \emph{from} the origin
+#' \emph{to} either side
+#' @param sleft,sright as above but bars drawn \emph{from} the left or
+#' right side \emph{to} the origin
+#' @param col a vector of colors for each column
+#' @param xlim,ylim x- and y-axis limits
+#' @param axes logical; if \code{TRUE}, the figure is framed and the x- and
+#' y-axes are drawn
+#' 
+#' @seealso
+#' \code{\link{prettybars2}}
+#' 
+#' @examples
+#' set.seed(1)
+#' x <- datasets::ability.cov$cov
+#' x <- x[sample(seq.int(nrow(x)), 20, TRUE), ]
+#' 
+#' bibar(x, left = 1:3, right = 4:6, xlim = c(-250, 250))
+#' 
+#' palette(c('grey90', 'cornflowerblue', 'blue', 'tomato', 'tomato3'))
+#' bibar(x, left = 2:3, right = 4:5, sleft = 1, sright = 6)
+#' legend('topleft', inset = c(0, -0.2), xpd = NA, fill = 2:3,
+#'        legend = colnames(x)[2:3], horiz = TRUE, bty = 'n')
+#' legend('topright', inset = c(0, -0.2), xpd = NA, fill = 4:5,
+#'        legend = colnames(x)[4:5], horiz = TRUE, bty = 'n')
+#' palette('default')
+#' 
+#' @export
+
+bibar <- function(x, left = NULL, right = NULL, sleft = NULL, sright = NULL,
+                  col = NULL, xlim = NULL, ylim = NULL, axes = TRUE) {
+  bp <- function(x, ...) {
+    barplot(t(x), ..., horiz = TRUE, add = TRUE,
+            axes = FALSE, axisnames = FALSE)
+  }
+  
+  if (is.null(xlim))
+    xlim <- max(rowSums(x)) * c(-1, 1)
+  col <- rep_len(col %||% seq.int(ncol(x)), ncol(x))
+  
+  yat <- barplot(t(x), horiz = TRUE, xlim = xlim, ylim = ylim %||% NULL,
+                 col = NA, border = NA, axes = FALSE, axisnames = FALSE)
+  
+  if (length(sleft)) {
+    nx <- x[, sleft, drop = FALSE]
+    nx <- -cbind(abs(xlim[1L]) - rowSums(nx), nx)
+    bd <- c(0, rep_len('black', length(sleft)))
+    bp(nx, col = c(0, col[sleft]), border = bd)
+  }
+  
+  if (length(sright)) {
+    nx <- x[, sright, drop = FALSE]
+    nx <- cbind(abs(xlim[2L]) - rowSums(nx), nx)
+    bd <- c(0, rep_len('black', length(sright)))
+    bp(nx, col = c(0, col[sright]), border = bd)
+  }
+  
+  if (length(left)) {
+    lx <- x[, left, drop = FALSE]
+    bp(-lx, col = col[left])
+  }
+  
+  if (length(right)) {
+    rx <- x[, right, drop = FALSE]
+    bp(rx, col = col[right])
+  }
+  
+  if (axes) {
+    xat <- pretty(par('usr'), n = 6L)
+    axis(1L, xat, abs(xat))
+    axis(2L, yat, rownames(x), las = 1L)
+    box(bty = par('bty'))
+  }
+  
+  invisible(yat)
 }
