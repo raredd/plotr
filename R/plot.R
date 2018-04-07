@@ -30,7 +30,7 @@
 #' \code{\link{par}}
 #' 
 #' @seealso
-#' \code{\link{prettybars2}}
+#' \code{\link{prettybars2}}; \code{\link{bibar}}
 #' 
 #' @examples
 #' set.seed(1)
@@ -71,83 +71,82 @@ prettybars <- function(x, y = names(x), emph = NULL,
                        
                        ## etc
                        extra.margin = 0, pars = NULL) {
-  
   m <- match.call()
   
   ## par settings
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
-  par(mar = c(3, 4 + extra.margin, 4, 2) + .1, las = 1, bg = 'snow')
+  par(mar = c(3, 4 + extra.margin, 4, 2) + .1, las = 1L, bg = 'snow')
   par(pars)
   
   ## error checks
   if (length(x) != length(y))
     stop('variable lengths not equal')
-  if (!is.null(emph) && all(emph %in% rownames(y)))
-    stop('error: some emph not found in y')
+  if (!is.null(emph) && !all(wh <- emph %in% y))
+    stop(sprintf('%s not found in \'y\'', toString(shQuote(emph[!wh]))),
+         call. = FALSE)
   
   x <- x[order(x)]
   y <- y[order(x)]
   
   ## background bars
-  breaks <- pretty(x)
-  s <- seq_along(breaks)
-  p0 <- barplot(x, horiz = TRUE, axes = FALSE, col = NA, border = NA, 
-                xlim = range(breaks), names.arg = FALSE)
+  at <- pretty(x)
+  s  <- seq_along(at)
+  p0 <- barplot(x, horiz = TRUE, axes = FALSE, col = NA, border = NA,
+                xlim = range(at), names.arg = FALSE)
   
-  rect(breaks[1], 0, breaks[length(breaks)], sum(range(p0)), 
+  rect(at[1L], 0, at[length(at)], sum(range(p0)),
        col = tcol(col.bg, 50), border = NA)
-  rect(breaks, 0, breaks + rep(diff(breaks)[1], length(breaks)), sum(range(p0)), 
+  rect(at, 0, at + rep(diff(at)[1L], length(at)), sum(range(p0)),
        col = c(tcol(col.bg, 80), NA), border = NA)
   
   ## data bars
   p1 <- barplot(x, names.arg = FALSE, horiz = TRUE, border = NA, axes = FALSE,
-                xlim = range(breaks), ylim = c(0, length(x)), col = col.bar, 
+                xlim = range(at), ylim = c(0, length(x)), col = col.bar, 
                 cex.names = 0.85, add = TRUE, xpd = FALSE)
   
   ## emphasized bars
   x2 <- x * (y %in% emph)
   bp <- barplot(x2, names.arg = FALSE, horiz = TRUE, border = NA,
-                xlim = range(breaks), col = tcol(col.emph, 200),
+                xlim = range(at), col = tcol(col.emph, 200),
                 cex.names = 0.85, axes = FALSE, add = TRUE, xpd = FALSE)
   
   ## FUN line
   if (!is.null(FUN)) {
     at.x <- round(FUN(x, ...), digits)
-    #     tcl <- length(p0) / (max(p0) - min(p0)) / 4
+    # tcl <- length(p0) / (max(p0) - min(p0)) / 4
     tcl <- min(p0) / mean(p0)
-    arrows(x0 = at.x, y0 = 0, x1 = at.x, y1 = sum(range(p0)),
-           lwd = 1.5, length = 0, xpd = TRUE, col = col.y, lty = 3)
-    arrows(x0 = at.x, y0 = 0, x1 = at.x, y1 = -tcl,
-           lwd = 3, length = 0, xpd = TRUE)
-    arrows(x0 = at.x, y0 = sum(range(p0)), x1 = at.x, y1 = sum(range(p0)) + tcl,
-           lwd = 3, length = 0, xpd = TRUE)
-    #     text(x = at.x, y = sum(range(p0)) * 1.25, labels = fun.lab, pos = 2, 
-    #          xpd = TRUE, cex = 0.65, font = 3)
-    #     text(x = at.x, y = sum(range(p0)) * 1.25, labels = at.x, pos = 4, 
-    #          xpd = TRUE, cex = 0.65, font = 4)
-    mtext(text = fun.lab, side = 3, line = 0, adj = 0, at = at.x, 
-          cex = 0.65, font = 3)
-    mtext(text = at.x, side = 3, line = -.5, adj = 0, at = at.x, 
-          cex = 0.65, font = 4)
+    arrows(at.x, 0, at.x, sum(range(p0)), length = 0,
+           lwd = 1.5, xpd = TRUE, col = col.y, lty = 3L)
+    arrows(at.x, 0, at.x, -tcl, length = 0, lwd = 3, xpd = TRUE)
+    arrows(at.x, sum(range(p0)), at.x, sum(range(p0)) + tcl,
+           length = 0, lwd = 3, xpd = TRUE)
+    # text(at.x, y = sum(range(p0)) * 1.25, labels = fun.lab, pos = 2L,
+    #      xpd = TRUE, cex = 0.65, font = 3L)
+    # text(at.x, y = sum(range(p0)) * 1.25, labels = at.x, pos = 4L,
+    #      xpd = TRUE, cex = 0.65, font = 4L)
+    mtext(fun.lab, side = 3L, line = 0, adj = 0, at = at.x, 
+          cex = 0.65, font = 3L)
+    mtext(at.x, side = 3L, line = -.5, adj = 0, at = at.x, 
+          cex = 0.65, font = 4L)
   }
   
   ## axes text
-  mtext(text = breaks, at = breaks, side = 1, line = 0, cex = 0.80)
-  font <- 1 + (y %in% emph) * rep(1, length(x))
-  text(x = breaks[1], y = p1, labels = y, pos = 2, col = col.y,
+  mtext(at, at = at, side = 1L, line = 0, cex = 0.8)
+  font <- 1L + (y %in% emph) * rep(1L, length(x))
+  text(at[1L], p1, labels = y, pos = 2L, col = col.y,
        xpd = TRUE, adj = 0, cex = cex.y, font = font)
-  text(x = breaks[1], y = p1, labels = x, col = col.y,
+  text(x = at[1L], y = p1, labels = x, col = col.y,
        xpd = TRUE, adj = 0, cex = cex.y, font = font)
   
   ## plot text (titles, notes)
-  mtext(text = title, side = 3, line = 2, adj = 0, cex = 1.2, font = 2)
-  mtext(text = sub, side = 3, line = 1, adj = 0, cex = 0.9)
-  mtext(text = note, side = 3, line = -.5, adj = 1, cex = 0.65, font = 3, 
+  mtext(title, side = 3L, line = 2, adj = 0, cex = 1.2, font = 2L)
+  mtext(sub, side = 3L, line = 1, adj = 0, cex = 0.9)
+  mtext(note, side = 3L, line = -.5, adj = 1, cex = 0.65, font = 3L, 
         col = col.note)
-  #   text(x = breaks[length(breaks)], y = max(p0), labels = note, pos = 3,
-  #        xpd = TRUE, cex = 0.65, font = 3)
-  mtext(text = subnote, side = 1, line = 1, adj = 1, cex = 0.65, font = 3)
+  # text(at[length(at)], max(p0), labels = note, pos = 3L,
+  #      xpd = TRUE, cex = 0.65, font = 3L)
+  mtext(subnote, side = 1L, line = 1, adj = 1, cex = 0.65, font = 3L)
   
   invisible(bp)
 }
@@ -167,14 +166,12 @@ prettybars <- function(x, y = names(x), emph = NULL,
 #' @param extra.margin extra left spacing for long \code{lab.y} labels
 #' @param col.bg background color
 #' @param cex.y size of \code{lab.y}
-#' @param title main title
-#' @param sub subtitle
-#' @param note optional note (top right)
-#' @param subnote optional subnote (bottom right)
-#' @param legend numeric (0, 1, 2); \code{0} for no legend; \code{1} default
-#' legend; or \code{2} for a default \code{\link{legend}}
 #' @param notext logical; if \code{TRUE}, suppresses all plot text, labels, and
 #' axes for user input
+#' @param title,sub main and sub titles
+#' @param note,subnote optional note (top right) or subnote (bottom right)
+#' @param legend integer (0, 1, 2); \code{0} for no legend; \code{1} for a
+#' legend with pre-formatting; or \code{2} for a default \code{\link{legend}}
 #' @param ... additional graphical parameters passed to \code{\link{par}}
 #' 
 #' @seealso
@@ -196,39 +193,52 @@ prettybars <- function(x, y = names(x), emph = NULL,
 #' })
 #' 
 #' tdat <- table(dat)
-#' cols <- c(grey(.9), tcol(c('lightblue','lightblue','magenta1','magenta1'),
+#' cols <- c(grey(.9), tcol(c('lightblue', 'lightblue', 'magenta1', 'magenta1'),
 #'                c(200, 100, 100, 200)))
 #'                
 #' ## compare:
 #' barplot(tdat, horiz = TRUE, las = 1, col = cols, border = NA)
-#' prettybars2(tdat, lab.y = paste('Question #', 1:7), extra.margin = 3, 
+#' prettybars2(tdat, lab.y = paste('Question #', 1:7), extra.margin = 3,
 #'             col.group = cols)
-#'
+#' 
+#' ## using bibar
+#' par(mar = c(5, 8, 4, 2))
+#' at <- bibar(t(tdat), 3:2, 4:5, 1, col = cols,
+#'             xlim = c(-80, 50), axes = FALSE)
+#' 
+#' axis(1, pretty(c(-80, 50)), abs(pretty(c(-80, 50))))
+#' abline(v = 0, col = 'lightblue', lwd = 4)
+#' text(-85, at, sprintf('Question # %s', 1:7), xpd = NA, adj = 1)
+#' 
+#' legend('topleft', inset = c(0, -0.2), xpd = NA, fill = cols[2:3],
+#'        legend = rownames(tdat)[2:3], horiz = TRUE, bty = 'n')
+#' legend('topright', inset = c(0, -0.2), xpd = NA, fill = cols[4:5],
+#'        legend = rownames(tdat)[4:5], horiz = TRUE, bty = 'n')
+#' 
+#' 
 #' @export
 
-prettybars2 <- function(x,
-                        lab.y = colnames(x), 
-                        n.y = ncol(x),
-                        lab.group = rownames(x), 
-                        n.group = nrow(x),
-                        col.group = tcol(1:n.group, 100),
-                        col.line = 'skyblue3',
-                        extra.margin = 0,
-                        col.bg = 'snow',
-                        cex.y = 0.7,
-                        title = paste0('prettybar of ', m$x), 
-                        sub = paste0('     n = ', sum(x)), 
-                        note = NULL, 
-                        subnote = 'subnote: here is a subnote',
-                        legend = 1,
+prettybars2 <- function(x, lab.y = colnames(x), n.y = ncol(x),
+                        lab.group = rownames(x), n.group = nrow(x),
+                        
+                        ## aesthetics
+                        col.group = tcol(seq.int(n.group), alpha = 0.5),
+                        col.line = 'skyblue3', extra.margin = 0,
+                        col.bg = 'snow', cex.y = 0.7,
+                        
+                        ## labels
                         notext = FALSE,
+                        title = paste0('prettybar of ', m$x),
+                        sub = paste0('     n = ', sum(x)), note = NULL,
+                        subnote = 'subnote: here is a subnote', legend = 1L,
+                        
                         ...) {
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
   m <- match.call()
   
   if (!is.table(x))
-    stop('x must be a table')
+    stop('\'x\' must be a table')
   if (nrow(x) != n.group || nrow(x) != length(lab.group))
     stop('check group labels')
   if (ncol(x) != n.y || ncol(x) != length(lab.y))
@@ -236,56 +246,51 @@ prettybars2 <- function(x,
   if (length(col.group) != n.group)
     warning('colors will be recycled (length(col.group) != n.group)')
   
-  par(mar = c(6, 4 + extra.margin, 4, 2) + .1, bg = 'snow',
-      #       lheight = 1.5,
-      las = 1)
+  par(mar = c(6, 4 + extra.margin, 4, 2) + .1, bg = 'snow', las = 1L)
   par(...)
   
   ## data bars
-  p0 <- barplot(-rep(100, n.y), names.arg = lab.y, cex.names = cex.y, 
-                horiz = TRUE, border = col.bg, xlim = c(-100, n.y * 10), 
-                col = col.group[1], axes = FALSE)
-  barplot(-(100 - x[1, ]), axisnames = FALSE, horiz = TRUE, border = col.bg, 
+  p0 <- barplot(-rep(100, n.y), names.arg = lab.y, cex.names = cex.y,
+                horiz = TRUE, border = col.bg, xlim = c(-100, n.y * 10),
+                col = col.group[1L], axes = FALSE)
+  barplot(-(100 - x[1L, ]), axisnames = FALSE, horiz = TRUE, border = col.bg,
           xlim = c(-100, n.y * 10), col = col.bg, axes = FALSE, add = TRUE)
-  barplot(-x[3:2, ], axisnames = FALSE, horiz = TRUE, border = NA, 
-          xlim = c(-100, n.y * 10), col = col.group[3:2], axes = FALSE, 
-          add = TRUE)
-  barplot(x[4:5, ], axisnames = FALSE, horiz = TRUE, border = NA, 
-          xlim = c(-100, n.y * 10), col = col.group[4:5], axes = FALSE, 
-          add = TRUE)
+  barplot(-x[3:2, ], axisnames = FALSE, horiz = TRUE, border = NA, add = TRUE,
+          xlim = c(-100, n.y * 10), col = col.group[3:2], axes = FALSE)
+  barplot(x[4:5, ], axisnames = FALSE, horiz = TRUE, border = NA, add = TRUE,
+          xlim = c(-100, n.y * 10), col = col.group[4:5], axes = FALSE)
   
   ## legend, axes
-  arrows(x0 = 0, y0 = -0.1, x1 = 0, y1 = sum(range(p0)),
-         lwd = 2.5, length = 0, xpd = TRUE, col = col.line)
-  if (legend == 2) {
-    legend(x = -110, y = -0.1, horiz = TRUE, fill = col.group, legend = lab.group, 
+  arrows(0, -0.1, 0, sum(range(p0)), length = 0,
+         lwd = 2.5, xpd = TRUE, col = col.line)
+  if (legend == 2L) {
+    legend(-110, -0.1, horiz = TRUE, fill = col.group, legend = lab.group,
            border = col.group, pt.cex = 3, bty = 'n', xpd = TRUE, cex = .8)
-  } else if (legend == 1) {
-    # if fine-tune
+  } else if (legend == 1L) {
+    ## fine-tune
     px <- c(-95,-90, -59, -53, -37)
     tx <- c(-100, -79, -65, -45, -25)
-    lab.group <- c('N/A','Strongly agree','Agree','Disagree','Strongly disagree')
-    points(x = px, y = rep(-1, n.group), pch = 15, cex = 3, 
+    lab.group <- c('N/A', 'Strongly agree', 'Agree',
+                   'Disagree', 'Strongly disagree')
+    points(px, rep(-1, n.group), pch = 15L, cex = 3,
            col = col.group, xpd = TRUE)
-    text(x = tx, y = rep(-1, n.group), labels = lab.group, xpd = TRUE, font = 3, 
-         cex = .8)
-  } else if (legend == 0) TRUE
+    text(tx, rep(-1, n.group), labels = lab.group,
+         xpd = TRUE, font = 3L, cex = .8)
+  } else if (legend == 0L)
+    NULL
   else warning('legend should be 0, 1, or 2')
   
   if (!notext) {
     ## x-lab
-    mtext(c(80, 60, 40, 20, 0, 20, 40, 60), at = c(-80,-60,-40,-20,0,20,40,60), 1,
-          line = 0, cex = 0.95)
+    mtext(c(80, 60, 40, 20, 0, 20, 40, 60),
+          at = c(-80, -60, -40, -20, 0, 20, 40, 60),
+          side = 1L, line = 0, cex = 0.95)
     
     ## plot text (titles, notes)
-    mtext(text = title, side = 3, line = 2, adj = 0, cex = 1.2, font = 2)
-    mtext(text = sub, side = 3, line = 1, adj = 0, cex = 0.9, font = 3)
-    mtext(text = note, side = 3, line = -.5, adj = 1, cex = 0.65, font = 3)
-    #   text(x = breaks[length(breaks)], y = max(p0), labels = note, pos = 3,
-    #        xpd = TRUE, cex = 0.65, font = 3)
-    mtext(text = subnote, side = 1, line = 1, adj = 1, cex = 0.65, font = 3)
-    #   mtext(paste0('N = ', sum(x)), side = 3, line = 0, at = -70, 
-    #         cex = 0.8, font = 3)
+    mtext(title, side = 3L, line = 2, adj = 0, cex = 1.2, font = 2L)
+    mtext(sub, side = 3L, line = 1, adj = 0, cex = 0.9, font = 3L)
+    mtext(note, side = 3L, line = -.5, adj = 1, cex = 0.65, font = 3L)
+    mtext(subnote, side = 1L, line = 1, adj = 1, cex = 0.65, font = 3L)
   }
 }
 
@@ -512,23 +517,18 @@ barmap <- function(x, db = 'worldHires', region, labels, cols) {
 #' 
 #' @param x vector of grouping values
 #' @param y numeric vector of data values
-#' @param main overall title for plot
-#' @param sub sub-title for plot
-#' @param foot footnote for plot
-#' @param note note for plot
+#' @param main,sub main title and sub title for plot
+#' @param foot,note footnote (left-adjusted) and note (right) for plot
 #' @param col a vector of colors for elements of the form 
 #' \code{c(section background, text, negative bars, positive bars)}
 #' 
 #' @examples
-#' 
 #' par(oma = c(5,5,7,5), mar = c(5,0,3,.1), las = 1,
 #'     fg = 'transparent', bg = 'grey98')
 #' widebars(mtcars$gear, mtcars$mpg * sample(c(-1,1), 32, replace = TRUE),
 #'          'Motor Trend car road tests', 'Miles per gallon by gear',
 #'          'some footnote that is not important', 'blahblah')
 #' 
-#' \dontrun{
-#' pdf('./widebar.pdf', width = 14, height = 7)
 #' par(oma = c(5,5,7,5), mar = c(5,0,3,.1), las = 1,
 #'     fg = 'transparent', bg = 'grey98')
 #' widebars(x <- rep(2004:2015, each = 4), rnorm(48),
@@ -536,22 +536,17 @@ barmap <- function(x, db = 'worldHires', region, labels, cols) {
 #'          sub = 'Percent change, quarterly',
 #'          foot = paste('Values current as of', format(Sys.time(), '%b %Y')),
 #'          note = 'github.com/raredd')
-#' dev.off()
-#' }
 #' 
 #' @export
 
-widebars <- function(x, y, main, sub, foot, note,
-                     col = c('grey90','grey30','lightblue2','dodgerblue2')) {
-  
-  if (missing(main)) main <- ''
-  if (missing(sub))  sub  <- ''
-  if (missing(foot)) foot <- ''
-  if (missing(note)) note <- ''
+widebars <- function(x, y, main = NULL, sub = NULL, foot = NULL, note = NULL,
+                     col = c('grey90', 'grey30', 'lightblue2', 'dodgerblue2')) {
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
   
   ## data and aesthetic vars
-  bgcol  <- col[1]
-  txtcol <- col[2]
+  bgcol  <- col[1L]
+  txtcol <- col[2L]
   barcol <- col[3:4]
   
   xx <- unique(x)
@@ -560,25 +555,27 @@ widebars <- function(x, y, main, sub, foot, note,
   par(mfcol = c(1, length(xx)))
   for (ii in 1:length(xx)) {
     xt <- y[x == xx[ii]]
-    cols <- ifelse(xt < 0, barcol[1], barcol[2])
+    cols <- ifelse(xt < 0, barcol[1L], barcol[2L])
     barplot(xt, border = NA, bty = 'n', col = cols, ylim = rr, axes = FALSE,
             panel.first = {
               usr <- par('usr')
-              rect(usr[1], usr[3], usr[2], usr[4], col = bgcol)
+              rect(usr[1L], usr[3L], usr[2L], usr[4L], col = bgcol)
             })
-    if (ii == 1)
-      axis(2, lwd = 0, cex.axis = 1.25,
-#            labels = paste0(pretty(rr), '%'),
+    if (ii == 1L)
+      axis(2L, lwd = 0, cex.axis = 1.25,
+           # labels = paste0(pretty(rr), '%'),
            at = pretty(rr))
-    mtext(text = xx[ii], side = 1, line = 2, cex = 1.25, col = txtcol)
+    mtext(xx[ii], side = 1L, line = 2, cex = 1.25, col = txtcol)
   }
   
   mtext(main, line = 2.5, adj = 0, cex = 2, col = txtcol, outer = TRUE)
   mtext(sub, line = -0.5, adj = 0, cex = 1.5, col = txtcol, outer = TRUE)
-  mtext(note, side = 1, line = 1, adj = 1, cex = 1.25, font = 3,
+  mtext(note, side = 1L, line = 1, adj = 1, cex = 1.25, font = 3L,
         col = txtcol, outer = TRUE)
-  mtext(foot, side = 1, line = 1, adj = 0, cex = 1.25, font = 3,
+  mtext(foot, side = 1L, line = 1, adj = 0, cex = 1.25, font = 3L,
         col = txtcol, outer = TRUE)
+  
+  invisible(NULL)
 }
 
 #' waffle
@@ -605,24 +602,28 @@ widebars <- function(x, y, main, sub, foot, note,
 #' waffle(c(80, 30, 20, 10), rows = 8, cols = cols, mar = c(0,0,0,7))
 #' legend('right', legend = LETTERS[1:4], pch = 15, col = cols, pt.cex = 2,
 #'        bty = 'n')
-#'        
+#' 
 #' ## using mat
 #' mat <- rep(c(cols, NA), times = c(80, 30, 20, 10, 4))
 #' waffle(mat = matrix(mat, 8))
 #' 
+#' 
 #' \dontrun{
-#' pdf('~/desktop/waffle.pdf', width = 7, height = 3)
+#' tf <- tempfile(fileext = '.pdf')
+#' pdf(tf, width = 7, height = 3)
 #' savings <- c('Mortgage ($84,911)' = 84911,
 #'              'Auto and\ntuition loans ($14,414)'=14414,
 #'              'Home equity loans ($10,062)' = 10062,
 #'              'Credit cards\n($8,565)' = 8565)
 #' w <- waffle(savings / 392, rows = 7, cols = c("#c7d4b6", "#a3aabd", "#a0d0de", "#97b5cf"),
 #'             bg = 'cornsilk', mar = c(0,0,0,3))
+#' 
 #' xx <- c(-.05, .73, .85, .93)
 #' yy <- c(-.05, -.05, -.35, -.05)
 #' segments(x0 = xx, y0 = .05, y1 = yy, lty = 'dotted',
 #'          lwd = 1, xpd = NA, col = 'grey50')
 #' text(xx, yy + .05, labels = names(savings), xpd = NA, cex = .6, col = 'grey50', pos = 1)
+#' 
 #' p <- par('usr')
 #' mtext('Average household savings each year', at = xx[1], font = 2,
 #'       col = 'grey50', adj = 0, line = 1)
@@ -631,36 +632,39 @@ widebars <- function(x, y, main, sub, foot, note,
 #' legend(.87, 1.3, legend = '$392', xpd = NA, bty = 'n', bg = 'cornsilk',
 #'        col = 'orange', text.col = 'grey50', pch = 15, cex = .8, pt.cex = 1.5)
 #' dev.off()
+#' 
+#' system(paste(getOption('pdfviewer'), tf))
+#' unlink(tf)
 #' }
 #' 
 #' @export
 
 waffle <- function(x, rows, horiz = TRUE, cols = seq_along(x), mat, ...) {
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
   
   if (!missing(mat)) {
-    # m <- mat[nrow(mat):1, ]
+    # m <- mat[rev(seq.int(nrow(mat))), ]
     m <- mat
   } else {
     xx <- rep(cols, times = x)
     lx <- length(xx)
     m <- matrix(nrow = rows, ncol = (lx %/% rows) + (lx %% rows != 0))
-    m[1:length(xx)] <- xx
+    m[seq.int(length(xx))] <- xx
     
     if (!horiz) {
       m <- matrix(c(m), nrow = rows, byrow = TRUE)
-      m <- m[nrow(m):1, ]
+      m <- m[rev(seq.int(nrow(m))), ]
     }
   }
   
-  op <- par(no.readonly = TRUE)
-  on.exit(par(op))
-  
-  par(list(...))
+  par(...)
   plot.new()
-  o <- cbind(c(row(m)), c(col(m))) + 1
-  plot.window(xlim = c(0, max(o[, 2]) + 1), ylim = c(0, max(o[, 1]) + 1),
+  o <- cbind(c(row(m)), c(col(m))) + 1L
+  plot.window(c(0L, max(o[, 2L]) + 1L), c(0L, max(o[, 1L]) + 1L),
               asp = 1, xaxs = 'i', yaxs = 'i')
-  rect(o[, 2], o[, 1], o[, 2] + .85, o[, 1] + .85, col = c(m), border = NA)
+  rect(o[, 2L], o[, 1L], o[, 2L] + .85, o[, 1L] + .85,
+       col = c(m), border = NA)
   
   invisible(list(m = m, o = o))
 }
@@ -685,22 +689,25 @@ bump <- function(mat, adj = .5, ...) {
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
   
-  par(list(...))
+  par(...)
   plot.new()
-  plot.window(xlim = c(0, ncol(mat)), ylim = c(0, nrow(mat)),
+  plot.window(c(0, ncol(mat)), c(0, nrow(mat)),
               xaxs = 'i', yaxs = 'i')
-  segments(x0 = 1:ncol(mat), y0 = 1 - adj, y1 = nrow(mat),
+  segments(seq.int(ncol(mat)), y0 = 1 - adj, y1 = nrow(mat),
            col = 'grey70', lty = 'dashed')
   
-  lapply(1:nrow(mat), function(x) lines(mat[x, ], col = x))
+  lapply(seq.int(nrow(mat)), function(x) lines(mat[x, ], col = x))
   rn <- rownames(mat)
-  start <- order(mat[, 1])
+  start <- order(mat[, 1L])
   end <- order(mat[, ncol(mat)])
   
-  text(1 - adj, 1:nrow(mat), labels = rn[start], col = start, adj = 1, xpd = NA)
-  text(ncol(mat) + adj, 1:nrow(mat), labels = rn[end], col = end,
-       xpd = NA, adj = 0)
-  text(1:ncol(mat), y = 0, labels = colnames(mat), xpd = NA)
+  text(1 - adj, seq.int(nrow(mat)), labels = rn[start],
+       col = start, adj = 1, xpd = NA)
+  text(ncol(mat) + adj, seq.int(nrow(mat)), labels = rn[end],
+       col = end, xpd = NA, adj = 0)
+  text(seq.int(ncol(mat)), 0, labels = colnames(mat), xpd = NA)
+  
+  invisible(NULL)
 }
 
 #' histr
@@ -999,8 +1006,8 @@ waterfall2 <- function(data, group, order, group.order = unique(group),
 #' 
 #' palette(c('grey90', 'cornflowerblue', 'blue', 'tomato', 'tomato3'))
 #' bibar(x, left = 2:3, right = 4:5, sleft = 1, sright = 6)
-#' legend('topleft', inset = c(0, -0.2), xpd = NA, fill = 2:3,
-#'        legend = colnames(x)[2:3], horiz = TRUE, bty = 'n')
+#' legend('topleft', inset = c(0, -0.2), xpd = NA, fill = 3:2,
+#'        legend = colnames(x)[3:2], horiz = TRUE, bty = 'n')
 #' legend('topright', inset = c(0, -0.2), xpd = NA, fill = 4:5,
 #'        legend = colnames(x)[4:5], horiz = TRUE, bty = 'n')
 #' palette('default')
@@ -1019,7 +1026,7 @@ bibar <- function(x, left = NULL, right = NULL, sleft = NULL, sright = NULL,
   col <- rep_len(col %||% seq.int(ncol(x)), ncol(x))
   
   yat <- barplot(t(x), horiz = TRUE, xlim = xlim, ylim = ylim %||% NULL,
-                 col = NA, border = NA, axes = FALSE, axisnames = FALSE)
+                 col = NA, axes = FALSE, axisnames = FALSE, border = NA)
   
   if (length(sleft)) {
     nx <- x[, sleft, drop = FALSE]

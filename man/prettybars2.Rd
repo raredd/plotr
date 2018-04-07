@@ -5,11 +5,11 @@
 \title{prettybars2}
 \usage{
 prettybars2(x, lab.y = colnames(x), n.y = ncol(x),
-  lab.group = rownames(x), n.group = nrow(x), col.group = tcol(1:n.group,
-  100), col.line = "skyblue3", extra.margin = 0, col.bg = "snow",
-  cex.y = 0.7, title = paste0("prettybar of ", m$x),
-  sub = paste0("     n = ", sum(x)), note = NULL,
-  subnote = "subnote: here is a subnote", legend = 1, notext = FALSE, ...)
+  lab.group = rownames(x), n.group = nrow(x),
+  col.group = tcol(seq.int(n.group), alpha = 0.5), col.line = "skyblue3",
+  extra.margin = 0, col.bg = "snow", cex.y = 0.7, notext = FALSE,
+  title = paste0("prettybar of ", m$x), sub = paste0("     n = ", sum(x)),
+  note = NULL, subnote = "subnote: here is a subnote", legend = 1L, ...)
 }
 \arguments{
 \item{x}{a table of data, typically from \code{\link{table}} or 
@@ -33,19 +33,15 @@ prettybars2(x, lab.y = colnames(x), n.y = ncol(x),
 
 \item{cex.y}{size of \code{lab.y}}
 
-\item{title}{main title}
-
-\item{sub}{subtitle}
-
-\item{note}{optional note (top right)}
-
-\item{subnote}{optional subnote (bottom right)}
-
-\item{legend}{numeric (0, 1, 2); \code{0} for no legend; \code{1} default
-legend; or \code{2} for a default \code{\link{legend}}}
-
 \item{notext}{logical; if \code{TRUE}, suppresses all plot text, labels, and
 axes for user input}
+
+\item{title, sub}{main and sub titles}
+
+\item{note, subnote}{optional note (top right) or subnote (bottom right)}
+
+\item{legend}{integer (0, 1, 2); \code{0} for no legend; \code{1} for a
+legend with pre-formatting; or \code{2} for a default \code{\link{legend}}}
 
 \item{...}{additional graphical parameters passed to \code{\link{par}}}
 }
@@ -68,13 +64,28 @@ dat <- within(dat, {
 })
 
 tdat <- table(dat)
-cols <- c(grey(.9), tcol(c('lightblue','lightblue','magenta1','magenta1'),
+cols <- c(grey(.9), tcol(c('lightblue', 'lightblue', 'magenta1', 'magenta1'),
                c(200, 100, 100, 200)))
                
 ## compare:
 barplot(tdat, horiz = TRUE, las = 1, col = cols, border = NA)
-prettybars2(tdat, lab.y = paste('Question #', 1:7), extra.margin = 3, 
+prettybars2(tdat, lab.y = paste('Question #', 1:7), extra.margin = 3,
             col.group = cols)
+
+## using bibar
+par(mar = c(5, 8, 4, 2))
+at <- bibar(t(tdat), 3:2, 4:5, 1, col = cols,
+            xlim = c(-80, 50), axes = FALSE)
+
+axis(1, pretty(c(-80, 50)), abs(pretty(c(-80, 50))))
+abline(v = 0, col = 'lightblue', lwd = 4)
+text(-85, at, sprintf('Question # \%s', 1:7), xpd = NA, adj = 1)
+
+legend('topleft', inset = c(0, -0.2), xpd = NA, fill = cols[2:3],
+       legend = rownames(tdat)[2:3], horiz = TRUE, bty = 'n')
+legend('topright', inset = c(0, -0.2), xpd = NA, fill = cols[4:5],
+       legend = rownames(tdat)[4:5], horiz = TRUE, bty = 'n')
+
 
 }
 \seealso{

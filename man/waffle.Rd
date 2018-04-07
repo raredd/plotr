@@ -36,24 +36,28 @@ cols <- c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF")
 waffle(c(80, 30, 20, 10), rows = 8, cols = cols, mar = c(0,0,0,7))
 legend('right', legend = LETTERS[1:4], pch = 15, col = cols, pt.cex = 2,
        bty = 'n')
-       
+
 ## using mat
 mat <- rep(c(cols, NA), times = c(80, 30, 20, 10, 4))
 waffle(mat = matrix(mat, 8))
 
+
 \dontrun{
-pdf('~/desktop/waffle.pdf', width = 7, height = 3)
+tf <- tempfile(fileext = '.pdf')
+pdf(tf, width = 7, height = 3)
 savings <- c('Mortgage ($84,911)' = 84911,
              'Auto and\\ntuition loans ($14,414)'=14414,
              'Home equity loans ($10,062)' = 10062,
              'Credit cards\\n($8,565)' = 8565)
 w <- waffle(savings / 392, rows = 7, cols = c("#c7d4b6", "#a3aabd", "#a0d0de", "#97b5cf"),
             bg = 'cornsilk', mar = c(0,0,0,3))
+
 xx <- c(-.05, .73, .85, .93)
 yy <- c(-.05, -.05, -.35, -.05)
 segments(x0 = xx, y0 = .05, y1 = yy, lty = 'dotted',
          lwd = 1, xpd = NA, col = 'grey50')
 text(xx, yy + .05, labels = names(savings), xpd = NA, cex = .6, col = 'grey50', pos = 1)
+
 p <- par('usr')
 mtext('Average household savings each year', at = xx[1], font = 2,
       col = 'grey50', adj = 0, line = 1)
@@ -62,6 +66,9 @@ mtext('Source: Federal Reserve', side = 1, font = 3, at = xx[1],
 legend(.87, 1.3, legend = '$392', xpd = NA, bty = 'n', bg = 'cornsilk',
        col = 'orange', text.col = 'grey50', pch = 15, cex = .8, pt.cex = 1.5)
 dev.off()
+
+system(paste(getOption('pdfviewer'), tf))
+unlink(tf)
 }
 
 }

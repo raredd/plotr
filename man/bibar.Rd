@@ -36,8 +36,8 @@ bibar(x, left = 1:3, right = 4:6, xlim = c(-250, 250))
 
 palette(c('grey90', 'cornflowerblue', 'blue', 'tomato', 'tomato3'))
 bibar(x, left = 2:3, right = 4:5, sleft = 1, sright = 6)
-legend('topleft', inset = c(0, -0.2), xpd = NA, fill = 2:3,
-       legend = colnames(x)[2:3], horiz = TRUE, bty = 'n')
+legend('topleft', inset = c(0, -0.2), xpd = NA, fill = 3:2,
+       legend = colnames(x)[3:2], horiz = TRUE, bty = 'n')
 legend('topright', inset = c(0, -0.2), xpd = NA, fill = 4:5,
        legend = colnames(x)[4:5], horiz = TRUE, bty = 'n')
 palette('default')
