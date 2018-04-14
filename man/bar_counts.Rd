@@ -4,8 +4,8 @@
 \alias{bar_counts}
 \title{Add counts to bar plots}
 \usage{
-bar_counts(data, x, fill, facet = NULL, position = c("stack", "fill"),
-  rev = FALSE, fmt = "n (p\%)", ...)
+bar_counts(data, x, fill, facet, position = c("stack", "fill"), rev = FALSE,
+  fmt = "n (p\%)", ...)
 }
 \arguments{
 \item{data}{data set to use for plot and \code{x}, \code{y}}
@@ -53,5 +53,26 @@ ggplot(mt, aes(vs, fill = gear)) +
   bar_counts(mt, vs, gear, position = 'fill',
              colour = 'white', size = 5, family = 'HersheySerif',
              fontface = 'bold.italic')
+
+
+## for ggplot2 >= 2.2.0 use geom_col with pre-computed stats
+dat <- data.frame(prop.table(with(mt, table(vs, gear))))
+dat <- within(dat, {
+  lbl <- sprintf('Gear: \%s\\n(\%s\%\%)', gear, Freq * 100)
+})
+
+ggplot(dat, aes(vs, Freq, fill = gear)) +
+  geom_col() +
+  geom_text(aes(label = gear), position = position_stack(vjust = 0.5))
+
+ggplot(dat, aes(vs, Freq, fill = gear)) +
+  geom_col(position = 'fill') +
+  geom_text(aes(label = lbl), position = position_fill(vjust = 0.5))
+
+
+## or use geom_bar with stat = 'identity' and position = 'fill'
+ggplot(dat, aes(vs, Freq, fill = gear)) +
+  geom_bar(stat = 'identity', position = 'fill') +
+  geom_text(aes(label = lbl), position = position_fill(vjust = 0.5))
 
 }

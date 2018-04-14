@@ -344,11 +344,11 @@ ggsurv <- function(s,
     if (is.null(col.surv)) col.surv <- 'black'
     
     # step plot
-    tmp <- ggplot(data = survdat, aes(x = time, y = surv)) 
+    tmp <- ggplot(data = survdat, aes(x = time, y = surv))
     if (is.null(col.surv)) {
       tmp <- tmp + geom_step(colour = 'black', lty = lty.surv, direction = 'hv')
     } else {
-      tmp <- tmp + geom_step(colour = col.surv, lty = lty.surv, 
+      tmp <- tmp + geom_step(colour = col.surv, lty = lty.surv,
                              direction = 'hv')
     }
     # add censored observations
@@ -1410,15 +1410,36 @@ facet_limits <- function(pl, limits, useNA = c('ifany','no','always')) {
 #'              colour = 'white', size = 5, family = 'HersheySerif',
 #'              fontface = 'bold.italic')
 #' 
+#' 
+#' ## for ggplot2 >= 2.2.0 use geom_col with pre-computed stats
+#' dat <- data.frame(prop.table(with(mt, table(vs, gear))))
+#' dat <- within(dat, {
+#'   lbl <- sprintf('Gear: %s\n(%s%%)', gear, Freq * 100)
+#' })
+#' 
+#' ggplot(dat, aes(vs, Freq, fill = gear)) +
+#'   geom_col() +
+#'   geom_text(aes(label = gear), position = position_stack(vjust = 0.5))
+#' 
+#' ggplot(dat, aes(vs, Freq, fill = gear)) +
+#'   geom_col(position = 'fill') +
+#'   geom_text(aes(label = lbl), position = position_fill(vjust = 0.5))
+#' 
+#' 
+#' ## or use geom_bar with stat = 'identity' and position = 'fill'
+#' ggplot(dat, aes(vs, Freq, fill = gear)) +
+#'   geom_bar(stat = 'identity', position = 'fill') +
+#'   geom_text(aes(label = lbl), position = position_fill(vjust = 0.5))
+#' 
 #' @export
 
-bar_counts <- function(data, x, fill, facet = NULL, position = c('stack', 'fill'),
+bar_counts <- function(data, x, fill, facet, position = c('stack', 'fill'),
                        rev = FALSE, fmt = 'n (p%)', ...) {
   x <- deparse(substitute(x))
   y <- if (missing(fill))
     NULL else deparse(substitute(fill))
   
-  facet <- if (is.null(facet))
+  facet <- if (missing(facet))
     NULL else deparse(substitute(facet))
   position <- match.arg(position)
   
@@ -1448,9 +1469,9 @@ bar_counts <- function(data, x, fill, facet = NULL, position = c('stack', 'fill'
   fmt <- gsub('n|p', '%s', fmt)
   data$lbl <- do.call('sprintf', c(list(fmt = fmt), fmt2))
   
-  list(geom_text(data = data,
-                 aes_string(label = 'lbl', x = x, y = 'pct_alt'),
-                 ...))
+  list(
+    geom_text(aes_string(label = 'lbl', x = x, y = 'pct_alt'), data, ...)
+  )
 }
 
 #' Table plot
@@ -1499,8 +1520,8 @@ ggtable <- function(data, caption = dname, row.names, newpage = TRUE) {
   
   cap <- textGrob(caption, gp = gpar(fontsize = 15))
   
-  gt <- gtable_add_rows(gt, grobHeight(cap) + pad, 0)
-  gt <- gtable_add_grob(gt, cap, 1, 1, 1, ncol(gt), Inf, 'off')
+  gt <- gtable::gtable_add_rows(gt, grobHeight(cap) + pad, 0)
+  gt <- gtable::gtable_add_grob(gt, cap, 1, 1, 1, ncol(gt), Inf, 'off')
   
   if (newpage)
     grid.newpage()
