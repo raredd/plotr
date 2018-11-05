@@ -81,7 +81,7 @@ gspineplot(x, ...)
 \item{data}{an optional data frame.}
 
 \item{subset}{an optional vector specifying a subset of observations
-    to be used for plotting.  }
+    to be used for plotting.}
 }
 \description{
 Spine plots are a special case of mosaic plots and can be seen as a 
