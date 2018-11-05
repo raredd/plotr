@@ -233,14 +233,13 @@ zoomin <- function(x, y, ...) {
 #' 
 #' @export
 
-ptlocator <- function(n = 512L, x, y, col = tcol('red', 80), pch = 20, ...) {
+ptlocator <- function(n = 512L, x, y, col = tcol('red', 80), pch = 16, ...) {
   xsc <- scale(x)
   ysc <- scale(y)
-  # pos <- numeric(n)
   pos <- NULL
   
-  for(i in seq(n)) {
-    pt <- locator(1)
+  for(ii in seq.int(n)) {
+    pt <- locator(1L)
     if (!is.null(pt)) {
       ptxsc <- scale(pt$x, center = attr(xsc, 'scaled:center'),
                      scale = attr(xsc, 'scaled:scale'))
@@ -249,7 +248,6 @@ ptlocator <- function(n = 512L, x, y, col = tcol('red', 80), pch = 20, ...) {
       pos.i <- which.min(sqrt((c(ptxsc) - c(xsc)) ^ 2 +
                                 (c(ptysc) - c(ysc)) ^ 2))
       points(x[pos.i], y[pos.i], col = col, pch = pch, ...)
-      # pos[i] <- pos.i
       pos <- c(pos, pos.i)
     } else return(invisible(pos))
   }
@@ -268,6 +266,8 @@ ptlocator <- function(n = 512L, x, y, col = tcol('red', 80), pch = 20, ...) {
 #' @param n tuning parameter for fitting the shading region to the curve; a
 #' lower value will result in a worse fit around the curve
 #' @param miny by default, shading will extend from the curve to \code{min(y)}
+#' @param horiz logical; if \code{TRUE}, the y-axis is assumed to be the
+#' horizontal
 #' @param ... additional parameters passed to \code{\link{polygon}}; common
 #' uses are \code{density} for shading lines, \code{col} for shading color(s),
 #' \code{border} for border color, or \code{lty} for line type
@@ -277,30 +277,35 @@ ptlocator <- function(n = 512L, x, y, col = tcol('red', 80), pch = 20, ...) {
 #' 
 #' @examples
 #' set.seed(1)
-#' x <- c(rnorm(75), rnorm(25, 5))
+#' x <- density(c(rnorm(75), rnorm(25, 5)))
 #' 
-#' plot(xx <- density(x), panel.first = {
-#'   polyShade(xx$x, xx$y, from = c(min(xx$x), 6), to = c(-2, max(xx$x)),
-#'             col = adjustcolor('red', .3), border = NA)
-#' })
-#' 
+#' plot(x)
 #' polyShade(xx$x, xx$y, -1, 2, col = 'red', border = NA)
-#' 
+#' polyShade(xx$x, xx$y, from = c(-Inf, 6), to = c(-2, Inf),
+#'           col = adjustcolor('red', .3), border = NA)
 #' polyShade(xx$x, xx$y, 0, 4, col = 'blue', density = 20, lty = 4, 
 #'           miny = par('usr')[1], border = NA)
 #' 
+#' plot(xx$y, xx$x, type = 'l')
+#' polyShade(xx$x, xx$y, horiz = TRUE, col = 'blue')
+#' 
 #' @export
 
-polyShade <- function(x, y, from, to, n = 50, miny, ...) {
+polyShade <- function(x, y, from = -Inf, to = Inf, n = 1e3,
+                      miny = min(y, na.rm = TRUE), horiz = FALSE, ...) {
   if (!identical(lf <- length(from), lt <- length(to)))
     stop('\'from\' and \'to\' should have the same length')
-  if (missing(miny))
-    miny <- min(y)
   
-  drawPoly <- function(fun, from, to, n = 50, miny, ...) {
-    Sq <- seq(from = from, to = to, length = n)
-    polygon(x = c(Sq[1], Sq, Sq[n]), y = c(miny, fun(Sq), miny), ...)
+  drawPoly <- function(fun, from, to, n, miny, ...) {
+    Sq <- seq(from, to, length.out = n)
+    dd <- data.frame(x = c(Sq[1L], Sq, Sq[n]), y = c(miny, fun(Sq), miny))
+    if (horiz)
+      names(dd) <- c('y', 'x')
+    polygon(dd$x, dd$y, ...)
   }
+  
+  from[from == -Inf] <- min(x, na.rm = TRUE)
+  to[to == Inf] <- max(x, na.rm = TRUE)
   
   interp <- approxfun(x = x, y = y)
   mapply(drawPoly, from = from, to = to, ...,

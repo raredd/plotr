@@ -4,7 +4,8 @@
 \alias{polyShade}
 \title{Polygon shading}
 \usage{
-polyShade(x, y, from, to, n = 50, miny, ...)
+polyShade(x, y, from = -Inf, to = Inf, n = 1000, miny = min(y, na.rm =
+  TRUE), horiz = FALSE, ...)
 }
 \arguments{
 \item{x, y}{x- and y-values from the curve}
@@ -19,6 +20,9 @@ lower value will result in a worse fit around the curve}
 
 \item{miny}{by default, shading will extend from the curve to \code{min(y)}}
 
+\item{horiz}{logical; if \code{TRUE}, the y-axis is assumed to be the
+horizontal}
+
 \item{...}{additional parameters passed to \code{\link{polygon}}; common
 uses are \code{density} for shading lines, \code{col} for shading color(s),
 \code{border} for border color, or \code{lty} for line type}
@@ -28,17 +32,17 @@ Color or shade the area under a curve.
 }
 \examples{
 set.seed(1)
-x <- c(rnorm(75), rnorm(25, 5))
+x <- density(c(rnorm(75), rnorm(25, 5)))
 
-plot(xx <- density(x), panel.first = {
-  polyShade(xx$x, xx$y, from = c(min(xx$x), 6), to = c(-2, max(xx$x)),
-            col = adjustcolor('red', .3), border = NA)
-})
-
+plot(x)
 polyShade(xx$x, xx$y, -1, 2, col = 'red', border = NA)
-
+polyShade(xx$x, xx$y, from = c(-Inf, 6), to = c(-2, Inf),
+          col = adjustcolor('red', .3), border = NA)
 polyShade(xx$x, xx$y, 0, 4, col = 'blue', density = 20, lty = 4, 
           miny = par('usr')[1], border = NA)
+
+plot(xx$y, xx$x, type = 'l')
+polyShade(xx$x, xx$y, horiz = TRUE, col = 'blue')
 
 }
 \seealso{
