@@ -86,12 +86,6 @@ gmatlines(x, y, type = "l", lty = 1:5, lwd = 1, pch = NULL, col = 1:6,
 
 \item{ylim}{ranges of x and y axes, as in \code{\link{plot}}.}
 
-\item{...}{Graphical parameters (see \code{\link{par}}) and any further
-    arguments of \code{plot}, typically \code{\link{plot.default}}, may also be
-    supplied as arguments to this function.  Hence, the high-level
-    graphics control arguments described under \code{\link{par}} and the
-    arguments to \code{\link{title}} may be supplied to this function.}
-
 \item{add}{logical.  If \code{TRUE}, plots are added to current one,
     using \code{\link{points}} and \code{\link{lines}}.}
 
