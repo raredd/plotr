@@ -1,5 +1,6 @@
 ### utils
-# plotr_utils, %ni%, %inside%, %||%, tcol, rescaler, assert_class, coords
+# plotr_utils, %ni%, %inside%, %||%, tcol, rescaler, assert_class, coords,
+# islist
 #
 # coordinate systems: d2r, r2d, p2c, c2p, p2r, p2d
 ###
@@ -64,7 +65,9 @@ NULL
 
 #' @rdname plotr_utils
 #' @export
-'%ni%' <- function(x, table) !(match(x, table, nomatch = 0) > 0)
+'%ni%' <- function(x, table) {
+  !(match(x, table, nomatch = 0) > 0)
+}
 
 #' @rdname plotr_utils
 #' @export
@@ -75,12 +78,16 @@ NULL
 
 #' @rdname plotr_utils
 #' @export
-'%||%' <- function(a, b) if (!is.null(a)) a else b
+'%||%' <- function(a, b) {
+  if (!is.null(a)) a else b
+}
 
 #' @rdname plotr_utils
 #' @export
 tcol <- function(color, trans = 255, alpha) {
-  stopifnot(trans %inside% c(0,255) | is.na(trans))
+  stopifnot(
+    trans %inside% c(0,255) | is.na(trans)
+  )
   if (!missing(alpha)) {
     stopifnot(alpha %inside% 0:1 | is.na(alpha))
     trans <- round(rescaler(alpha, to = c(0,255), from = 0:1))
@@ -103,11 +110,12 @@ tcol <- function(color, trans = 255, alpha) {
   res <- unlist(Map(paste0, res, as.character(try(as.hexmode(trans)))))
   res[is.na(color) | is.na(trans)] <- NA
   res[color %in% 'transparent'] <- 'transparent'
+  
   unname(res)
 }
 
-## rawr::rescaler
 rescaler <- function (x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
+  ## rawr::rescaler
   zero_range <- function(x, tol = .Machine$double.eps * 100) {
     if (length(x) == 1L)  return(TRUE)
     if (length(x) != 2L)  stop('\'x\' must be length one or two')
@@ -125,10 +133,10 @@ rescaler <- function (x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
   (x - from[1L]) / diff(from) * diff(to) + to[1L]
 }
 
-## rawr::col_scaler
 col_scaler <- function(x, colors, alpha = 1,
                        alpha.min = min(0.1, x[x >= 0], na.rm = TRUE),
                        to = c(0, 1), from = range(x, na.rm = TRUE)) {
+  ## rawr::col_scaler
   pals <- c('rainbow', paste0(c('heat', 'terrain', 'topo', 'cm'), '.colors'))
   colors <- if (is.numeric(colors))
     rep_len(palette(), max(colors, na.rm = TRUE))[as.integer(colors)]
@@ -180,8 +188,12 @@ assert_class <- function(x, class, which = FALSE,
 ## coordinate systems
 
 ## convert degrees to radians or vice versa
-d2r <- function(degrees = 1) degrees * (pi / 180)
-r2d <- function(radians = 1) radians * (180 / pi)
+d2r <- function(degrees = 1) {
+  degrees * (pi / 180)
+}
+r2d <- function(radians = 1) {
+  radians * (180 / pi)
+}
 
 ## convert polar to cartesian or vice versa
 p2c <- function(radius, theta, degree = FALSE) {
@@ -208,8 +220,8 @@ p2d <- function(x, y, cx = 0, cy = 0) {
   r2d(atan2(y - cy, x - cx))
 }
 
-## rawr::coords
 coords <- function(x = 0:1, y = x, to = 'user', line, side) {
+  ## rawr::coords
   xy <- cbind(x, y)
   x  <- xy[, 1L]
   y  <- xy[, 2L]
@@ -231,4 +243,9 @@ coords <- function(x = 0:1, y = x, to = 'user', line, side) {
       inner  = list(x = grconvertX(x, 'nic', to), y = grconvertY(y, 'nic', to)),
       device = list(x = grconvertX(x, 'ndc', to), y = grconvertY(y, 'ndc', to))
     )
+}
+
+islist <- function(x) {
+  ## is.list(data.frame()); plotr:::islist(data.frame())
+  inherits(x, 'list')
 }

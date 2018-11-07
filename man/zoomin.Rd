@@ -7,7 +7,7 @@
 zoomin(x, y, ...)
 }
 \arguments{
-\item{x, y}{x- and y-coordinates}
+\item{x, y}{x- and y-axis variables}
 
 \item{...}{additional arguments passed to \code{\link{identify}}}
 }
@@ -24,4 +24,5 @@ plot(x, y, xlab = 'mean', ylab = 'sd')
 
 zoomin(x, y)
 ## ESC to quit
+
 }

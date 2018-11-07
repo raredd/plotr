@@ -1,7 +1,7 @@
 Package: plotr
 Type: Package
 Title: More plotting functions and examples
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: person("Robert", "Redd", email = "raredd01@gmail.com",
   role = c("aut", "cre"))
 Author: Robert Redd
@@ -17,7 +17,10 @@ Suggests:
     knitr,
     plotrix,
     rawr,
-    testthat
+    rsvd,
+    Rtsne,
+    testthat,
+    vegan
 License: GPL-2
 LazyData: yes
 URL: https://github.com/raredd/plotr

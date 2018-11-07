@@ -1,6 +1,7 @@
 ### plotting extras
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
-# click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot
+# click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot,
+# rm_alpha
 ###
 
 
@@ -100,7 +101,7 @@ color_bar <- function(colors,
 #' 
 #' Provides a summary statistic for sample points in a plot.
 #' 
-#' @param x,y x- and y-coordinates
+#' @param x,y x- and y-axis variables
 #' @param ... additional arguments passed to \code{\link{identify}}
 #' 
 #' @examples
@@ -113,6 +114,7 @@ color_bar <- function(colors,
 #' 
 #' zoomin(x, y)
 #' ## ESC to quit
+#' 
 #' @export
 
 zoomin <- function(x, y, ...) {
@@ -986,4 +988,8 @@ subplot <- function(expr, x, y = NULL, log = NULL, size = c(1,1),
   expr
   
   invisible(par(no.readonly = TRUE))
+}
+
+rm_alpha <- function(x) {
+  gsub('(^#[A-Fa-f0-9]{6})[A-Fa-f0-9]{2}$', '\\1', x)
 }
