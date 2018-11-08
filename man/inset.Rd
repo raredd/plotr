@@ -50,7 +50,7 @@ Map(function(x) {
  par(op)
  Sys.sleep(0.5)
  }, c('bottomright', 'bottom', 'bottomleft', 'left',
-      'topleft', 'top', 'topright', 'right', 'center'))
-
+      'topleft', 'top', 'topright', 'right', 'center')
+)
 
 }

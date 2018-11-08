@@ -5,8 +5,8 @@
 \title{t-SNE plot}
 \usage{
 tsne(data, group = rep(1L, ncol(data)), col = NULL, ..., perplexity = 30,
-  centers = NULL, labels = FALSE, legend = length(perplexity) == 1L,
-  args.legend = list())
+  centers = NULL, plot3d = FALSE, labels = FALSE,
+  legend = length(perplexity) == 1L, args.legend = list())
 }
 \arguments{
 \item{data}{an \code{r x c} matrix-like object with \code{r} features and
@@ -16,10 +16,16 @@ tsne(data, group = rep(1L, ncol(data)), col = NULL, ..., perplexity = 30,
 
 \item{col}{a vector of colors for each group}
 
+\item{...}{additional arguments passed to \code{\link{plot}} or further to
+\code{\link{par}}}
+
 \item{perplexity}{perplexity parameter passed to \code{\link[Rtsne]{Rtsne}}}
 
 \item{centers}{an integer value for the number of desired clusters, passed
 to \code{\link[stats]{kmeans}}}
+
+\item{plot3d}{logical; if \code{TRUE}, the first three dimensions are drawn
+as a 3D scatterplot; see \code{\link[rgl]{plot3d}}}
 
 \item{labels}{argument controlling labels for points; if \code{FALSE}, no
 labels are drawn; if a numeric value in \code{(0,1)}, points outside
@@ -32,7 +38,8 @@ override defaults}
 }
 \description{
 Wrapper function to plot an \code{\link[Rtsne]{Rtsne}} object with optional
-\code{\link[stats]{kmeans}} groupings.
+\code{\link[stats]{kmeans}} groupings. Alternatively, plot a 3D scatterplot
+of the first three t-SNE dimensions.
 }
 \examples{
 ## feature x sample matrix
@@ -41,9 +48,13 @@ grp <- unique(iris)$Species
 
 tsne(dat)
 tsne(dat, grp)
+tsne(dat, grp, centers = 3)$km$perplexity30$cluster
 tsne(dat, grp, centers = 3, perplexity = c(5, 10, 20, 30), pch = 16)
 tsne(dat, grp, centers = 3, perplexity = 20, col = tcol(3:5, alpha = 0.5),
      pch = 16, cex = 1.5, las = 1L, bty = 'l', labels = 0.001,
      args.legend = list(x = 'topleft', title = 'Species'))
 
+}
+\seealso{
+\code{\link{pca}}
 }

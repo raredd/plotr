@@ -5,27 +5,14 @@
 \alias{prettypie2}
 \title{prettypie}
 \usage{
-prettypie(dat, file, dev = "pdf", width = 15, height = 11, main, sub,
-  note)
+prettypie(dat, main = NULL, sub = NULL, note = NULL)
 
 prettypie2(x, group = 1, labels = NA, col = NULL, radius = c(0.7, 1))
 }
 \arguments{
 \item{dat}{data}
 
-\item{file}{path to output file}
-
-\item{dev}{device; default is \code{\link{pdf}}}
-
-\item{width}{width of \code{dev}}
-
-\item{height}{height of \code{dev}}
-
-\item{main}{overall title for plot}
-
-\item{sub}{sub-title for plot}
-
-\item{note}{note for plot}
+\item{main, sub, note}{overall title, sub-title, and note for plot}
 
 \item{x}{numeric vector representing the size for each slice}
 
@@ -42,27 +29,34 @@ labels will be drawn; if \code{NULL}, slices will be labeled sequentially}
 A pie chart. \code{prettypie} is stupid, ignore it; use \code{prettypie2},
 }
 \examples{
-\dontrun{
 browsers <- source(system.file('source','browsers.r', package = 'plotr'))$value
 browsers <- within(browsers, total <- ave(share, browser, FUN = sum))
-browsers <- browsers[c('browser','version','share','total')]
+browsers <- browsers[c('browser', 'version', 'share', 'total')]
 
-prettypie(dat = browsers,
-          file = './donuts.pdf', 
-          main = 'Browser market share, April 2011',
-          sub = 'stackoverflow.com:::maryam',
-          note = '/questions/26748069/ggplot2-pie-and-donut-chart-on-same-plot')
+m1 <- 'Browser market share, April 2011'
+s1 <- 'stackoverflow.com:::maryam'
+n1 <- '/questions/26748069/ggplot2-pie-and-donut-chart-on-same-plot'
+prettypie(browsers, m1, s1, n1)
 
 
 disease <- source(system.file('source','disease.r', package = 'plotr'))$value
-disease <- disease[c('Disease','Acosts60','Pcosts60','Patients60','Total60')]
+disease <- disease[c('Disease', 'Acosts60', 'Pcosts60', 'Patients60', 'Total60')]
 
-prettypie(dat = disease,
-          file = './cost.pdf', 
-          main = 'Cost of getting sick',
-          sub = 'Inside: Personal Costs, outside: Insurer Costs',
-          note = 'visualization.geblogs.com/visualization/health_costs/')
+m2 <- 'Cost of getting sick'
+s2 <- 'Inside: Personal Costs, outside: Insurer Costs'
+n2 <- 'visualization.geblogs.com/visualization/health_costs/'
+prettypie(disease, m2, s2, n2)
+
+\dontrun{
+pdf('~/desktop/prettypie-browsers.pdf', width = 15, height = 11, bg = 'snow')
+prettypie(browsers, m1, s1, n1)
+dev.off()
+
+pdf('~/desktop/prettypie-disease.pdf', width = 15, height = 11, bg = 'snow')
+prettypie(disease, m2, s2, n2)
+dev.off()
 }
+
 ## basic usage
 prettypie2(mtcars$mpg)
 

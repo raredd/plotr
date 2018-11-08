@@ -64,8 +64,11 @@ dat <- within(dat, {
 })
 
 tdat <- table(dat)
-cols <- c(grey(.9), tcol(c('lightblue', 'lightblue', 'magenta1', 'magenta1'),
-               c(200, 100, 100, 200)))
+cols <- c(
+  grey(.9),
+  rawr::tcol(c('lightblue', 'lightblue', 'magenta1', 'magenta1'),
+             alpha = c(.75, .25, .25, .75))
+)
                
 ## compare:
 barplot(tdat, horiz = TRUE, las = 1, col = cols, border = NA)
@@ -85,7 +88,6 @@ legend('topleft', inset = c(0, -0.2), xpd = NA, fill = cols[2:3],
        legend = rownames(tdat)[2:3], horiz = TRUE, bty = 'n')
 legend('topright', inset = c(0, -0.2), xpd = NA, fill = cols[4:5],
        legend = rownames(tdat)[4:5], horiz = TRUE, bty = 'n')
-
 
 }
 \seealso{

@@ -35,14 +35,15 @@ set.seed(1)
 x <- density(c(rnorm(75), rnorm(25, 5)))
 
 plot(x)
-polyShade(xx$x, xx$y, -1, 2, col = 'red', border = NA)
-polyShade(xx$x, xx$y, from = c(-Inf, 6), to = c(-2, Inf),
+polyShade(x$x, x$y, -1, 2, col = 'red', border = NA)
+polyShade(x$x, x$y, from = c(-Inf, 6), to = c(-2, Inf),
           col = adjustcolor('red', .3), border = NA)
-polyShade(xx$x, xx$y, 0, 4, col = 'blue', density = 20, lty = 4, 
+polyShade(x$x, x$y, 0, 4, col = 'blue', density = 20, lty = 4,
           miny = par('usr')[1], border = NA)
 
-plot(xx$y, xx$x, type = 'l')
-polyShade(xx$x, xx$y, horiz = TRUE, col = 'blue')
+## horizontal
+plot(x$y, x$x, type = 'l')
+polyShade(x$x, x$y, horiz = TRUE, col = 'blue')
 
 }
 \seealso{

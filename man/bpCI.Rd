@@ -29,6 +29,9 @@ matrix (when \code{beside = TRUE}) of all bar (or group) midpoints}
 \item{pch}{plotting character to be used for significance; default is 
 \code{*} and uses same significance codes as \code{\link{printCoefmat}}}
 
+\item{show.p}{logical; if \code{TRUE}, p-values are shown and formatted
+with \code{\link[rawr]{pvalr}}}
+
 \item{...}{additional graphical parameters passed to \code{\link{par}}}
 }
 \description{

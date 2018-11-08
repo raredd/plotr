@@ -17,11 +17,17 @@
 #' boxes; default is \code{TRUE} (horiztonal)
 #' @param cols colors for each group, should be of length \code{length(x)}
 #' @param mat an optional matrix giving the layout; see details
+#' @param pct the percent the square spanned along the x- and y-axes; can be
+#' length one (recycled) or two
 #' @param ... additional graphical parameters passed to \code{par}
 #' 
 #' @examples
-#' waffle(c(3, 10), rows = 2, cols = c('red','black'))
-#' waffle(c(15, 700), rows = 40, horiz = FALSE, cols = c('salmon2','grey90'))
+#' waffle(c(3, 10), 2)
+#' waffle(c(3, 10), 2, pct = 1)
+#' waffle(c(3, 10), 2, pct = 0.5)
+#' waffle(c(3, 10), 2, pct = c(0.95, 0.5))
+#' 
+#' waffle(c(15, 700), rows = 40, horiz = FALSE, cols = c('salmon2', 'grey90'))
 #' 
 #' cols <- c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF")
 #' waffle(c(80, 30, 20, 10), rows = 8, cols = cols, mar = c(0,0,0,7))
@@ -64,13 +70,14 @@
 #' 
 #' @export
 
-waffle <- function(x, rows, horiz = TRUE, cols = seq_along(x), mat, ...) {
+waffle <- function(x, rows, horiz = TRUE, cols = seq_along(x), mat,
+                   pct = 0.85, ...) {
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
   
-  if (!missing(mat)) {
-    # m <- mat[rev(seq.int(nrow(mat))), ]
-    m <- mat
+  m <- if (!missing(mat)) {
+    # mat[rev(seq.int(nrow(mat))), ]
+    mat
   } else {
     xx <- rep(cols, times = x)
     lx <- length(xx)
@@ -81,15 +88,23 @@ waffle <- function(x, rows, horiz = TRUE, cols = seq_along(x), mat, ...) {
       m <- matrix(c(m), nrow = rows, byrow = TRUE)
       m <- m[rev(seq.int(nrow(m))), ]
     }
+    
+    m
   }
   
   par(...)
   plot.new()
   o <- cbind(c(row(m)), c(col(m))) + 1L
-  plot.window(c(0L, max(o[, 2L]) + 1L), c(0L, max(o[, 1L]) + 1L),
-              asp = 1, xaxs = 'i', yaxs = 'i')
-  rect(o[, 2L], o[, 1L], o[, 2L] + .85, o[, 1L] + .85,
-       col = c(m), border = NA)
+  pct <- rep_len(pct, 2L)
+  plot.window(
+    c(0L, max(o[, 2L]) + 1L), c(0L, max(o[, 1L]) + 1L),
+    asp = 1, xaxs = 'i', yaxs = 'i'
+  )
+  rect(
+    xleft = o[, 2L], ybottom = o[, 1L],
+    xright = o[, 2L] + pct[1L], ytop = o[, 1L] + pct[2L],
+    col = c(m), border = NA
+  )
   
   invisible(list(m = m, o = o))
 }
@@ -202,11 +217,9 @@ histr <- function(x, ..., lines.pars, rug.pars, poly.pars, reset_par = TRUE) {
 #' @export
 
 shist <- function(x, ..., col = grey.colors(length(x) + 1L),
-                  loess = TRUE, total = TRUE,
-                  xlim = NULL, ylim = NULL,
-                  heights = NULL, heights.main = 0.5,
-                  reset_par = TRUE) {
-  op <- par(mar = c(0,0,0,0), oma = par('mar'))
+                  loess = TRUE, total = TRUE, xlim = NULL, ylim = NULL,
+                  heights = NULL, heights.main = 0.5, reset_par = TRUE) {
+  op <- par(no.readonly = TRUE)
   if (reset_par)
     on.exit(par(op))
   
@@ -231,6 +244,7 @@ shist <- function(x, ..., col = grey.colors(length(x) + 1L),
   heights <- rep_len(heights, length(x))
   
   layout(seq_along(x), heights = heights)
+  par(mar = c(0,0,0,0), oma = par('mar'))
   
   res <- vector('list', length(x))
   for (ii in seq_along(x)) {

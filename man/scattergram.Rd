@@ -35,7 +35,7 @@ with(mtcars, {
 })
 
 with(mtcars, {
-  scattergram(mpg, wt, cyl)
+  scattergram(mpg, wt, cyl, col = rainbow(3), pch = 16)
 })
 
 with(mtcars, {

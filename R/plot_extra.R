@@ -1,7 +1,6 @@
 ### plotting extras
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
 # click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot,
-# rm_alpha
 ###
 
 
@@ -39,7 +38,7 @@
 #' 
 #' ## compare
 #' plot(mtcars$mpg, pch = 19, cex = 2, 
-#'      col = plotr:::col_scaler(mtcars$mpg, c('yellow','red')))
+#'      col = rawr:::col_scaler(mtcars$mpg, c('yellow','red')))
 #' plot(mtcars$mpg, pch = 19, cex = 2,
 #'      col = color_bar(c('yellow','red'), mtcars$mpg, labels = mtcars$mpg))
 #' 
@@ -52,7 +51,7 @@
 #' with(mtcars, {
 #'   plot(mpg, pch = 19, cex = 2,
 #'        main = 'color by weight (red = heavier)',
-#'        col = plotr:::col_scaler(wt, c('yellow','red')))
+#'        col = rawr:::col_scaler(wt, c('yellow','red')))
 #' })
 #' 
 #' with(mtcars, {
@@ -63,38 +62,32 @@
 #'
 #' @export
 
-color_bar <- function(colors, 
-                      x = NULL, 
-                      y = x,
-                      labels = NULL,
-                      at.x = par('usr')[2L],
-                      at.y = par('usr')[3L],
-                      cex.x = 1, 
-                      cex.y = 1,
-                      ...) {
-  op <- par(no.readonly = TRUE)
+color_bar <- function(colors, x = NULL, y = x, labels = NULL,
+                      at.x = par('usr')[2L], at.y = par('usr')[3L],
+                      cex.x = 1, cex.y = 1, ...) {
+  op <- par(..., no.readonly = TRUE)
   on.exit(par(op))
-  par(list(...))
   
   par(mar = c(5, 4, 4, 4) + .1, xpd = TRUE, new = TRUE)
   bx <- par('usr')
   nc <- 1000
   colors <- colorRampPalette(colors)(nc)
   
-  bx.y <- c(bx[3L], bx[4L])
-  sapply(0:nc, function(x) {
-    segments(at.x, 
-             at.y + x * diff(bx.y) / nc * cex.y, 
-             at.x + diff(bx[1:2]) / nc * 20 * cex.x, 
-             at.y + x * diff(bx.y) / nc * cex.y, 
-             col = colors[x], lwd = 1, xpd = TRUE)
-  })
+  bx.y <- bx[3:4]
+  sapply(0:nc, function(ii)
+    segments(
+      x0 = at.x, y0 = at.y + ii * diff(bx.y) / nc * cex.y,
+      x1 = at.x + diff(bx[1:2]) / nc * 20 * cex.x,
+      y1 = at.y + ii * diff(bx.y) / nc * cex.y,
+      col = colors[ii], lwd = 1, xpd = TRUE
+    )
+  )
+  
   if (!is.null(labels))
-    text(x = at.x, y = pretty(y), labels = pretty(labels), 
-         pos = 4L, cex = 0.8, offset = 0.75)
+    text(at.x, pretty(y), pretty(labels), pos = 4L, offset = 1)
   
   if (!is.null(x))
-    invisible(colors[rescaler(x, c(1, nc))])
+    invisible(colors[rawr::rescaler(x, c(1, nc))])
 }
 
 #' Zoom for points in base \code{R} plot
@@ -126,7 +119,7 @@ zoomin <- function(x, y, ...) {
     
     error = function(e) {
       if (grepl('plot.new has not been called yet', e$message, fixed = TRUE)) {
-        par(mfrow = c(1, 2))
+        par(mfrow = 1:2)
         plot(x, y)
         op <- par(no.readonly = TRUE)
       } else return(e)
@@ -282,14 +275,15 @@ ptlocator <- function(n = 512L, x, y, col = tcol('red', 80), pch = 16, ...) {
 #' x <- density(c(rnorm(75), rnorm(25, 5)))
 #' 
 #' plot(x)
-#' polyShade(xx$x, xx$y, -1, 2, col = 'red', border = NA)
-#' polyShade(xx$x, xx$y, from = c(-Inf, 6), to = c(-2, Inf),
+#' polyShade(x$x, x$y, -1, 2, col = 'red', border = NA)
+#' polyShade(x$x, x$y, from = c(-Inf, 6), to = c(-2, Inf),
 #'           col = adjustcolor('red', .3), border = NA)
-#' polyShade(xx$x, xx$y, 0, 4, col = 'blue', density = 20, lty = 4, 
+#' polyShade(x$x, x$y, 0, 4, col = 'blue', density = 20, lty = 4,
 #'           miny = par('usr')[1], border = NA)
 #' 
-#' plot(xx$y, xx$x, type = 'l')
-#' polyShade(xx$x, xx$y, horiz = TRUE, col = 'blue')
+#' ## horizontal
+#' plot(x$y, x$x, type = 'l')
+#' polyShade(x$x, x$y, horiz = TRUE, col = 'blue')
 #' 
 #' @export
 
@@ -333,6 +327,8 @@ polyShade <- function(x, y, from = -Inf, to = Inf, n = 1e3,
 #' @param pvals p-values of group comparisons to be displayed as sig stars
 #' @param pch plotting character to be used for significance; default is 
 #' \code{*} and uses same significance codes as \code{\link{printCoefmat}}
+#' @param show.p logical; if \code{TRUE}, p-values are shown and formatted
+#' with \code{\link[rawr]{pvalr}}
 #' @param ... additional graphical parameters passed to \code{\link{par}}
 #' 
 #' @examples
@@ -454,12 +450,12 @@ pstar_ <- function(pv, pch, non_sig = 'NS') {
 #'  par(op)
 #'  Sys.sleep(0.5)
 #'  }, c('bottomright', 'bottom', 'bottomleft', 'left',
-#'       'topleft', 'top', 'topright', 'right', 'center'))
-#' 
+#'       'topleft', 'top', 'topright', 'right', 'center')
+#' )
 #' 
 #' @export
 
-inset <- function(x, y = NULL, pct = .25, ...) {
+inset <- function(x, y = NULL, pct = 0.25, ...) {
   m <- substitute(...())
   usr <- par('usr')
   plt <- par('plt')
@@ -470,25 +466,31 @@ inset <- function(x, y = NULL, pct = .25, ...) {
     match.arg(x, c("bottomright", "bottom", "bottomleft", "left",
                    "topleft", "top", "topright", "right", "center")) else NA
   
-  xx <- switch(auto, bottomright = c(plt[2L] - pctx, plt[2L]),
-               bottom = mean(plt[1:2]) + c(-1, 1) * pctx / 2,
-               bottomleft = c(plt[1L], plt[1L] + pctx),
-               left = c(plt[1L], plt[1L] + pctx),
-               topleft = c(plt[1L], plt[1L] + pctx),
-               top = mean(plt[1:2]) + c(-1, 1) * pctx / 2,
-               topright = c(plt[2L] - pctx, plt[2L]),
-               right = c(plt[2L] - pctx, plt[2L]),
-               center = mean(plt[1:2]) + c(-1, 1) * pctx / 2)
+  xx <- switch(
+    auto,
+    bottomright = c(plt[2L] - pctx, plt[2L]),
+    bottom      = mean(plt[1:2]) + c(-1, 1) * pctx / 2,
+    bottomleft  = c(plt[1L], plt[1L] + pctx),
+    left        = c(plt[1L], plt[1L] + pctx),
+    topleft     = c(plt[1L], plt[1L] + pctx),
+    top         = mean(plt[1:2]) + c(-1, 1) * pctx / 2,
+    topright    = c(plt[2L] - pctx, plt[2L]),
+    right       = c(plt[2L] - pctx, plt[2L]),
+    center      = mean(plt[1:2]) + c(-1, 1) * pctx / 2
+  )
   
-  yy <- switch(auto, bottomright = c(plt[3L], plt[3L] + pcty),
-               bottom = c(plt[3L], plt[3L] + pcty),
-               bottomleft = c(plt[3L], plt[3L] + pcty),
-               left = mean(plt[3:4]) + c(-1, 1) * pcty / 2,
-               topleft = c(plt[4L] - pcty, plt[4L]),
-               top = c(plt[4L] - pcty, plt[4L]),
-               topright = c(plt[4L] - pcty, plt[4L]),
-               right = mean(plt[3:4]) + c(-1, 1) * pcty / 2,
-               center = mean(plt[3:4]) + c(-1, 1) * pcty / 2)
+  yy <- switch(
+    auto,
+    bottomright = c(plt[3L], plt[3L] + pcty),
+    bottom      = c(plt[3L], plt[3L] + pcty),
+    bottomleft  = c(plt[3L], plt[3L] + pcty),
+    left        = mean(plt[3:4]) + c(-1, 1) * pcty / 2,
+    topleft     = c(plt[4L] - pcty, plt[4L]),
+    top         = c(plt[4L] - pcty, plt[4L]),
+    topright    = c(plt[4L] - pcty, plt[4L]),
+    right       = mean(plt[3:4]) + c(-1, 1) * pcty / 2,
+    center      = mean(plt[3:4]) + c(-1, 1) * pcty / 2
+  )
   
   # xx <- rescaler(xx, plt[1:2], usr[1:2])
   # yy <- rescaler(yy, plt[3:4], usr[3:4])
@@ -561,9 +563,11 @@ grcols <- function(n, s = .5, v = 1, alpha = 1) {
 click_text <- function(expr, ...) {
   op <- par(no.readonly = TRUE) 
   on.exit(par(op))
+  
   par(mar = c(0,0,0,0), xpd = NA)
   co <- locator(1L)
-  text(co[[1L]], co[[2L]], labels = if (missing(expr)) '' else expr, ...)
+  text(co[[1L]], co[[2L]], if (missing(expr)) '' else expr, ...)
+  
   invisible(c(x = co[[1L]], y = co[[2L]]))
 }
 
@@ -584,7 +588,9 @@ click_text <- function(expr, ...) {
 #' 
 #' @examples
 #' \dontrun{
+#' op <- par(xpd = NA)
 #' plot.new()
+#' plot.window(0:1, 0:1, asp = 1)
 #' click_shape('line') # a line segment
 #' click_shape('arrow', col = 'blue', code = 2, lwd = 2, length = .15)
 #' click_shape('rect', border = 'purple', col = 'pink', lwd = 2)
@@ -594,6 +600,7 @@ click_text <- function(expr, ...) {
 #' click_shape('poly', corners = 3, border = 'red', col = 'yellow', lty = 1)
 #' click_shape('cyl', col = 'orange')
 #' click_shape('circle', col = 'orange', border = 'black', lty = 3, lwd = 3)
+#' par(op)
 #' }
 #' 
 #' @export
@@ -624,11 +631,14 @@ click_shape <- function(shape = c('circle', 'arrow', 'rect', 'cyl', 'line', 'pol
     rect(coords[1L], coords[3L], coords[2L], coords[4L], ...)
   }
   
-  suppressWarnings(
-    switch(shape, arrow = ARROW(...), circle = CIRCLE(...), cyl = CYL(...),
-           line = LINE(...), poly = POLY(...), rect = RECT(...),
-           stop('Invalid shape'))
-  )
+  suppressWarnings({
+    switch(
+      shape,
+      arrow = ARROW(...), circle = CIRCLE(...), cyl = CYL(...),
+      line = LINE(...), poly = POLY(...), rect = RECT(...),
+      stop('Invalid shape')
+    )
+  })
   
   invisible(coords)
 }
@@ -667,10 +677,11 @@ click_shape <- function(shape = c('circle', 'arrow', 'rect', 'cyl', 'line', 'pol
 
 ctext <- function(text, cols, space = TRUE, ...) {
   if (missing(cols))
-    cols <- rep(1, length(text))
+    cols <- rep_len(1L, length(text))
   l <- ctext_(text, cols, space)
   for (ii in seq_along(l$text))
     text(labels = l$text[[ii]], col = l$colors[ii], ...)
+  
   invisible(NULL)
 }
 
@@ -678,10 +689,11 @@ ctext <- function(text, cols, space = TRUE, ...) {
 #' @export
 cmtext <- function(text, cols, space = TRUE, ...) {
   if (missing(cols))
-    cols <- rep(1, length(text))
+    cols <- rep_len(1L, length(text))
   l <- ctext_(text, cols, space)
   for (ii in seq_along(l$text))
     mtext(text = l$text[[ii]], col = l$colors[ii], ...)
+  
   invisible(NULL)
 }
 
@@ -694,36 +706,53 @@ ctitle <- function(main = NULL, sub = NULL, xlab = NULL, ylab = NULL,
   ml <- dots$line
   dots$line <- NULL
   if (missing(cols))
-    cols <- rep(1, length(text))
-  wh <- c('main','sub','xlab','ylab')
+    cols <- rep_len(1L, length(text))
+  wh <- c('main', 'sub', 'xlab', 'ylab')
   l <- setNames(lapply(wh, function(x)
     ## if c() not used to pass text, this could cause problems
-    ctext_(as.character(m[[x]])[-1], cols, space)), wh)
+    ctext_(as.character(m[[x]])[-1L], cols, space)), wh)
   m <- par('mgp')
+  
   if (length(l$main$text)) {
     ll <- l$main
     for (ii in seq_along(ll$text))
-      do.call('mtext', c(list(text = ll$text[[ii]], col = ll$colors[ii],
-                              side = 3, font = 2, line = ml %||% (m[1] * .5)), dots))
+      do.call(
+        'mtext',
+        c(list(text = ll$text[[ii]], col = ll$colors[ii],
+               side = 3L, font = 2L, line = ml %||% (m[1L] * .5)), dots)
+      )
   }
+  
   if (length(l$sub$text)) {
     ll <- l$sub
     for (ii in seq_along(ll$text))
-      do.call('mtext', c(list(text = ll$text[[ii]], col = ll$colors[ii],
-                              side = 1, line = ml %||% (m[1] + 1)), dots))
+      do.call(
+        'mtext',
+        c(list(text = ll$text[[ii]], col = ll$colors[ii],
+               side = 1L, line = ml %||% (m[1L] + 1)), dots)
+      )
   }
+  
   if (length(l$xlab$text)) {
     ll <- l$xlab
     for (ii in seq_along(ll$text))
-      do.call('mtext', c(list(text = ll$text[[ii]], col = ll$colors[ii],
-                              side = 1, line = ml %||% m[1]), dots))
+      do.call(
+        'mtext',
+        c(list(text = ll$text[[ii]], col = ll$colors[ii],
+               side = 1L, line = ml %||% m[1L]), dots)
+      )
   }
+  
   if (length(l$ylab$text)) {
     ll <- l$ylab
     for (ii in seq_along(ll$text))
-      do.call('mtext', c(list(text = ll$text[[ii]], col = ll$colors[ii],
-                              side = 2, line = ml %||% m[1]), dots))
+      do.call(
+        'mtext',
+        c(list(text = ll$text[[ii]], col = ll$colors[ii],
+               side = 2L, line = ml %||% m[1]), dots)
+      )
   }
+  
   invisible(NULL)
 }
 
@@ -732,16 +761,19 @@ ctext_ <- function(text, cols, space) {
   # (ctext_(c('one','one','one'), 3:4, TRUE)) ## breaks old version
   if (space && (lt <- length(text)) > 1L)
     text[2:lt] <- paste0(' ', text[2:lt])
+  
   l <- lapply(seq_along(text), function(x) {
     txt <- shQuote(text)
     txt[-x] <- sprintf('phantom(%s)', txt[-x])
     xx <- sprintf('expression(%s)', paste0(txt, collapse = ' * '))
     eval(parse(text = xx))
   })
+  
   if ((lt <- length(text)) > (lc <- length(cols))) {
     # warning('colors will be recycled', domain = NA)
     cols <- rep_len(cols, lt)
   }
+  
   list(text = l, colors = cols)
 }
 
@@ -817,6 +849,7 @@ polygon2 <- function(x, y = NULL, radius, sides = 6, srt = 0,
   coords <- V(x, y, radius, sides, srt)
   lapply(seq_along(coords), function(ii)
     do.call('polygon', c(coords[[ii]], lapply(m, '[', ii))))
+  
   invisible(coords)
 }
 
@@ -936,22 +969,22 @@ subplot <- function(expr, x, y = NULL, log = NULL, size = c(1,1),
     y <- mean(usr[3:4])
     
     if (length(grep('left', x.char, ignore.case = TRUE))) {
-      x <- usr[1] + inset[1] * (usr[2] - usr[1])
+      x <- usr[1L] + inset[1L] * (usr[2L] - usr[1L])
       if (missing(hadj))
         hadj <- 0
     }
     if (length(grep('right', x.char, ignore.case = TRUE))) {
-      x <- usr[2] - inset[1] * (usr[2] - usr[1])
+      x <- usr[2L] - inset[1L] * (usr[2L] - usr[1L])
       if (missing(hadj))
         hadj <- 1
     }
     if (length(grep('top', x.char, ignore.case=TRUE))) {
-      y <- usr[4] - inset[2] * (usr[4] - usr[3])
+      y <- usr[4L] - inset[2L] * (usr[4L] - usr[3L])
       if (missing(vadj))
         vadj <- 1
     }
     if (length(grep('bottom', x.char, ignore.case = TRUE))) {
-      y <- usr[3] + inset[2] * (usr[4] - usr[3])
+      y <- usr[3L] + inset[2L] * (usr[4L] - usr[3L])
       if (missing(vadj))
         vadj <- 0
     }
@@ -964,10 +997,10 @@ subplot <- function(expr, x, y = NULL, log = NULL, size = c(1,1),
     xx <- grconvertX(xy$x[1], to = 'npc')
     yy <- grconvertY(xy$y[1], to = 'npc')
     
-    x <- c(xx - hadj * size[1] / pin[1],
-           xx + (1 - hadj) * size[1] / pin[1])
-    y <- c(yy - vadj * size[2] / pin[2],
-           yy + (1 - vadj) * size[2] / pin[2])
+    x <- c(xx - hadj * size[1L] / pin[1L],
+           xx + (1 - hadj) * size[1L] / pin[1L])
+    y <- c(yy - vadj * size[2L] / pin[2L],
+           yy + (1 - vadj) * size[2L] / pin[2L])
     
     xyx <- grconvertX(x, from = 'npc', to = 'nfc')
     xyy <- grconvertY(y, from = 'npc', to = 'nfc')
@@ -988,8 +1021,4 @@ subplot <- function(expr, x, y = NULL, log = NULL, size = c(1,1),
   expr
   
   invisible(par(no.readonly = TRUE))
-}
-
-rm_alpha <- function(x) {
-  gsub('(^#[A-Fa-f0-9]{6})[A-Fa-f0-9]{2}$', '\\1', x)
 }

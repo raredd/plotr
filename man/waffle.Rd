@@ -4,7 +4,7 @@
 \alias{waffle}
 \title{waffle}
 \usage{
-waffle(x, rows, horiz = TRUE, cols = seq_along(x), mat, ...)
+waffle(x, rows, horiz = TRUE, cols = seq_along(x), mat, pct = 0.85, ...)
 }
 \arguments{
 \item{x}{an integer vector with counts for each group}
@@ -18,6 +18,9 @@ boxes; default is \code{TRUE} (horiztonal)}
 
 \item{mat}{an optional matrix giving the layout; see details}
 
+\item{pct}{the percent the square spanned along the x- and y-axes; can be
+length one (recycled) or two}
+
 \item{...}{additional graphical parameters passed to \code{par}}
 }
 \description{
@@ -29,8 +32,12 @@ If \code{mat} is given, all other arguments except \dots are ignored, and
 see examples.
 }
 \examples{
-waffle(c(3, 10), rows = 2, cols = c('red','black'))
-waffle(c(15, 700), rows = 40, horiz = FALSE, cols = c('salmon2','grey90'))
+waffle(c(3, 10), 2)
+waffle(c(3, 10), 2, pct = 1)
+waffle(c(3, 10), 2, pct = 0.5)
+waffle(c(3, 10), 2, pct = c(0.95, 0.5))
+
+waffle(c(15, 700), rows = 40, horiz = FALSE, cols = c('salmon2', 'grey90'))
 
 cols <- c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF")
 waffle(c(80, 30, 20, 10), rows = 8, cols = cols, mar = c(0,0,0,7))

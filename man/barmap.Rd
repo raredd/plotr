@@ -4,7 +4,7 @@
 \alias{barmap}
 \title{Map barplot}
 \usage{
-barmap(x, db = "worldHires", region, labels, cols)
+barmap(x, db = "worldHires", region, labels = NULL, cols = NULL)
 }
 \arguments{
 \item{x}{a vector of proportions summing to 1 (approximately)}
@@ -22,7 +22,9 @@ Creates a barplot in the shape of a map region.
 }
 \examples{
 op <- par(mar = c(0,0,0,0))
-barmap(c(1,1,1)/3, region = 'Germany', cols = c('red','black','gold'))
+barmap(1, region = 'Germany')
+
+barmap(c(1,1,1) / 3, region = 'Germany', cols = c('red', 'black', 'gold'))
  
 voteGermany2013 <- read.table(header = TRUE, text = "Party Result
                               1 CDU/CSU   49.4

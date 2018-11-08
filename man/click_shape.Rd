@@ -21,7 +21,9 @@ Add shapes anywhere in a plot (including margins) with mouse click(s).
 }
 \examples{
 \dontrun{
+op <- par(xpd = NA)
 plot.new()
+plot.window(0:1, 0:1, asp = 1)
 click_shape('line') # a line segment
 click_shape('arrow', col = 'blue', code = 2, lwd = 2, length = .15)
 click_shape('rect', border = 'purple', col = 'pink', lwd = 2)
@@ -31,6 +33,7 @@ click_shape('poly', corners = 5, border = 'green', col = 'orange')
 click_shape('poly', corners = 3, border = 'red', col = 'yellow', lty = 1)
 click_shape('cyl', col = 'orange')
 click_shape('circle', col = 'orange', border = 'black', lty = 3, lwd = 3)
+par(op)
 }
 
 }

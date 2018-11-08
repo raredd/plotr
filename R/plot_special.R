@@ -192,8 +192,11 @@ prettybars <- function(x, y = names(x), emph = NULL,
 #' })
 #' 
 #' tdat <- table(dat)
-#' cols <- c(grey(.9), tcol(c('lightblue', 'lightblue', 'magenta1', 'magenta1'),
-#'                c(200, 100, 100, 200)))
+#' cols <- c(
+#'   grey(.9),
+#'   rawr::tcol(c('lightblue', 'lightblue', 'magenta1', 'magenta1'),
+#'              alpha = c(.75, .25, .25, .75))
+#' )
 #'                
 #' ## compare:
 #' barplot(tdat, horiz = TRUE, las = 1, col = cols, border = NA)
@@ -213,7 +216,6 @@ prettybars <- function(x, y = names(x), emph = NULL,
 #'        legend = rownames(tdat)[2:3], horiz = TRUE, bty = 'n')
 #' legend('topright', inset = c(0, -0.2), xpd = NA, fill = cols[4:5],
 #'        legend = rownames(tdat)[4:5], horiz = TRUE, bty = 'n')
-#' 
 #' 
 #' @export
 
@@ -298,104 +300,101 @@ prettybars2 <- function(x, lab.y = colnames(x), n.y = ncol(x),
 #' A pie chart. \code{prettypie} is stupid, ignore it; use \code{prettypie2},
 #' 
 #' @param dat data
-#' @param file path to output file
-#' @param dev device; default is \code{\link{pdf}}
-#' @param width width of \code{dev}
-#' @param height height of \code{dev}
-#' @param main overall title for plot
-#' @param sub sub-title for plot
-#' @param note note for plot
+#' @param main,sub,note overall title, sub-title, and note for plot
 #' 
 #' @examples
-#' \dontrun{
 #' browsers <- source(system.file('source','browsers.r', package = 'plotr'))$value
 #' browsers <- within(browsers, total <- ave(share, browser, FUN = sum))
-#' browsers <- browsers[c('browser','version','share','total')]
+#' browsers <- browsers[c('browser', 'version', 'share', 'total')]
 #' 
-#' prettypie(dat = browsers,
-#'           file = './donuts.pdf', 
-#'           main = 'Browser market share, April 2011',
-#'           sub = 'stackoverflow.com:::maryam',
-#'           note = '/questions/26748069/ggplot2-pie-and-donut-chart-on-same-plot')
+#' m1 <- 'Browser market share, April 2011'
+#' s1 <- 'stackoverflow.com:::maryam'
+#' n1 <- '/questions/26748069/ggplot2-pie-and-donut-chart-on-same-plot'
+#' prettypie(browsers, m1, s1, n1)
 #' 
 #' 
 #' disease <- source(system.file('source','disease.r', package = 'plotr'))$value
-#' disease <- disease[c('Disease','Acosts60','Pcosts60','Patients60','Total60')]
+#' disease <- disease[c('Disease', 'Acosts60', 'Pcosts60', 'Patients60', 'Total60')]
 #' 
-#' prettypie(dat = disease,
-#'           file = './cost.pdf', 
-#'           main = 'Cost of getting sick',
-#'           sub = 'Inside: Personal Costs, outside: Insurer Costs',
-#'           note = 'visualization.geblogs.com/visualization/health_costs/')
+#' m2 <- 'Cost of getting sick'
+#' s2 <- 'Inside: Personal Costs, outside: Insurer Costs'
+#' n2 <- 'visualization.geblogs.com/visualization/health_costs/'
+#' prettypie(disease, m2, s2, n2)
+#' 
+#' \dontrun{
+#' pdf('~/desktop/prettypie-browsers.pdf', width = 15, height = 11, bg = 'snow')
+#' prettypie(browsers, m1, s1, n1)
+#' dev.off()
+#' 
+#' pdf('~/desktop/prettypie-disease.pdf', width = 15, height = 11, bg = 'snow')
+#' prettypie(disease, m2, s2, n2)
+#' dev.off()
 #' }
+#' 
 #' @export
 
-prettypie <- function(dat, file, dev = 'pdf', width = 15, height = 11,
-                      main, sub, note) {
+prettypie <- function(dat, main = NULL, sub = NULL, note = NULL) {
   m <- match.call()
-  if (missing(main)) main <- ''
-  if (missing(sub))  sub  <- ''
-  if (missing(note)) note <- ''
-  if (missing(file)) file <- getwd()
-  
-  do.call(dev, list(file = file, width = width, height = height, bg = 'snow'))
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
   
   nr <- nrow(dat)
-  f0 <- rep(NA, nr)
-  ok <- length(unique(dat[, 1])) == nr
+  f0 <- rep_len(NA, nr)
+  ok <- length(unique(dat[, 1L])) == nr
   
   if (ok) {
-    width <- max(sqrt(dat[, 2])) / 0.8
-    tbl <- rep(1, nr)
-    cols <- colors()[1:nr]
+    width <- max(sqrt(dat[, 2L])) / 0.8
+    tbl <- rep_len(1L, nr)
+    cols <- colors()[-1L][seq.int(nr)]
   } else {
-    width <- max(sqrt(dat[, 3])) / 0.8
-    tbl <- table(dat[, 1])[order(unique(dat[, 1]))]
-    cols <- c('cyan2','red','orange','green','dodgerblue2')
+    ## browsers
+    width <- max(sqrt(dat[, 3L])) / 0.8
+    tbl <- table(dat[, 1L])[order(unique(dat[, 1L]))]
+    cols <- c('cyan2', 'red', 'orange', 'green', 'dodgerblue2')
     cols <- unlist(Map(rep, cols, tbl))
   }
   
   plot.new()
-  par(omi = c(0.5,0.5,0.75,0.5), mai = c(0.1,0.1,0.1,0.1), las = 1)
+  par(omi = c(0.5,0.5,0.75,0.5), mai = c(0.1,0.1,0.1,0.1), las = 1L)
+  
   for (ii in 1:nr) {
     par(new = TRUE)
     rgb <- col2rgb(cols[ii])
-    f0[ii] <- rgb(rgb[1], rgb[2], rgb[3], alpha = 190 / sequence(tbl)[ii], 
-                  maxColorValue = 255)
-    lab <- sprintf('%s: %s', dat[, 2], dat[, 3])
-    if (dat[, 3][ii] == max(dat[, 3]))
+    f0[ii] <- rgb(rgb[1L], rgb[2L], rgb[3L], alpha = 190 / sequence(tbl)[ii], 
+                  maxColorValue = 255L)
+    lab <- sprintf('%s: %s', dat[, 2L], dat[, 3L])
+    if (dat[, 3L][ii] == max(dat[, 3L]))
       lab0 <- lab
     else lab0 <- NA
     
     if (ok)
-      pie(dat[, 5], border = NA, radius = sqrt(dat[, 2])[ii] / width, 
+      pie(dat[, 5L], border = NA, radius = sqrt(dat[, 2L])[ii] / width, 
           col = f0, labels = lab0, cex = 1.8)
     else 
-      pie(dat[, 3], border = NA, radius = 5 / width, 
+      pie(dat[, 3L], border = NA, radius = 5 / width, 
           col = f0, labels = lab0, cex = 1.8)
     
     par(new = TRUE)
     rgb <- col2rgb(cols[ii])
-    f0[ii] <- rgb(rgb[1], rgb[2], rgb[3], maxColorValue = 255)
+    f0[ii] <- rgb(rgb[1L], rgb[2L], rgb[3L], maxColorValue = 255L)
     
     if (ok)
-      pie(dat[, 5], border = NA, radius = sqrt(dat[, 3])[ii] / width, 
+      pie(dat[, 5L], border = NA, radius = sqrt(dat[, 3L])[ii] / width, 
           col = f0, labels = NA)
     else
-      pie(dat[, 3], border = NA, radius = 4 / width, col = f0, labels = NA)
+      pie(dat[, 3L], border = NA, radius = 4 / width, col = f0, labels = NA)
     f0 <- rep(NA, nr)
   }
   
-  ## group labels, guess and check?
+  ## group labels - guess and check?
   if (!ok)
     text(x = c(-.05, -.05, 0.15, .25, .3), y = c(.08, -.12, -.15, -.08, -.02),
-         labels = unique(dat[, 1]), col = 'white', cex = 1.2)
-  mtext(main, side = 3, line = -1, adj = 0, cex = 3.5, outer = TRUE, font = 2)
-  mtext(sub, side = 3, line = -3.5, adj = 0, cex = 1.75, outer = TRUE, font = 3)
-  mtext(note, side = 1, line = 0, adj = 1, cex = 1.2, outer = TRUE, font = 3)
-  dev.off()
+         labels = unique(dat[, 1L]), col = 'white', cex = 1.2)
+  mtext(main, 3L, line = -1, adj = 0, cex = 3.5, outer = TRUE, font = 2L)
+  mtext(sub, 3L, line = -3.5, adj = 0, cex = 1.75, outer = TRUE, font = 3L)
+  mtext(note, 1L, line = 0, adj = 1, cex = 1.2, outer = TRUE, font = 3L)
+  
+  invisible(NULL)
 }
 
 #' @param x numeric vector representing the size for each slice
@@ -450,7 +449,9 @@ prettypie2 <- function(x, group = 1, labels = NA, col = NULL, radius = c(.7, 1))
 #' 
 #' @examples
 #' op <- par(mar = c(0,0,0,0))
-#' barmap(c(1,1,1)/3, region = 'Germany', cols = c('red','black','gold'))
+#' barmap(1, region = 'Germany')
+#' 
+#' barmap(c(1,1,1) / 3, region = 'Germany', cols = c('red', 'black', 'gold'))
 #'  
 #' voteGermany2013 <- read.table(header = TRUE, text = "Party Result
 #'                               1 CDU/CSU   49.4
@@ -465,51 +466,48 @@ prettypie2 <- function(x, group = 1, labels = NA, col = NULL, radius = c(.7, 1))
 #' 
 #' @export
 
-barmap <- function(x, db = 'worldHires', region, labels, cols) {
+barmap <- function(x, db = 'worldHires', region, labels = NULL, cols = NULL) {
   op <- par(no.readonly = TRUE)
-  on.exit(par(op))
-  
-  suppressPackageStartupMessages({
-    require('maps', character.only = TRUE, quietly = TRUE)
-    require('mapdata', character.only = TRUE, quietly = TRUE)
+  on.exit({
+    par(op)
+    palette('default')
   })
   
   ## fill = TRUE !important
-  dat <- map(db, region, fill = TRUE)
-  
-  ## set up plotting window
-  p <- par('usr')
-  plot.new()
-  plot.window(p[1:2], p[3:4])
+  suppressPackageStartupMessages({
+    require('mapdata', character.only = TRUE, quietly = TRUE)
+  })
+  dat <- maps::map(db, region, fill = TRUE)
   
   ## calculate some useful things
+  p <- par('usr')
   xx <- range(dat$x, na.rm = TRUE)
   yy <- range(dat$y, na.rm = TRUE)
   zz <- diff(yy) * x
   
-  if (missing(cols))
-    cols <- palette(rainbow(length(x)))
+  if (is.null(cols))
+    cols <- palette(rainbow(pmax(2L, length(x))))
   
   ## draw and color rectangles
-  dyy <- rep(0, length(zz))
+  dyy <- rep_len(0L, length(zz))
   dy <- 0
   for (ii in seq_along(zz)) {
-    rect(p[1], yy[1] + dy, p[2], yy[1] + (dy <- sum(zz[1:ii])),
+    rect(p[1L], yy[1L] + dy, p[2L], yy[1L] + (dy <- sum(zz[1:ii])),
          col = cols[ii], border = NA)
     ## label y-coordinates
-    dyy[ii] <- yy[1] + c(0, cumsum(zz))[ii] + zz[ii] / 2
+    dyy[ii] <- yy[1L] + c(0, cumsum(zz))[ii] + zz[ii] / 2
   }
   
-  map(db, region, col = 'black', add = TRUE)
+  maps::map(db, region, col = 'black', add = TRUE)
   
   ## trim around borders
-  xb <- xx + c(-1,1)
-  yb <- yy + c(-1,1)
-  polypath(c(dat$x, NA, c(xb, rev(xb))), c(dat$y, NA, rep(yb, each = 2)),
+  xb <- xx + c(-1, 1)
+  yb <- yy + c(-1, 1)
+  polypath(c(dat$x, NA, c(xb, rev(xb))), c(dat$y, NA, rep(yb, each = 2L)),
            col = 'white', rule = 'evenodd')
+  text(max(xx), dyy, labels, pos = 4L, xpd = NA)
   
-  if (!missing(labels))
-    text(max(xx), dyy, labels = labels, pos = 4, xpd = NA)
+  invisible(NULL)
 }
 
 #' Wide bar plots
@@ -570,11 +568,11 @@ widebars <- function(x, y, main = NULL, sub = NULL, foot = NULL, note = NULL,
     mtext(xx[ii], side = 1L, line = 2, cex = 1.25, col = txtcol)
   }
   
-  mtext(main, line = 2.5, adj = 0, cex = 2, col = txtcol, outer = TRUE)
-  mtext(sub, line = -0.5, adj = 0, cex = 1.5, col = txtcol, outer = TRUE)
-  mtext(note, side = 1L, line = 1, adj = 1, cex = 1.25, font = 3L,
+  mtext(main, 3L, line = 2.5, adj = 0, cex = 2, col = txtcol, outer = TRUE)
+  mtext(sub, 3L, line = -0.5, adj = 0, cex = 1.5, col = txtcol, outer = TRUE)
+  mtext(note, 1L, line = 1, adj = 1, cex = 1.25, font = 3L,
         col = txtcol, outer = TRUE)
-  mtext(foot, side = 1L, line = 1, adj = 0, cex = 1.25, font = 3L,
+  mtext(foot, 1L, line = 1, adj = 0, cex = 1.25, font = 3L,
         col = txtcol, outer = TRUE)
   
   invisible(NULL)
@@ -592,7 +590,7 @@ widebars <- function(x, y, main = NULL, sub = NULL, foot = NULL, note = NULL,
 #' @examples
 #' mat <- replicate(5, sample(1:10))
 #' dimnames(mat) <- list(rownames(mtcars)[1:nrow(mat)], paste0('time', 1:ncol(mat)))
-#' bump(mat, mar = c(2,4,2,9), adj = .1, bg = 'cornsilk')
+#' bump(mat, mar = c(2,4,2,9), adj = .1, bg = 'snow')
 #' 
 #' @export
 
@@ -602,12 +600,13 @@ bump <- function(mat, adj = .5, ...) {
   
   par(...)
   plot.new()
-  plot.window(c(0, ncol(mat)), c(0, nrow(mat)),
-              xaxs = 'i', yaxs = 'i')
+  plot.window(c(0, ncol(mat)), c(0, nrow(mat)), xaxs = 'i', yaxs = 'i')
+  
   segments(seq.int(ncol(mat)), y0 = 1 - adj, y1 = nrow(mat),
            col = 'grey70', lty = 'dashed')
   
   lapply(seq.int(nrow(mat)), function(x) lines(mat[x, ], col = x))
+  
   rn <- rownames(mat)
   start <- order(mat[, 1L])
   end <- order(mat[, ncol(mat)])

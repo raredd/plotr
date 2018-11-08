@@ -1,7 +1,7 @@
 Package: plotr
 Type: Package
 Title: More plotting functions and examples
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: person("Robert", "Redd", email = "raredd01@gmail.com",
   role = c("aut", "cre"))
 Author: Robert Redd
@@ -9,14 +9,21 @@ Maintainer: Robert Redd <raredd01@gmail.com>
 Description: Various collected plots, plotting tools, and other examples.
 Imports:
     ggplot2,
+    graphics,
+    grDevices,
     grid,
-    gridExtra
+    gridExtra,
+    stats,
+    utils
 Suggests:
     Hmisc,
     igraph,
     knitr,
+    mapdata,
+    maps,
     plotrix,
     rawr,
+    rgl,
     rsvd,
     Rtsne,
     testthat,

@@ -12,7 +12,6 @@
 \alias{\%ni\%}
 \alias{\%inside\%}
 \alias{\%||\%}
-\alias{tcol}
 \title{plotr utils}
 \usage{
 x \%ni\% table
@@ -20,8 +19,6 @@ x \%ni\% table
 x \%inside\% interval
 
 a \%||\% b
-
-tcol(color, trans = 255, alpha)
 }
 \arguments{
 \item{x}{vector or \code{NULL}; the values to be matched}

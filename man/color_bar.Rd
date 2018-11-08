@@ -49,7 +49,7 @@ text(x = 0, y = seq(0, par('usr')[4], length = 6), pos = 4, xpd = TRUE,
 
 ## compare
 plot(mtcars$mpg, pch = 19, cex = 2, 
-     col = plotr:::col_scaler(mtcars$mpg, c('yellow','red')))
+     col = rawr:::col_scaler(mtcars$mpg, c('yellow','red')))
 plot(mtcars$mpg, pch = 19, cex = 2,
      col = color_bar(c('yellow','red'), mtcars$mpg, labels = mtcars$mpg))
 
@@ -62,7 +62,7 @@ plot(mtcars$mpg, pch = 19, cex = 2,
 with(mtcars, {
   plot(mpg, pch = 19, cex = 2,
        main = 'color by weight (red = heavier)',
-       col = plotr:::col_scaler(wt, c('yellow','red')))
+       col = rawr:::col_scaler(wt, c('yellow','red')))
 })
 
 with(mtcars, {
