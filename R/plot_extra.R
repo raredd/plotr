@@ -1,6 +1,7 @@
 ### plotting extras
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
 # click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot,
+# coords
 ###
 
 
@@ -1021,4 +1022,79 @@ subplot <- function(expr, x, y = NULL, log = NULL, size = c(1,1),
   expr
   
   invisible(par(no.readonly = TRUE))
+}
+
+#' Plotting coordinates
+#' 
+#' Return the user plot, figure, inner, and device \emph{\{x,y\}} coordinates
+#' for a vector of normalized (i.e., in \code{[0,1]}) coordinates. Or, if
+#' \code{line} and \code{side} are given, the x (or y) user coordinates.
+#' 
+#' @param x,y normalized x- and y-coordinates in \code{[0,1]}, recycled as
+#' needed
+#' @param to character string giving the coordinate system to convert to
+#' @param line,side the margin line starting at 0 counting outwards and side
+#' of the plot (1=below, 2=left, 3=above, 4=right); see \code{\link{mtext}}
+#' 
+#' @seealso
+#' \code{\link[=grconvertX]{convertXY}}; \code{\link{mtext}}
+#' 
+#' @examples
+#' op <- par(oma = 1:4, mar = 1:4, xpd = NA, pch = 16, xpd = NA)
+#' plot.new()
+#' box('plot', col = 1)
+#' box('figure', col = 2)
+#' box('outer', col = 3)
+#' # box('inner', col = 4)
+#' 
+#' xx <- c(1,2,1,2)
+#' yy <- c(1,1,2,2)
+#' 
+#' co <- coords()
+#' 
+#' points(co$plot$x[xx], co$plot$y[yy], cex = 5, col = 1)
+#' points(co$figure$x[xx], co$figure$y[yy], cex = 5, col = 2)
+#' points(co$device$x[xx], co$device$y[yy], cex = 5, col = 3)
+#' 
+#' 
+#' co <- coords(seq(0, 1, 0.1), 1)
+#' 
+#' points(co$plot$x, co$plot$y, cex = 2, col = 4)
+#' points(co$figure$x, co$figure$y, cex = 2, col = 5)
+#' points(co$device$x, co$device$y, cex = 2, col = 6)
+#' 
+#' 
+#' ## use line/side for x or y coordinates depending on side
+#' mtext('text', line = 1, side = 3, at = 0.5)
+#' text(0.5, coords(line = 1, side = 3), 'text', col = 2)
+#' 
+#' mtext('text', line = -1:4, side = 4, at = 0.5)
+#' text(coords(line = -1:4, side = 4), 0.5, 'text', col = 2, srt = 90)
+#' 
+#' par(op)
+#' 
+#' @export
+
+coords <- function(x = 0:1, y = x, to = 'user', line, side) {
+  xy <- cbind(x, y)
+  x  <- xy[, 1L]
+  y  <- xy[, 2L]
+  
+  if (!missing(line) | !missing(side)) {
+    lh <- par('cin')[2L] * par('cex') * par('lheight')
+    
+    sapply(line, function(li) {
+      li <- li + 0.5
+      x  <- diff(grconvertX(x, 'in', 'user')) * lh * li
+      y  <- diff(grconvertY(y, 'in', 'user')) * lh * li
+      
+      (par('usr')[c(3, 1, 4, 2)] + c(-y, -x, y, x))[match(side, 1:4)]
+    })
+  } else
+    list(
+      plot   = list(x = grconvertX(x, 'npc', to), y = grconvertY(y, 'npc', to)),
+      figure = list(x = grconvertX(x, 'nfc', to), y = grconvertY(y, 'nfc', to)),
+      inner  = list(x = grconvertX(x, 'nic', to), y = grconvertY(y, 'nic', to)),
+      device = list(x = grconvertX(x, 'ndc', to), y = grconvertY(y, 'ndc', to))
+    )
 }
