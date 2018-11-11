@@ -1,5 +1,5 @@
 ### utils
-# assert_class, islist, rm_alpha, 
+# assert_class, islist, rm_alpha
 # 
 # plotr_utils:
 # %ni%, %inside%, %||%
@@ -12,16 +12,22 @@
 assert_class <- function(x, class, which = FALSE,
                          message = NULL, warn = FALSE) {
   name <- substitute(x)
-  FUN <- if (warn)
-    function(...) warning(..., call. = FALSE)
-  else function(...) stop(..., call. = FALSE)
+  FUN  <- function(...) {
+    if (warn)
+      warning(..., call. = FALSE)
+    else stop(..., call. = FALSE)
+  }
   
   if (is.null(message))
-    message <- paste(shQuote(name), 'is not of class',
-                     toString(shQuote(class)))
+    message <- paste(
+      shQuote(name),
+      'is not of class',
+      toString(shQuote(class))
+    )
   
   if (!all(inherits(x, class, which)))
     FUN(message)
+  
   invisible(TRUE)
 }
 
@@ -47,48 +53,24 @@ rm_alpha <- function(x) {
 #' or \code{NULL}, but if \code{NULL} is the result of \code{f}, it is
 #' desirable to return some other default value without errors.
 #' 
-#' \code{tcol} adds transparency to colors (vectorized).
-#' 
 #' @param x vector or \code{NULL}; the values to be matched
 #' @param table vector or \code{NULL}; the values to be matched against
 #' @param interval numeric vector of length two representing the interval
 #' @param a,b raw, logical, "number-like" vectors or objects
-#' @param color vector of color names (or hexadecimal)
-#' @param trans transparency defined as an integer in the range 
-#' \code{[0, 255]} where \code{0} is fully transparent and \code{255} is fully
-#' visible
-#' @param alpha the alpha transparency in \code{[0,1]}; \code{trans} is
-#' ignored if \code{alpha} is given
 #' 
-#' @aliases oror %||% notin %ni% inside %inside% tcol
+#' @aliases oror %||% notin %ni% inside %inside%
 #' @seealso \code{\link{\%in\%}}, \code{\link{||}}
 #' @name plotr_utils
 #' 
 #' @examples
-#' \dontrun{
 #' 1:5 %ni% 3:5
 #' 
 #' c(0,4) %inside% c(0, 4)
-#' -5:5 %inside% c(0,5)
-#' -5:5 %inside% c(5,0)
+#' -5:5 %inside% c(0, 5)
+#' -5:5 %inside% c(5, 0)
 #' 
-#' f <- function(x0 = TRUE) NULL || x0
-#' f() # error
-#' f <- function(x0 = TRUE) NULL %||% x0
-#' f() # TRUE
-#' 
-#' cols <- c('red','green','blue')
-#' 
-#' # a normal plot
-#' plot(rnorm(100), col = tcol(cols), pch = 16, cex = 4)
-#' 
-#' # more transparent
-#' plot(rnorm(100), col = tcol(cols, 100), pch = 16, cex = 4)
-#' 
-#' # hexadecimal colors also work
-#' cols <- c('#FF0000','#00FF00','#0000FF')
-#' plot(rnorm(100), col = tcol(cols, c(50, 100, 255)), pch= 16, cex = 4)
-#' }
+#' # NULL || TRUE ## error
+#' NULL %||% TRUE ## TRUE
 NULL
 
 #' @rdname plotr_utils
