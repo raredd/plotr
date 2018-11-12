@@ -1,7 +1,7 @@
 ### plotting extras
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
 # click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot,
-# coords
+# coords, fig
 ###
 
 
@@ -229,7 +229,8 @@ zoomin <- function(x, y, ...) {
 #' 
 #' @export
 
-ptlocator <- function(n = 512L, x, y, col = tcol('red', 80), pch = 16, ...) {
+ptlocator <- function(n = 512L, x, y, col = adjustcolor('red', alpha.f = 0.5),
+                      pch = 16L, ...) {
   xsc <- scale(x)
   ysc <- scale(y)
   pos <- NULL
@@ -546,7 +547,7 @@ grcols <- function(n, s = .5, v = 1, alpha = 1) {
 #'
 #' @seealso
 #' \code{\link{click_shape}}; \code{\link{plotmath}} for help with plotting
-#' mathematical expressions; \code{link{tcol}}
+#' mathematical expressions
 #' 
 #' @return
 #' (Invisibly) a vector of length two with the x- and y-coordinates of the text.
@@ -1097,4 +1098,98 @@ coords <- function(x = 0:1, y = x, to = 'user', line, side) {
       inner  = list(x = grconvertX(x, 'nic', to), y = grconvertY(y, 'nic', to)),
       device = list(x = grconvertX(x, 'ndc', to), y = grconvertY(y, 'ndc', to))
     )
+}
+
+#' Determine figure location
+#' 
+#' Convenience function to determine the location of a figure within a matrix.
+#' 
+#' @param idx the figure index
+#' @param dim the dimensions of the figure matrix, usually set with
+#' \code{par(mfrow = )}
+#' @param byrow logical; use \code{FALSE} if \code{par(mfcol = )} was used
+#' since this sets figures to be column-major; otherwise, figures are assumed
+#' to be drawn row-major
+#' 
+#' @examples
+#' op <- par(no.readonly = TRUE)
+#' ## eg, a 1x1 figure
+#' fig(1, c(1, 1))
+#' 
+#' par(mfrow = c(2, 4))
+#' sapply(1:8, function(x)
+#'   plot(1, main = paste(x, '-', names(fig(x, par('mfrow'))))))
+#' 
+#' par(mfcol = c(2, 4))
+#' sapply(1:8, function(x)
+#'   plot(1, main = paste(x, '-', names(fig(x, par('mfcol'), FALSE)))))
+#' 
+#' ## par(mfrow = c(4, 4))
+#' i <- fig(1:16, c(4, 4))
+#' matrix(names(i), 4, 4, byrow = TRUE)
+#' 
+#' ## for mfcol, set byrow = FALSE
+#' ## par(mfcol = c(2, 8))
+#' i <- fig(1:16, c(2, 8), FALSE)
+#' matrix(names(i), 2, 8, byrow = FALSE)
+#' 
+#' ## par(mfrow = c(1, 4))
+#' i <- fig(1:4, c(1, 4))
+#' matrix(names(i), 1, 4, byrow = TRUE)
+#' 
+#' ## par(mfrow = c(4, 1))
+#' i <- fig(1:4, c(4, 1))
+#' matrix(names(i), 4, 1, byrow = TRUE)
+#' 
+#' 
+#' ## example usage
+#' pars <- list(
+#'   ltop    = list(pch = 4, tcl = 0, bty = 'l'),
+#'   lcenter = list(pch = 1, las = 1, tcl = 0, bty = 'n'),
+#'   lbottom = list(pch = 16, las = 0, tcl = 0.5, bty = '7')
+#' )
+#' 
+#' par(mfrow = c(5, 1), oma = c(5, 4, 4, 2), mar = c(0, 0, 0, 0))
+#' ## apply a different set of pars depending on the figure location
+#' sapply(1:5, function(ii) {
+#'   f <- fig(ii, par('mfrow'))
+#'   par(pars[[names(f)]])
+#'   plot(1)
+#' })
+#' 
+#' par(op)
+#' 
+#' @export
+
+fig <- function(idx, dim, byrow = TRUE) {
+  fig <- function(idx, mat) {
+    sapply(idx, function(ii) {
+      ii <- c(which(mat == ii, arr.ind = TRUE))
+      res <- c(
+        findInterval(ii[1L], c(2L, nrow(mat))),
+        findInterval(ii[2L], c(2L, ncol(mat)))
+      )
+      paste0(res, collapse = '')
+    })
+  }
+  
+  loc <- c(
+    'full', 'topleft', 'top', 'topright', 'left', 'center', 'right',
+    'bottomleft', 'bottom', 'bottomright',
+    'ltop', 'lcenter', 'lbottom', 'wleft', 'wcenter', 'wright'
+  )
+  mat <- if (is.matrix(dim))
+    dim
+  else matrix(seq.int(prod(dim)), dim[1L], dim[2L], byrow = byrow)
+  
+  res <- if (identical(dim(mat), c(1L, 1L)))
+    rep_len(0L, length(idx))
+  else if (ncol(mat) == 1L)
+    findInterval(idx, c(2, nrow(mat))) + 10L
+  else if (nrow(mat) == 1L)
+    findInterval(idx, c(2, ncol(mat))) + 13L
+  else sapply(idx, function(ii)
+    which(fig(1:9, matrix(1:9, 3L, 3L, byrow = TRUE)) %in% fig(ii, mat)))
+  
+  setNames(res, loc[res + 1L])
 }
