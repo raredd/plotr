@@ -4,7 +4,8 @@
 \alias{ptlocator}
 \title{Point locator}
 \usage{
-ptlocator(n = 512L, x, y, col = tcol("red", 80), pch = 16, ...)
+ptlocator(n = 512L, x, y, col = adjustcolor("red", alpha.f = 0.5),
+  pch = 16L, ...)
 }
 \arguments{
 \item{n}{the maximum number of points to locate}

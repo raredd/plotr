@@ -30,5 +30,5 @@ click_text(expression(sum(x ^ 2) == 5 ^ hat(x)), srt = 45)
 }
 \seealso{
 \code{\link{click_shape}}; \code{\link{plotmath}} for help with plotting
-mathematical expressions; \code{link{tcol}}
+mathematical expressions
 }

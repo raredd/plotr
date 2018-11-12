@@ -6,10 +6,11 @@
 \usage{
 prettybars2(x, lab.y = colnames(x), n.y = ncol(x),
   lab.group = rownames(x), n.group = nrow(x),
-  col.group = tcol(seq.int(n.group), alpha = 0.5), col.line = "skyblue3",
-  extra.margin = 0, col.bg = "snow", cex.y = 0.7, notext = FALSE,
-  title = paste0("prettybar of ", m$x), sub = paste0("     n = ", sum(x)),
-  note = NULL, subnote = "subnote: here is a subnote", legend = 1L, ...)
+  col.group = adjustcolor(seq.int(n.group), alpha.f = 0.5),
+  col.line = "skyblue3", extra.margin = 0, col.bg = "snow", cex.y = 0.7,
+  notext = FALSE, title = paste0("prettybar of ", m$x),
+  sub = paste0("     n = ", sum(x)), note = NULL,
+  subnote = "subnote: here is a subnote", legend = 1L, ...)
 }
 \arguments{
 \item{x}{a table of data, typically from \code{\link{table}} or 
@@ -66,8 +67,7 @@ dat <- within(dat, {
 tdat <- table(dat)
 cols <- c(
   grey(.9),
-  rawr::tcol(c('lightblue', 'lightblue', 'magenta1', 'magenta1'),
-             alpha = c(.75, .25, .25, .75))
+  adjustcolor(c('cadetblue', 'lightblue', 'lightpink', 'red'), alpha.f = 0.5)
 )
                
 ## compare:

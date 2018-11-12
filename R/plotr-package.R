@@ -6,5 +6,5 @@
 #' @aliases plotr
 #' @docType package
 #' @import ggplot2 graphics grDevices grid gridExtra stats utils
-#' @importFrom rawr col_scaler coords rescaler tcol
+#' @importFrom rawr col_scaler rescaler tcol
 NULL

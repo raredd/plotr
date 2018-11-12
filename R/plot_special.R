@@ -95,9 +95,9 @@ prettybars <- function(x, y = names(x), emph = NULL,
                 xlim = range(at), names.arg = FALSE)
   
   rect(at[1L], 0, at[length(at)], sum(range(p0)),
-       col = tcol(col.bg, 50), border = NA)
+       col = adjustcolor(col.bg, alpha.f = 0.2), border = NA)
   rect(at, 0, at + rep(diff(at)[1L], length(at)), sum(range(p0)),
-       col = c(tcol(col.bg, 80), NA), border = NA)
+       col = c(adjustcolor(col.bg, alpha.f = 0.3), NA), border = NA)
   
   ## data bars
   p1 <- barplot(x, names.arg = FALSE, horiz = TRUE, border = NA, axes = FALSE,
@@ -107,7 +107,7 @@ prettybars <- function(x, y = names(x), emph = NULL,
   ## emphasized bars
   x2 <- x * (y %in% emph)
   bp <- barplot(x2, names.arg = FALSE, horiz = TRUE, border = NA,
-                xlim = range(at), col = tcol(col.emph, 200),
+                xlim = range(at), col = adjustcolor(col.emph, alpha.f = 0.8),
                 cex.names = 0.85, axes = FALSE, add = TRUE, xpd = FALSE)
   
   ## FUN line
@@ -194,8 +194,7 @@ prettybars <- function(x, y = names(x), emph = NULL,
 #' tdat <- table(dat)
 #' cols <- c(
 #'   grey(.9),
-#'   rawr::tcol(c('lightblue', 'lightblue', 'magenta1', 'magenta1'),
-#'              alpha = c(.75, .25, .25, .75))
+#'   adjustcolor(c('cadetblue', 'lightblue', 'lightpink', 'red'), alpha.f = 0.5)
 #' )
 #'                
 #' ## compare:
@@ -223,7 +222,7 @@ prettybars2 <- function(x, lab.y = colnames(x), n.y = ncol(x),
                         lab.group = rownames(x), n.group = nrow(x),
                         
                         ## aesthetics
-                        col.group = tcol(seq.int(n.group), alpha = 0.5),
+                        col.group = adjustcolor(seq.int(n.group), alpha.f = 0.5),
                         col.line = 'skyblue3', extra.margin = 0,
                         col.bg = 'snow', cex.y = 0.7,
                         
