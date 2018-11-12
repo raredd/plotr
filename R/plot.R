@@ -1,5 +1,8 @@
 ### some useful plots
-# scattergram, tsne, pca
+# scattergram, dimr, plot.dimr
+# 
+# unexported:
+# int
 ###
 
 
@@ -115,248 +118,301 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
   invisible(NULL)
 }
 
-#' t-SNE plot
+#' Dimension reduction
 #' 
-#' Wrapper function to plot an \code{\link[Rtsne]{Rtsne}} object with optional
-#' \code{\link[stats]{kmeans}} groupings. Alternatively, plot a 3D scatterplot
-#' of the first three t-SNE dimensions.
+#' Wrapper function to perform and plot methods of dimensionality reduction
+#' including \code{\link[Rtsne]{Rtsne}}, \code{\link[rsvd]{rpca}}, and
+#' \code{\link[stats]{prcomp}} with optional \code{\link[stats]{kmeans}}
+#' clusters.
 #' 
 #' @param data an \code{r x c} matrix-like object with \code{r} features and
 #' \code{c} samples
-#' @param group a length \code{c} vector identifying the group of each sample
+#' @param type the type of algorithm to run
+#' @param k an integer representing the number of desired clusters, passed to
+#' \code{\link[stats]{kmeans}}; note this is only used for convenience and
+#' does not affect the algorithm determied by \code{type}
+#' 
+#' note, if \code{k} is passed in \code{plot.dimr}, a new k-means clustering
+#' is performed; this is useful for on-the-fly clustering
+#' @param ... for \code{dimr}, additional arguments passed to the algorithm
+#' determined by \code{type}; for \code{plot.dimr}, additional arguments
+#' passed to plotting functions or further to \code{\link{par}}
+#' @param group a length \code{c} vector identifying the group of each sample;
+#' use \code{FALSE} for none or \code{TRUE} to use k-means clusters
+#' @param group2 a list of data to plot, usually samples in \code{data}, each
+#' to be shown as a scatter plot
 #' @param col a vector of colors for each group
-#' @param ... additional arguments passed to \code{\link{plot}} or further to
-#' \code{\link{par}}
-#' @param perplexity perplexity parameter passed to \code{\link[Rtsne]{Rtsne}}
-#' @param centers an integer value for the number of desired clusters, passed
-#' to \code{\link[stats]{kmeans}}
-#' @param plot3d logical; if \code{TRUE}, the first three dimensions are drawn
-#' as a 3D scatterplot; see \code{\link[rgl]{plot3d}}
 #' @param labels argument controlling labels for points; if \code{FALSE}, no
 #' labels are drawn; if a numeric value in \code{(0,1)}, points outside
 #' quantile are labelled; otherwise, a vector of labels for each point
+#' @param vegan logical; if \code{TRUE}, ordination diagrams are drawn for each
+#' k-means cluster; see \code{\link[vegan]{ordihull}}
 #' @param legend logical; if \code{TRUE}, a legend will be drawn
 #' @param args.legend a \emph{named} list of \code{\link{legend}} arguments to
 #' override defaults
+#' @param plot3d logical; if \code{TRUE}, the first three dimensions are drawn
+#' as a 3D scatterplot; see \code{\link[rgl]{plot3d}}
+#' 
+#' @return
+#' \code{dimr} returns a list of class "\code{dimr}" with the following
+#' components:
+#' 
+#' \item{\code{object}}{the object return by the algorithm determined via
+#' \code{type}}
+#' \item{\code{x}}{a matrix with the first three dimensions}
+#' \item{\code{kmeans}}{a k-means clustering performed on the first two
+#' dimensions of \code{object}}
 #' 
 #' @seealso
-#' \code{\link{pca}}
+#' \code{\link[Rtsne]{Rtsne}}; \code{\link[rsvd]{rpca}};
+#' \code{\link[stats]{pca}}; \code{\link[stats]{kmeans}}
 #' 
 #' @examples
 #' ## feature x sample matrix
 #' dat <- t(unique(iris[, 1:4]))
 #' grp <- unique(iris)$Species
 #' 
-#' tsne(dat)
-#' tsne(dat, grp)
-#' tsne(dat, grp, centers = 3)$km$perplexity30$cluster
-#' tsne(dat, grp, centers = 3, perplexity = c(5, 10, 20, 30), pch = 16)
-#' tsne(dat, grp, centers = 3, perplexity = 20, col = tcol(3:5, alpha = 0.5),
-#'      pch = 16, cex = 1.5, las = 1L, bty = 'l', labels = 0.001,
-#'      args.legend = list(x = 'topleft', title = 'Species'))
+#' tsne <- dimr(dat)
+#' pca  <- dimr(dat, type = 'pca')
+#' rpca <- dimr(dat, type = 'rpca')
+#' pca2 <- dimr(dat, type = 'pca', scale. = TRUE) ## same as rpca
+#' 
+#' plot(tsne)        ## k-means cluster groups
+#' plot(tsne, grp)   ## sample groups
+#' plot(tsne, k = 4) ## new k-means
+#' 
+#' plot(pca, vegan = TRUE)
+#' plot(pca, k = 5, vegan = TRUE)$kmeans$cluster
+#' 
+#' 
+#' ## use group2 to show scatter plots of numeric data
+#' plot(pca, group2 = as.list(data.frame(t(dat))))
+#' plot(pca, pch = 16, cex = 3, col = adjustcolor(palette()[1:3], alpha.f = 0.5),
+#'      group2 = as.list(data.frame(t(rbind(dat, dat)))))
+#' 
+#' \dontrun{
+#' plot(tsne, k = 5, plot3d = TRUE)
+#' }
 #' 
 #' @export
 
-tsne <- function(data, group = rep(1L, ncol(data)), col = NULL, ...,
-                 perplexity = 30, centers = NULL, plot3d = FALSE, labels = FALSE,
-                 legend = length(perplexity) == 1L, args.legend = list()) {
-  op <- par(no.readonly = TRUE)
-  on.exit({
-    par(op)
-    palette('default')
-  })
+dimr <- function(data, type = c('tsne', 'pca', 'rpca'), k = 3L, ...) {
+  type <- match.arg(type)
+  data <- t(data)
   
-  if (is.numeric(col))
-    col <- palette()[as.integer(col)]
-  if (is.character(col))
-    palette(col)
-  
-  group <- as.factor(group)
-  colii <- as.integer(group)
-  
-  ## run tsne for each perplexity, create labels
-  set.seed(1)
-  res <- lapply(seq_along(perplexity), function(ii) {
-    ts <- Rtsne::Rtsne(
-      stats::dist(t(data)), dims = 3L, is_distance = TRUE,
-      perplexity = perplexity[ii]
-    )
-    
-    x <- ts$Y[, 1L]
-    y <- ts$Y[, 2L]
-    
-    if (isTRUE(labels))
-      labels <- FALSE
-    lbl <- if (is.numeric(labels) & length(labels) == 1L) {
-      q <- c(labels / 2, 1 - labels / 2)
-      ifelse(x %inside% quantile(x, q) & y %inside% quantile(y, q),
-             '', colnames(data))
-    } else if (identical(labels, FALSE))
-      NULL else rep_len(labels, length(x))
-    
-    structure(ts, labels = lbl)
-  })
-  
-  if (plot3d) {
-    which <- 1L
-    co <- res[[which]]$Y[, 1:3]
-    gr <- if (is.null(centers))
-      colii else kmeans(co, centers, 10000L)$cluster
-    
-    rgl::plot3d(co, col = gr, type = 's', size = 1, scale = 0.2)
-    return(invisible(NULL))
-  }
-  
-  ## plot each tsne
-  par(mfrow = rev(n2mfrow(length(perplexity))))
-  kml <- vector('list', length(res))
-  
-  for (ii in seq_along(res)) {
-    co <- res[[ii]]
-    x <- co$Y[, 1L]
-    y <- co$Y[, 2L]
-    plot(x, y, col = colii, xlab = 't-SNE 1', ylab = 't-SNE 2', ...)
-    text(x, y, labels = attr(co, 'labels'), pos = 3L, xpd = NA, cex = 0.7)
-    
-    if (!is.null(centers)) {
-      xy <- cbind(x, y)
-      kml[[ii]] <- km <- kmeans(xy, centers, 10000L)
-      vegan::ordispider(
-        xy, factor(km$cluster), label = TRUE, col = tcol('grey', alpha = 0.5))
-      vegan::ordihull(xy, factor(km$cluster), lty = 'dashed', col = 'darkgrey')
+  set.seed(1L)
+  res <- switch(
+    type,
+    tsne = {
+      object <- Rtsne::Rtsne(
+        stats::dist(data), dims = 3L, is_distance = TRUE, ...
+      )
+      list(object = object, x = object$Y[, 1:3], type = 't-SNE')
+    },
+    pca = {
+      object <- stats::prcomp(data, ...)
+      list(obect = object, x = object$x[, 1:3], type = 'PC')
+    },
+    rpca = {
+      object <- rsvd::rpca(data, ...)
+      list(object = object, x = object$x[, 1:3], type = 'rPC')
     }
-    
-    p <- par('usr')
-    largs <- list(
-      x = p[1L], y = p[4L] + diff(p[3:4]) * 0.1, bty = 'n', horiz = TRUE,
-      col = unique(colii), pch = 16, xpd = NA, legend = levels(group)
-    )
-    if (!islist(args.legend))
-      args.legend <- list()
-    if (legend)
-      do.call('legend', modifyList(largs, args.legend))
-    
-    mtext(sprintf('perplexity = %s', perplexity[ii]), adj = 1)
-  }
+  )
   
-  res <- setNames(res, paste0('perplexity', perplexity))
-  kml <- if (!is.null(centers))
-    setNames(kml, paste0('perplexity', perplexity)) else NULL
+  km <- stats::kmeans(res$x[, 1:2], k, 1e4L)
   
-  invisible(list(tsne = res, km = kml))
+  res <- structure(
+    c(res, list(kmeans = km)),
+    class = 'dimr'
+  )
+  
+  invisible(res)
 }
 
-#' PCA plot
-#' 
-#' Wrapper function to plot a \code{\link{prcomp}} or \code{\link[rsvd]{rpca}}
-#' object with optional \code{\link[stats]{kmeans}} groupings. Alternatively,
-#' plot a 3D scatterplot of the first three principal components.
-#' 
-#' @param data an \code{r x c} matrix-like object with \code{r} features and
-#' \code{c} samples
-#' @param group a length \code{c} vector identifying the group of each sample
-#' @param col a vector of colors for each group
-#' @param ... additional arguments passed to \code{\link{plot}} or further to
-#' \code{\link{par}}
-#' @param centers an integer value for the number of desired clusters, passed
-#' to \code{\link[stats]{kmeans}}
-#' @param plot3d logical; if \code{TRUE}, the first three dimensions are drawn
-#' as a 3D scatterplot; see \code{\link[rgl]{plot3d}}
-#' @param labels argument controlling labels for points; if \code{FALSE}, no
-#' labels are drawn; if a numeric value in \code{(0,1)}, points outside
-#' quantile are labelled; otherwise, a vector of labels for each point
-#' @param rpca logical; if \code{TRUE}, \code{\link[rsvd]{rpca}} is used to
-#' calculate the principal components
-#' @param legend logical; if \code{TRUE}, a legend will be drawn
-#' @param args.legend a \emph{named} list of \code{\link{legend}} arguments to
-#' override defaults
-#' 
-#' @seealso
-#' \code{\link{tsne}}
-#' 
-#' @examples
-#' ## feature x sample matrix
-#' dat <- t(unique(iris[, 1:4]))
-#' grp <- unique(iris)$Species
-#' 
-#' pca(dat)
-#' pca(dat, grp)
-#' pca(dat, grp, rpca = TRUE)
-#' pca(dat, grp, centers = 3, pch = 16)$km$cluster
-#' pca(dat, grp, centers = 3, col = tcol(3:5, alpha = 0.5),
-#'     pch = 16, cex = 1.5, las = 1L, bty = 'l', labels = 0.001,
-#'     args.legend = list(x = 'topleft', title = 'Species'))
-#' 
+#' @rdname dimr
 #' @export
-
-pca <- function(data, group = rep(1L, ncol(data)), col = NULL, ...,
-                centers = NULL, plot3d = FALSE, labels = FALSE, rpca = FALSE,
-                legend = TRUE, args.legend = list()) {
-  op <- par(no.readonly = TRUE)
+plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
+                      col = NULL, labels = FALSE, vegan = FALSE,
+                      legend = TRUE, args.legend = list(),
+                      plot3d = FALSE, ...) {
   on.exit({
-    par(op)
     palette('default')
   })
+  
+  object <- x
+  type <- object$type
+  
+  if (!is.null(k)) {
+    set.seed(1L)
+    object$kmeans <- stats::kmeans(object$x[, 1:2], k, 1e4L)
+  }
   
   if (is.numeric(col))
     col <- palette()[as.integer(col)]
   if (is.character(col))
     palette(col)
   
+  x <- object$x[, 1L]
+  y <- object$x[, 2L]
+  z <- object$x[, 3L]
+  
+  group <- if (identical(group, FALSE))
+    rep_len(1L, length(x))
+  else if (isTRUE(group))
+    object$kmeans$cluster
+  else rep_len(group, length(x))
+  
   group <- as.factor(group)
   colii <- as.integer(group)
-  
-  ## choose which pca fn to use
-  res <- if (rpca)
-    rsvd::rpca(t(data), retx = TRUE, k = 3L)
-  else prcomp(t(data), retx = TRUE, center = TRUE, scale. = TRUE)
-  
-  x <- res$x[, 1L]
-  y <- res$x[, 2L]
   
   if (isTRUE(labels))
     labels <- FALSE
-  lbl <- if (is.numeric(labels) & length(labels) == 1L) {
+  
+  object$lbl <- if (is.numeric(labels) & length(labels) == 1L) {
     q <- c(labels / 2, 1 - labels / 2)
     ifelse(x %inside% quantile(x, q) & y %inside% quantile(y, q),
            '', colnames(data))
   } else if (identical(labels, FALSE))
     NULL else rep_len(labels, length(x))
   
-  res <- structure(res, labels = lbl)
-  
   if (plot3d) {
-    co <- res$x[, 1:3]
-    gr <- if (is.null(centers))
-      colii else kmeans(co, centers, 10000L)$cluster
-    
-    rgl::plot3d(co, col = gr, type = 's', size = 1, scale = 0.2)
-    return(invisible(NULL))
-  }
-  
-  par(mfrow = c(1, 1))
-  plot(x, y, col = colii, xlab = 'PC 1', ylab = 'PC 2', ...)
-  text(x, y, labels = attr(res, 'labels'), pos = 3L, xpd = NA, cex = 0.7)
-  
-  km <- NULL
-  if (!is.null(centers)) {
-    xy <- cbind(x, y)
-    km <- kmeans(xy, centers, 10000L)
-    vegan::ordispider(
-      xy, factor(km$cluster), label = TRUE, col = tcol('grey', alpha = 0.5)
+    rgl::plot3d(
+      x, y, z,
+      paste(type, '1'), paste(type, '2'), paste(type, '3'),
+      type = 's', col = colii, size = 1, scale = 0.2, ...
     )
-    vegan::ordihull(xy, factor(km$cluster), lty = 'dashed', col = 'darkgrey')
+  } else {
+    ## set up plotting regions for extra panel
+    if (!is.null(group2)) {
+      op <- par(no.readonly = TRUE)
+      on.exit(par(op), add = TRUE)
+      group2 <- if (islist(group2))
+        group2 else list(group2)
+      
+      n <- length(group2)
+      m <- n2mfrow(n)
+      m <- matrix(seq.int(prod(m)), m[1L], m[2L])
+      l <- cbind(1L, m + 1L)
+      l <- layout(l, heights = 1, widths = c(2, rep(0.5, n)))
+      par(oma = par('mar'), mar = c(0,0,0,1))
+    }
+    
+    plot(
+      x, y, col = colii, ...,
+      xlab = paste(type, '1'), ylab = paste(type, '2')
+    )
+    text(x, y, labels = object$lbl, pos = 3L, xpd = NA, cex = 0.7)
+    
+    if (vegan) {
+      xy <- cbind(x, y)
+      gr <- factor(object$kmeans$cluster)
+      vegan::ordispider(
+        xy, gr, label = TRUE, col = adjustcolor('grey', alpha.f = 0.5)
+      )
+      vegan::ordihull(
+        xy, gr, lty = 'dashed', col = 'darkgrey'
+      )
+    }
+    
+    xy <- unlist(coords(0.51, 0.95)$device)
+    xy <- par('usr')[c(1L, 4L)]
+    largs <- list(
+      x = xy[1L], y = xy[2L], bty = 'n', horiz = TRUE, yjust = 0,
+      col = unique(colii), pch = 16L, xpd = NA, legend = levels(group)
+    )
+    if (!islist(args.legend))
+      args.legend <- list()
+    if (legend)
+      do.call('legend', modifyList(largs, args.legend))
+    
+    if (type == 't-SNE')
+      mtext(sprintf('perplexity = %s', object$object$perplexity),
+            adj = 1, line = 0.5)
+    
+    if (!is.null(group2)) {
+      xy <- par('usr')[c(2L, 4L)]
+      col <- c('blue', 'red')
+      largs <- list(
+        x = xy[1L], y = xy[2L], bty = 'n', horiz = TRUE, yjust = 0, xjust = -0.1,
+        col = c(col, 'black', 'black'), pch = 16L, pt.cex = c(3, 3, 1, 4) / 2,
+        legend = c('Low', 'High', 'Less', 'More'), xpd = NA
+      )
+      
+      if (legend)
+        do.call('legend', modifyList(largs, list()))
+      int(group2, x, y, dim = m)
+    }
   }
   
-  p <- par('usr')
+  invisible(object)
+}
+
+# d <- as.list(mtcars[, rep_len(c('mpg', 'wt', 'hp'), 9)])
+# par(mfrow = c(3, 3), oma = c(5, 5, 4, 2))
+# int(d, mtcars$mpg, mtcars$wt, legend = T)
+# title(xlab = 'MPG', ylab = 'Weight', outer = TRUE, cex.lab = 2)
+
+int <- function(data, x, y, col = c('blue', 'red'), cex = c(0.5, 2),
+                legend = FALSE, alpha = 0.5, dim = par('mfrow'),
+                opad = 0, ipad = 0, args.legend = list(), ...) {
+  data <- if (islist(data))
+    data else list(data)
+  
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  
+  opad <- rep_len(opad, 4L)
+  ipad <- rep_len(ipad, 2L)
+  
+  p <- lapply(seq_along(data), function(ii) {
+    dd <- data[[ii]]
+    cc <- rawr::col_scaler(dd, col, alpha = alpha)
+    cx <- rawr::rescaler(dd, cex)
+    
+    mar <- switch(
+      fig(ii, dim),
+      c(0, ipad[1L], opad[3L], 0),
+      c(0, 0, opad[3L], 0),
+      c(0, 0, opad[3L], ipad[2L]),
+      c(0, ipad[1L], 0, 0),
+      c(0, 0, 0, 0),
+      c(0, 0, 0, ipad[2L]),
+      c(opad[1L], ipad[1L], 0, 0),
+      c(opad[1L], 0, 0, 0),
+      c(opad[1L], 0, 0, ipad[2L]),
+      c(0, opad[2:4]),
+      c(0, opad[2L], 0, opad[4L]),
+      c(opad[1:2], 0, opad[4L]),
+      c(opad[1:3], 0),
+      c(opad[1L], 0, opad[3L], 0),
+      c(opad[1L], 0, opad[3:4])
+    )
+    par(mar = mar)
+    plot.new()
+    plot.window(extendrange(x), extendrange(y))
+    box()
+    
+    points(x, y, col = cc, cex = cx, pch = 16L)
+    mtext(names(data)[ii], line = -1)
+    
+    p <- par('usr')
+    c(grconvertX(p[1:2], 'user', 'ndc'), grconvertY(p[3:4], 'user', 'ndc'))
+  })
+  
+  p <- do.call('rbind', p)
+  
+  xy <- unlist(coords(0.51, 0.95)$device)
+  xy <- c(min(c(min(p[, 1L]), max(p[, 2L]))), max(p[, 4L]))
+  xy <- c(grconvertX(xy[1L], 'ndc', 'user'), grconvertY(xy[2L], 'ndc', 'user'))
+  
   largs <- list(
-    x = p[1L], y = p[4L] + diff(p[3:4]) * 0.1, bty = 'n', horiz = TRUE,
-    col = unique(colii), pch = 16, xpd = NA, legend = levels(group)
+    x = xy[1L], y = xy[2L], bty = 'n', horiz = TRUE,
+    col = c(col, 'black', 'black'), pch = 16L, pt.cex = c(3, 3, 1, 4) / 2,
+    legend = c('Low', 'High', 'Less', 'More'), xpd = NA
   )
-  if (!islist(args.legend))
-    args.legend <- list()
+  
   if (legend)
     do.call('legend', modifyList(largs, args.legend))
   
-  invisible(list(pca = res, km = km))
+  invisible(NULL)
 }
