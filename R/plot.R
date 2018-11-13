@@ -340,6 +340,7 @@ plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
       
       if (legend)
         do.call('legend', modifyList(largs, list()))
+      
       int(group2, x, y, dim = m)
     }
   }
@@ -347,18 +348,20 @@ plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
   invisible(object)
 }
 
-# d <- as.list(mtcars[, rep_len(c('mpg', 'wt', 'hp'), 9)])
+# n <- 9
+# d <- as.list(mtcars[, rep_len(c('mpg', 'wt', 'hp'), n)])
 # par(mfrow = c(3, 3), oma = c(5, 5, 4, 2))
-# int(d, mtcars$mpg, mtcars$wt, legend = T)
+# int(d, mtcars$mpg, mtcars$wt, legend = TRUE)
 # title(xlab = 'MPG', ylab = 'Weight', outer = TRUE, cex.lab = 2)
 
 int <- function(data, x, y, col = c('blue', 'red'), cex = c(0.5, 2),
                 legend = FALSE, alpha = 0.5, dim = par('mfrow'),
-                opad = 0, ipad = 0, args.legend = list(), ...) {
+                opad = 0, ipad = 0, vec = NULL, args.legend = list()) {
   data <- if (islist(data))
     data else list(data)
   
   op <- par(no.readonly = TRUE)
+  op$fig <- abs(op$fig)
   on.exit(par(op))
   
   opad <- rep_len(opad, 4L)
@@ -366,7 +369,9 @@ int <- function(data, x, y, col = c('blue', 'red'), cex = c(0.5, 2),
   
   p <- lapply(seq_along(data), function(ii) {
     dd <- data[[ii]]
-    cc <- rawr::col_scaler(dd, col, alpha = alpha)
+    cc <- if (!is.null(vec))
+      rawr:::col_scaler2(dd, col, rep_len(vec, length(data))[ii], alpha = alpha)
+    else rawr::col_scaler(dd, col, alpha = alpha)
     cx <- rawr::rescaler(dd, cex)
     
     mar <- switch(
