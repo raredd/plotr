@@ -258,7 +258,7 @@ plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
   
   group <- if (identical(group, FALSE))
     rep_len(1L, length(x))
-  else if (isTRUE(group))
+  else if (isTRUE(group) || is.null(group))
     object$kmeans$cluster
   else rep_len(group, length(x))
   
@@ -318,7 +318,7 @@ plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
     xy <- par('usr')[c(1L, 4L)]
     largs <- list(
       x = xy[1L], y = xy[2L], bty = 'n', horiz = TRUE, yjust = 0,
-      col = unique(colii), pch = 16L, xpd = NA, legend = levels(group)
+      col = unique(sort(colii)), pch = 16L, xpd = NA, legend = levels(group)
     )
     if (!islist(args.legend))
       args.legend <- list()
