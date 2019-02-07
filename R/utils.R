@@ -1,5 +1,5 @@
 ### utils
-# assert_class, islist, rm_alpha
+# assert_class, islist, rescale, rm_alpha
 # 
 # plotr_utils:
 # %ni%, %inside%, %||%
@@ -34,6 +34,10 @@ assert_class <- function(x, class, which = FALSE,
 islist <- function(x) {
   ## is.list(data.frame()); plotr:::islist(data.frame())
   inherits(x, 'list')
+}
+
+rescale <- function(x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
+  (x - from[1L]) / diff(from) * diff(to) + to[1L]
 }
 
 rm_alpha <- function(x) {

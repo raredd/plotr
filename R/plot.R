@@ -2,7 +2,7 @@
 # scattergram, dimr, plot.dimr
 # 
 # unexported:
-# int
+# grid_
 ###
 
 
@@ -152,6 +152,8 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' override defaults
 #' @param plot3d logical; if \code{TRUE}, the first three dimensions are drawn
 #' as a 3D scatterplot; see \code{\link[rgl]{plot3d}}
+#' @param iplot logical; if \code{TRUE}, the first two dimensions are drawn
+#' as an interactive scatter plot; see \code{\link[iplotr]{iscatter}}
 #' 
 #' @return
 #' \code{dimr} returns a list of class "\code{dimr}" with the following
@@ -179,7 +181,7 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' 
 #' plot(tsne)        ## k-means cluster groups
 #' plot(tsne, grp)   ## sample groups
-#' plot(tsne, k = 4) ## new k-means
+#' plot(tsne, k = 3) ## new k-means
 #' 
 #' plot(pca, vegan = TRUE)
 #' plot(pca, k = 5, vegan = TRUE)$kmeans$cluster
@@ -190,32 +192,41 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' plot(pca, pch = 16, cex = 3, col = adjustcolor(palette()[1:3], alpha.f = 0.5),
 #'      group2 = as.list(data.frame(t(rbind(dat, dat)))))
 #' 
+#' 
+#' ## use plot3d = TRUE for a 3D, interactive figure
 #' \dontrun{
-#' plot(tsne, k = 5, plot3d = TRUE)
+#' plot(tsne, plot3d = TRUE)
+#' 
+#' plot(tsne, iplot = TRUE, labels = data.frame(t(dat)))
 #' }
 #' 
 #' @export
 
-dimr <- function(data, type = c('tsne', 'pca', 'rpca'), k = 3L, ...) {
+dimr <- function(data, type = c('tsne', 'pca', 'rpca'), k = NULL, ...) {
   type <- match.arg(type)
+  dims <- pmin(nrow(data), 3L)
   data <- t(data)
+  
+  k <- k %||% guess_k(data, 'wss')
+  if (is.na(k))
+    k <- 3L
   
   set.seed(1L)
   res <- switch(
     type,
     tsne = {
       object <- Rtsne::Rtsne(
-        stats::dist(data), dims = 3L, is_distance = TRUE, ...
+        stats::dist(data), dims = dims, is_distance = TRUE, ...
       )
-      list(object = object, x = object$Y[, 1:3], type = 't-SNE')
+      list(object = object, x = object$Y[, seq.int(dims)], type = 't-SNE')
     },
     pca = {
       object <- stats::prcomp(data, ...)
-      list(obect = object, x = object$x[, 1:3], type = 'PC')
+      list(obect = object, x = object$x[, seq.int(dims)], type = 'PC')
     },
     rpca = {
       object <- rsvd::rpca(data, ...)
-      list(object = object, x = object$x[, 1:3], type = 'rPC')
+      list(object = object, x = object$x[, seq.int(dims)], type = 'rPC')
     }
   )
   
@@ -234,7 +245,7 @@ dimr <- function(data, type = c('tsne', 'pca', 'rpca'), k = 3L, ...) {
 plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
                       col = NULL, labels = FALSE, vegan = FALSE,
                       legend = TRUE, args.legend = list(),
-                      plot3d = FALSE, ...) {
+                      plot3d = FALSE, iplot = FALSE, ...) {
   on.exit({
     palette('default')
   })
@@ -254,7 +265,13 @@ plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
   
   x <- object$x[, 1L]
   y <- object$x[, 2L]
-  z <- object$x[, 3L]
+  z <- if (ncol(object$x) > 2L)
+    object$x[, 3L] else NULL
+  
+  if (is.null(z) && plot3d) {
+    message('not enough dimensions for 3d plot', domain = NA)
+    plot3d <- FALSE
+  }
   
   group <- if (identical(group, FALSE))
     rep_len(1L, length(x))
@@ -281,6 +298,14 @@ plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
       paste(type, '1'), paste(type, '2'), paste(type, '3'),
       type = 's', col = colii, size = 1, scale = 0.2, ...
     )
+  } else if (iplot) {
+    lbl <- if (identical(labels, FALSE) || is.null(labels))
+      seq_along(x) else labels
+    ip <- iplotr::iscatter(
+      x, y, group = colii, col = palette()[unique(sort(colii))],
+      labels = lbl, ...
+    )
+    return(ip)
   } else {
     ## set up plotting regions for extra panel
     if (!is.null(group2)) {
@@ -335,13 +360,14 @@ plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
       largs <- list(
         x = xy[1L], y = xy[2L], bty = 'n', horiz = TRUE, yjust = 0, xjust = -0.1,
         col = c(col, 'black', 'black'), pch = 16L, pt.cex = c(3, 3, 1, 4) / 2,
-        legend = c('Low', 'High', 'Less', 'More'), xpd = NA
+        # legend = c('Low', 'High', 'Less', 'More'), xpd = NA
+        legend = c('Lower', 'Higher'), xpd = NA
       )
       
       if (legend)
         do.call('legend', modifyList(largs, list()))
       
-      int(group2, x, y, dim = m)
+      grid_(group2, x, y, dim = m)
     }
   }
   
@@ -351,12 +377,12 @@ plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
 # n <- 9
 # d <- as.list(mtcars[, rep_len(c('mpg', 'wt', 'hp'), n)])
 # par(mfrow = c(3, 3), oma = c(5, 5, 4, 2))
-# int(d, mtcars$mpg, mtcars$wt, legend = TRUE)
+# grid_(d, mtcars$mpg, mtcars$wt, legend = TRUE)
 # title(xlab = 'MPG', ylab = 'Weight', outer = TRUE, cex.lab = 2)
 
-int <- function(data, x, y, col = c('blue', 'red'), cex = c(0.5, 2),
-                legend = FALSE, alpha = 0.5, dim = par('mfrow'),
-                opad = 0, ipad = 0, vec = NULL, args.legend = list()) {
+grid_ <- function(data, x, y, col = c('blue', 'red'), cex = c(0.5, 2),
+                  legend = FALSE, alpha = 0.5, dim = par('mfrow'),
+                  opad = 0, ipad = 0, vec = NULL, args.legend = list()) {
   data <- if (islist(data))
     data else list(data)
   
@@ -372,7 +398,8 @@ int <- function(data, x, y, col = c('blue', 'red'), cex = c(0.5, 2),
     cc <- if (!is.null(vec))
       rawr:::col_scaler2(dd, col, rep_len(vec, length(data))[ii], alpha = alpha)
     else rawr::col_scaler(dd, col, alpha = alpha)
-    cx <- rawr::rescaler(dd, cex)
+    # cx <- rawr::rescaler(dd, cex)
+    cx <- 1
     
     mar <- switch(
       fig(ii, dim),
@@ -411,13 +438,31 @@ int <- function(data, x, y, col = c('blue', 'red'), cex = c(0.5, 2),
   xy <- c(grconvertX(xy[1L], 'ndc', 'user'), grconvertY(xy[2L], 'ndc', 'user'))
   
   largs <- list(
-    x = xy[1L], y = xy[2L], bty = 'n', horiz = TRUE,
+    x = xy[1L], y = xy[2L], bty = 'n', horiz = TRUE, xpd = NA,
     col = c(col, 'black', 'black'), pch = 16L, pt.cex = c(3, 3, 1, 4) / 2,
-    legend = c('Low', 'High', 'Less', 'More'), xpd = NA
+    # legend = c('Low', 'High', 'Less', 'More')
+    legend = c('Lower', 'Higher')
   )
   
   if (legend)
     do.call('legend', modifyList(largs, args.legend))
   
   invisible(NULL)
+}
+
+wss <- function(data, n = pmin(20L, nrow(data)), p = 0.01, return_wss = FALSE) {
+  wss <- (nrow(data) - 1L) * sum(apply(data, 2L, stats::var, na.rm = TRUE))
+  wss <- c(wss, sapply(seq.int(n)[-1L], function(ii)
+    sum(kmeans(data, ii)$withinss)))
+  
+  if (return_wss)
+    wss else which(abs(diff(rescale(wss))) < p)[1L] - 1L
+}
+
+guess_k <- function(data, how = c('wss'), ...) {
+  how <- match.arg(how)
+  switch(
+    how,
+    wss = wss(data, ...)
+  )
 }

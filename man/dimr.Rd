@@ -5,11 +5,11 @@
 \alias{plot.dimr}
 \title{Dimension reduction}
 \usage{
-dimr(data, type = c("tsne", "pca", "rpca"), k = 3L, ...)
+dimr(data, type = c("tsne", "pca", "rpca"), k = NULL, ...)
 
 \method{plot}{dimr}(x, group = TRUE, group2 = NULL, k = NULL,
   col = NULL, labels = FALSE, vegan = FALSE, legend = TRUE,
-  args.legend = list(), plot3d = FALSE, ...)
+  args.legend = list(), plot3d = FALSE, iplot = FALSE, ...)
 }
 \arguments{
 \item{data}{an \code{r x c} matrix-like object with \code{r} features and
@@ -50,6 +50,9 @@ override defaults}
 
 \item{plot3d}{logical; if \code{TRUE}, the first three dimensions are drawn
 as a 3D scatterplot; see \code{\link[rgl]{plot3d}}}
+
+\item{iplot}{logical; if \code{TRUE}, the first two dimensions are drawn
+as an interactive scatter plot; see \code{\link[iplotr]{iscatter}}}
 }
 \value{
 \code{dimr} returns a list of class "\code{dimr}" with the following
@@ -90,8 +93,12 @@ plot(pca, group2 = as.list(data.frame(t(dat))))
 plot(pca, pch = 16, cex = 3, col = adjustcolor(palette()[1:3], alpha.f = 0.5),
      group2 = as.list(data.frame(t(rbind(dat, dat)))))
 
+
+## use plot3d = TRUE for a 3D, interactive figure
 \dontrun{
 plot(tsne, k = 5, plot3d = TRUE)
+
+plot(tsne, k = 5, iplot = TRUE, labels = data.frame(t(dat)))
 }
 
 }
