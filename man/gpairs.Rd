@@ -10,9 +10,10 @@ gpairs(x, ...)
 
 \method{gpairs}{default}(x, labels, panel = points, ...,
   lower.panel = panel, upper.panel = panel, diag.panel = NULL,
-  text.panel = textPanel, label.pos = 0.5 + has.diag/3, line.main = 3,
-  cex.labels = NULL, font.labels = 1, row1attop = TRUE, gap = 1,
-  log = "", grid = TRUE, col.grid = "grey90", col.acc = "white")
+  text.panel = textPanel, label.pos = 0.5 + has.diag/3,
+  line.main = 3, cex.labels = NULL, font.labels = 1,
+  row1attop = TRUE, gap = 1, log = "", grid = TRUE,
+  col.grid = "grey90", col.acc = "white")
 
 \method{gpairs}{formula}(formula, data = NULL, ..., subset,
   na.action = stats::na.pass, grid = TRUE, col.grid = "grey90",

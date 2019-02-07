@@ -8,9 +8,6 @@
 \alias{\%ni\%}
 \alias{inside}
 \alias{\%inside\%}
-\alias{\%ni\%}
-\alias{\%inside\%}
-\alias{\%||\%}
 \title{plotr utils}
 \usage{
 x \%ni\% table

@@ -8,17 +8,18 @@
 \usage{
 gspineplot(x, ...)
 
-\method{gspineplot}{default}(x, y = NULL, breaks = NULL, tol.ylab = 0.05,
-  off = NULL, ylevels = NULL, col = NULL, main = "", xlab = NULL,
-  ylab = NULL, xaxlabels = NULL, yaxlabels = NULL, xlim = NULL,
-  ylim = c(0, 1), axes = TRUE, ..., grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+\method{gspineplot}{default}(x, y = NULL, breaks = NULL,
+  tol.ylab = 0.05, off = NULL, ylevels = NULL, col = NULL,
+  main = "", xlab = NULL, ylab = NULL, xaxlabels = NULL,
+  yaxlabels = NULL, xlim = NULL, ylim = c(0, 1), axes = TRUE, ...,
+  grid = TRUE, col.grid = "grey90", col.acc = "white")
 
 \method{gspineplot}{formula}(formula, data = NULL, breaks = NULL,
-  tol.ylab = 0.05, off = NULL, ylevels = NULL, col = NULL, main = "",
-  xlab = NULL, ylab = NULL, xaxlabels = NULL, yaxlabels = NULL,
-  xlim = NULL, ylim = c(0, 1), axes = TRUE, ..., subset = NULL,
-  grid = TRUE, col.grid = "grey90", col.acc = "white")
+  tol.ylab = 0.05, off = NULL, ylevels = NULL, col = NULL,
+  main = "", xlab = NULL, ylab = NULL, xaxlabels = NULL,
+  yaxlabels = NULL, xlim = NULL, ylim = c(0, 1), axes = TRUE, ...,
+  subset = NULL, grid = TRUE, col.grid = "grey90",
+  col.acc = "white")
 }
 \arguments{
 \item{x}{an object, the default method expects either a single variable

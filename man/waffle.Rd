@@ -4,7 +4,8 @@
 \alias{waffle}
 \title{waffle}
 \usage{
-waffle(x, rows, horiz = TRUE, cols = seq_along(x), mat, pct = 0.85, ...)
+waffle(x, rows, horiz = TRUE, cols = seq_along(x), mat, pct = 0.85,
+  ...)
 }
 \arguments{
 \item{x}{an integer vector with counts for each group}

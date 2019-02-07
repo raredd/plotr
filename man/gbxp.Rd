@@ -4,10 +4,11 @@
 \alias{gbxp}
 \title{Draw boxplots from summaries}
 \usage{
-gbxp(z, notch = FALSE, width = NULL, varwidth = FALSE, outline = TRUE,
-  notch.frac = 0.5, log = "", border = par("fg"), pars = NULL,
-  horizontal = FALSE, add = FALSE, at = NULL, show.names = NULL, ...,
-  grid = TRUE, col.grid = "grey90", col.acc = "white")
+gbxp(z, notch = FALSE, width = NULL, varwidth = FALSE,
+  outline = TRUE, notch.frac = 0.5, log = "", border = par("fg"),
+  pars = NULL, horizontal = FALSE, add = FALSE, at = NULL,
+  show.names = NULL, ..., grid = TRUE, col.grid = "grey90",
+  col.acc = "white")
 }
 \arguments{
 \item{z}{a list containing data summaries to be used in constructing

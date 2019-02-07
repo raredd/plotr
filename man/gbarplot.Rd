@@ -8,14 +8,14 @@
 gbarplot(height, ...)
 
 \method{gbarplot}{default}(height, width = 1, space = NULL,
-  names.arg = NULL, legend.text = NULL, beside = FALSE, horiz = FALSE,
-  density = NULL, angle = 45, col = NULL, border = par("fg"),
-  main = NULL, sub = NULL, xlab = NULL, ylab = NULL, xlim = NULL,
-  ylim = NULL, xpd = TRUE, log = "", axes = TRUE, axisnames = TRUE,
-  cex.axis = 0.8, cex.names = par("cex.axis"), inside = TRUE,
-  plot = TRUE, axis.lty = 0, offset = 0, add = FALSE,
-  args.legend = NULL, grid = TRUE, col.grid = "grey90",
-  col.acc = "white", ...)
+  names.arg = NULL, legend.text = NULL, beside = FALSE,
+  horiz = FALSE, density = NULL, angle = 45, col = NULL,
+  border = par("fg"), main = NULL, sub = NULL, xlab = NULL,
+  ylab = NULL, xlim = NULL, ylim = NULL, xpd = TRUE, log = "",
+  axes = TRUE, axisnames = TRUE, cex.axis = 0.8,
+  cex.names = par("cex.axis"), inside = TRUE, plot = TRUE,
+  axis.lty = 0, offset = 0, add = FALSE, args.legend = NULL,
+  grid = TRUE, col.grid = "grey90", col.acc = "white", ...)
 }
 \arguments{
 \item{height}{either a vector or matrix of values describing the

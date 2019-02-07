@@ -6,10 +6,11 @@
 \usage{
 prettybars(x, y = names(x), emph = NULL, col.bar = grey(0.9),
   col.emph = "magenta1", col.y = "black", col.bg = "lightblue",
-  cex.y = 0.5, FUN = mean, ..., fun.lab = "overall mean", digits = 2L,
-  title = paste0("prettybar of ", m$x), sub = NULL, note = NULL,
-  col.note = col.emph, subnote = "source: github.com/raredd/rawr",
-  extra.margin = 0, pars = NULL)
+  cex.y = 0.5, FUN = mean, ..., fun.lab = "overall mean",
+  digits = 2L, title = paste0("prettybar of ", m$x), sub = NULL,
+  note = NULL, col.note = col.emph,
+  subnote = "source: github.com/raredd/rawr", extra.margin = 0,
+  pars = NULL)
 }
 \arguments{
 \item{x}{numeric vector; values of bar heights}

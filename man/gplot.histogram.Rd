@@ -4,12 +4,13 @@
 \alias{gplot.histogram}
 \title{gplot histograms}
 \usage{
-\method{gplot}{histogram}(x, freq = equidist, density = NULL, angle = 45,
-  col = "white", border = par("fg"), lty = NULL,
+\method{gplot}{histogram}(x, freq = equidist, density = NULL,
+  angle = 45, col = "white", border = par("fg"), lty = NULL,
   main = paste("Histogram of", paste(x$xname, collapse = "\\n")),
-  sub = NULL, xlab = x$xname, ylab, xlim = range(x$breaks), ylim = NULL,
-  axes = TRUE, labels = FALSE, add = FALSE, ann = TRUE, grid = TRUE,
-  col.grid = "grey90", col.acc = "white", ...)
+  sub = NULL, xlab = x$xname, ylab, xlim = range(x$breaks),
+  ylim = NULL, axes = TRUE, labels = FALSE, add = FALSE,
+  ann = TRUE, grid = TRUE, col.grid = "grey90", col.acc = "white",
+  ...)
 }
 \arguments{
 \item{x}{a \code{histogram} object, or a list with components

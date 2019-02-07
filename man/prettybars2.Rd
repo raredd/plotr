@@ -7,8 +7,8 @@
 prettybars2(x, lab.y = colnames(x), n.y = ncol(x),
   lab.group = rownames(x), n.group = nrow(x),
   col.group = adjustcolor(seq.int(n.group), alpha.f = 0.5),
-  col.line = "skyblue3", extra.margin = 0, col.bg = "snow", cex.y = 0.7,
-  notext = FALSE, title = paste0("prettybar of ", m$x),
+  col.line = "skyblue3", extra.margin = 0, col.bg = "snow",
+  cex.y = 0.7, notext = FALSE, title = paste0("prettybar of ", m$x),
   sub = paste0("     n = ", sum(x)), note = NULL,
   subnote = "subnote: here is a subnote", legend = 1L, ...)
 }

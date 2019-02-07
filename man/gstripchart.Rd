@@ -9,14 +9,15 @@
 gstripchart(x, ...)
 
 \method{gstripchart}{default}(x, method = "overplot", jitter = 0.1,
-  offset = 1/3, vertical = FALSE, group.names, add = FALSE, at = NULL,
-  xlim = NULL, ylim = NULL, ylab = NULL, xlab = NULL, dlab = "",
-  glab = "", log = "", pch = 0, col = par("fg"), cex = par("cex"),
-  axes = TRUE, frame.plot = axes, ..., grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+  offset = 1/3, vertical = FALSE, group.names, add = FALSE,
+  at = NULL, xlim = NULL, ylim = NULL, ylab = NULL, xlab = NULL,
+  dlab = "", glab = "", log = "", pch = 0, col = par("fg"),
+  cex = par("cex"), axes = TRUE, frame.plot = axes, ...,
+  grid = TRUE, col.grid = "grey90", col.acc = "white")
 
 \method{gstripchart}{formula}(x, data = NULL, dlab = NULL, ..., subset,
-  na.action = NULL, grid = TRUE, col.grid = "grey90", col.acc = "white")
+  na.action = NULL, grid = TRUE, col.grid = "grey90",
+  col.acc = "white")
 }
 \arguments{
 \item{x}{the data from which the plots are to be produced.  In the

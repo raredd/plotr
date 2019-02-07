@@ -14,8 +14,8 @@ gqqnorm(y, ...)
   col.acc = "white", ...)
 
 gqqplot(x, y, plot.it = TRUE, xlab = deparse(substitute(x)),
-  ylab = deparse(substitute(y)), ..., grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+  ylab = deparse(substitute(y)), ..., grid = TRUE,
+  col.grid = "grey90", col.acc = "white")
 }
 \arguments{
 \item{y}{The second or only data sample.}

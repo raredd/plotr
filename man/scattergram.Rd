@@ -4,8 +4,9 @@
 \alias{scattergram}
 \title{Scattergram}
 \usage{
-scattergram(x, y, g = NULL, col = NULL, ..., xlim = NULL, ylim = NULL,
-  axs = "i", main = NULL, legend = TRUE, args.legend = list())
+scattergram(x, y, g = NULL, col = NULL, ..., xlim = NULL,
+  ylim = NULL, axs = "i", main = NULL, legend = TRUE,
+  args.legend = list())
 }
 \arguments{
 \item{x, y, g}{the x-, y-, and group variables}

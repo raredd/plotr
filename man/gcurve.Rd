@@ -5,12 +5,14 @@
 \alias{gplot.function}
 \title{Draw function curves}
 \usage{
-gcurve(expr, from = NULL, to = NULL, n = 101, add = FALSE, type = "l",
-  xname = "x", xlab = xname, ylab = NULL, log = NULL, xlim = NULL,
-  ..., grid = TRUE, col.grid = "grey90", col.acc = "white")
+gcurve(expr, from = NULL, to = NULL, n = 101, add = FALSE,
+  type = "l", xname = "x", xlab = xname, ylab = NULL, log = NULL,
+  xlim = NULL, ..., grid = TRUE, col.grid = "grey90",
+  col.acc = "white")
 
 \method{gplot}{function}(x, y = 0, to = 1, from = y, xlim = NULL,
-  ylab = NULL, grid = TRUE, col.grid = "grey90", col.acc = "white", ...)
+  ylab = NULL, grid = TRUE, col.grid = "grey90", col.acc = "white",
+  ...)
 }
 \arguments{
 \item{expr}{The name of a function, or a \link{call} or an

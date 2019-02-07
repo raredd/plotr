@@ -10,10 +10,10 @@ ghist(x, ...)
 \method{ghist}{default}(x, breaks = "Sturges", freq = NULL,
   probability = !freq, include.lowest = TRUE, right = TRUE,
   density = NULL, angle = 45, col = "white", border = NULL,
-  main = paste("Histogram of", xname), xlim = range(breaks), ylim = NULL,
-  xlab = xname, ylab, axes = TRUE, plot = TRUE, labels = FALSE,
-  nclass = NULL, warn.unused = TRUE, grid = TRUE, col.grid = "grey90",
-  col.acc = "white", ...)
+  main = paste("Histogram of", xname), xlim = range(breaks),
+  ylim = NULL, xlab = xname, ylab, axes = TRUE, plot = TRUE,
+  labels = FALSE, nclass = NULL, warn.unused = TRUE, grid = TRUE,
+  col.grid = "grey90", col.acc = "white", ...)
 }
 \arguments{
 \item{x}{a vector of values for which the histogram is desired.}

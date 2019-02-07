@@ -9,10 +9,11 @@
 gsunflowerplot(x, ...)
 
 \method{gsunflowerplot}{default}(x, y = NULL, number, log = "",
-  digits = 6L, xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL,
-  add = FALSE, rotate = FALSE, pch = 16, cex = 0.8, cex.fact = 1.5,
-  col = par("col"), bg = NA, size = 1/8, seg.col = 2, seg.lwd = 1.5,
-  ..., grid = TRUE, col.grid = "grey90", col.acc = "white")
+  digits = 6L, xlab = NULL, ylab = NULL, xlim = NULL,
+  ylim = NULL, add = FALSE, rotate = FALSE, pch = 16, cex = 0.8,
+  cex.fact = 1.5, col = par("col"), bg = NA, size = 1/8,
+  seg.col = 2, seg.lwd = 1.5, ..., grid = TRUE,
+  col.grid = "grey90", col.acc = "white")
 
 \method{gsunflowerplot}{formula}(formula, data = NULL, xlab = NULL,
   ylab = NULL, ..., subset, na.action = NULL, grid = TRUE,
@@ -74,7 +75,7 @@ gsunflowerplot(x, ...)
     \code{\link{plot.default}}.}
 
 \item{size}{of sunflower leaves in inches, 1[in] := 2.54[cm].
-    Default: 1/8\", approximately 3.2mm.}
+    Default: 1/8\\", approximately 3.2mm.}
 
 \item{seg.col}{color to be used for the \bold{seg}ments which make the
     sunflowers leaves, see \code{\link{par}(col=)};

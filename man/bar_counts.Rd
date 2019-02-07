@@ -4,8 +4,8 @@
 \alias{bar_counts}
 \title{Add counts to bar plots}
 \usage{
-bar_counts(data, x, fill, facet, position = c("stack", "fill"), rev = FALSE,
-  fmt = "n (p\%)", ...)
+bar_counts(data, x, fill, facet, position = c("stack", "fill"),
+  rev = FALSE, fmt = "n (p\%)", ...)
 }
 \arguments{
 \item{data}{data set to use for plot and \code{x}, \code{y}}
