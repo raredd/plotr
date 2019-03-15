@@ -80,12 +80,12 @@ pca  <- dimr(dat, type = 'pca')
 rpca <- dimr(dat, type = 'rpca')
 pca2 <- dimr(dat, type = 'pca', scale. = TRUE) ## same as rpca
 
-plot(tsne)        ## k-means cluster groups
-plot(tsne, grp)   ## sample groups
-plot(tsne, k = 4) ## new k-means
+plot(tsne)        ## use k-means cluster groups
+plot(tsne, grp)   ## use groups from data
+plot(tsne, k = 3) ## perform new k-means
 
 plot(pca, vegan = TRUE)
-plot(pca, k = 5, vegan = TRUE)$kmeans$cluster
+plot(pca, k = 4, vegan = TRUE)$kmeans$cluster
 
 
 ## use group2 to show scatter plots of numeric data
@@ -96,9 +96,17 @@ plot(pca, pch = 16, cex = 3, col = adjustcolor(palette()[1:3], alpha.f = 0.5),
 
 ## use plot3d = TRUE for a 3D, interactive figure
 \dontrun{
-plot(tsne, k = 5, plot3d = TRUE)
+plot(tsne, plot3d = TRUE)
 
-plot(tsne, k = 5, iplot = TRUE, labels = data.frame(t(dat)))
+plot(tsne, iplot = TRUE, labels = data.frame(t(dat)))
+
+
+## make a gridplot (called from plot.dimr)
+n <- 9
+d <- as.list(mtcars[, rep_len(c('mpg', 'wt', 'hp'), n)])
+par(mfrow = n2mfrow(n), oma = c(5, 5, 4, 2))
+plotr:::gridplot(d, mtcars$mpg, mtcars$wt, legend = TRUE)
+title(xlab = 'MPG', ylab = 'Weight', outer = TRUE, cex.lab = 2)
 }
 
 }
