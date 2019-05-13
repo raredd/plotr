@@ -60,13 +60,16 @@ gpairs(x, ...)
 
 \item{font.labels}{graphics parameters for the text panel.}
 
-\item{row1attop}{logical. Should the layout be matrix-like with row 1
-    at the top, or graph-like with row 1 at the bottom?}
+\item{row1attop}{logical.  Should the layout be matrix-like with row 1
+    at the top, or graph-like with row 1 at the bottom?  The latter (non
+    default) leads to a basically symmetric scatterplot matrix.}
 
 \item{gap}{distance between subplots, in margin lines.}
 
 \item{log}{a character string indicating if logarithmic axes are to be
-    used: see \code{\link{plot.default}}.  \code{log = "xy"} specifies
+    used, see \code{\link{plot.default}} \emph{or} a numeric vector of
+    indices specifying the indices of those variables where logarithmic
+    axes should be used for both x and y.  \code{log = "xy"} specifies
     logarithmic axes for all variables.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}

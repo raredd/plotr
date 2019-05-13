@@ -464,6 +464,7 @@ wss <- function(data, n = pmin(20L, nrow(data)), p = 0.01, return_wss = FALSE) {
 
 guess_k <- function(data, how = c('wss'), ...) {
   how <- match.arg(how)
+  
   switch(
     how,
     wss = wss(data, ...)
