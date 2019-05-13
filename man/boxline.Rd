@@ -4,8 +4,8 @@
 \alias{boxline}
 \title{Boxline}
 \usage{
-boxline(x, probs = c(0.9, 0.95, 0.99), at = seq_along(x), col = 2L,
-  alpha = NULL, add = FALSE, ...)
+boxline(x, probs = c(0.75, 0.9, 0.99), at = seq_along(x), col = 2L,
+  pch = NULL, alpha = NULL, add = FALSE, ...)
 }
 \arguments{
 \item{x}{a list of vectors}
@@ -15,6 +15,9 @@ boxline(x, probs = c(0.9, 0.95, 0.99), at = seq_along(x), col = 2L,
 \item{at}{a vector of x-coodinates for each vector of \code{x}}
 
 \item{col}{a vector of colors for each \code{prob}, recycled as needed}
+
+\item{pch}{optional plotting character to used for the median point of
+each element of \code{x}}
 
 \item{alpha}{optional vector of opacity for each \code{prob}; see
 \code{\link{adjustcolor}}}
@@ -30,11 +33,11 @@ each box.
 }
 \examples{
 set.seed(1)
-x <- lapply(0:10, function(x) rnorm(10, x / 2, sd = 0.5))
+x <- lapply(0:10, function(x) rnorm(25, x / 2, sd = 0.5))
 boxplot(x)
 boxline(x, add = TRUE)
 
-boxline(x, col = c('red', 'orange', 'yellow'), alpha = 0.5, las = 1L)
-boxplot(x, add = TRUE, axes = FALSE)
+boxline(x, col = c('red', 'orange', 'yellow'), alpha = 0.5, pch = 16L)
+boxplot(x, add = TRUE, axes = FALSE, col = 'transparent')
 
 }

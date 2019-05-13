@@ -563,6 +563,8 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 #' @param probs a vector of probabilities; see \code{\link{quantile}}
 #' @param at a vector of x-coodinates for each vector of \code{x}
 #' @param col a vector of colors for each \code{prob}, recycled as needed
+#' @param pch optional plotting character to used for the median point of
+#' each element of \code{x}
 #' @param alpha optional vector of opacity for each \code{prob}; see
 #' \code{\link{adjustcolor}}
 #' @param add logical; if \code{TRUE}, adds to existing plot
@@ -571,17 +573,17 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 #' 
 #' @examples
 #' set.seed(1)
-#' x <- lapply(0:10, function(x) rnorm(10, x / 2, sd = 0.5))
+#' x <- lapply(0:10, function(x) rnorm(25, x / 2, sd = 0.5))
 #' boxplot(x)
 #' boxline(x, add = TRUE)
 #' 
-#' boxline(x, col = c('red', 'orange', 'yellow'), alpha = 0.5, las = 1L)
-#' boxplot(x, add = TRUE, axes = FALSE)
+#' boxline(x, col = c('red', 'orange', 'yellow'), alpha = 0.5, pch = 16L)
+#' boxplot(x, add = TRUE, axes = FALSE, col = 'transparent')
 #' 
 #' @export
 
-boxline <- function(x, probs = c(0.90, 0.95, 0.99), at = seq_along(x),
-                    col = 2L, alpha = NULL, add = FALSE, ...) {
+boxline <- function(x, probs = c(0.75, 0.90, 0.99), at = seq_along(x),
+                    col = 2L, pch = NULL, alpha = NULL, add = FALSE, ...) {
   probs <- unique(sort(c(0.5, probs), decreasing = TRUE))
   lprob <- length(probs)
   
@@ -604,8 +606,8 @@ boxline <- function(x, probs = c(0.90, 0.95, 0.99), at = seq_along(x),
             col = col[ii], border = NA)
   }
   
-  lines(at, sapply(x, function(xx)
-    quantile(xx, 0.5)), col = 1L, lwd = 2L)
+  lines(at, sapply(x, function(xx) quantile(xx, 0.5)),
+        col = 1L, lwd = 2L, type = if (is.null(pch)) 'l' else 'o', pch = pch)
   
   invisible(at)
 }
