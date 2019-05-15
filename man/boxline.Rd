@@ -4,32 +4,48 @@
 \alias{boxline}
 \title{Boxline}
 \usage{
-boxline(x, probs = c(0.75, 0.9, 0.99), at = seq_along(x), col = 2L,
-  pch = NULL, alpha = NULL, add = FALSE, ...)
+boxline(x, probs = c(0.75, 0.9, 0.99), col.probs = 2L, alpha = NULL,
+  col.med = 1L, pch = NULL, err = c("none", "sd", "se", "ci",
+  "quantile"), err.alpha = 0.05, col.err = col.med,
+  at = seq_along(x), add = FALSE, ...)
 }
 \arguments{
 \item{x}{a list of vectors}
 
 \item{probs}{a vector of probabilities; see \code{\link{quantile}}}
 
-\item{at}{a vector of x-coodinates for each vector of \code{x}}
+\item{col.probs}{a vector of colors for each \code{probs}, recycled as needed}
 
-\item{col}{a vector of colors for each \code{prob}, recycled as needed}
-
-\item{pch}{optional plotting character to used for the median point of
-each element of \code{x}}
-
-\item{alpha}{optional vector of opacity for each \code{prob}; see
+\item{alpha}{optional vector of opacity for each \code{probs}; see
 \code{\link{adjustcolor}}}
+
+\item{col.med}{color used for median line}
+
+\item{pch}{optional plotting character used for the median point of each}
+
+\item{err}{optional error bars around each median value; possible values
+are \code{"none"} (default), \code{"sd"} (standard deviation), \code{"se"}
+(standard error), \code{"ci"} (confidence interval), and \code{"quantile"}
+(quantile)}
+
+\item{err.alpha}{the alpha level used when \code{err} is \code{"ci"} or
+\code{"quantile"}}
+
+\item{col.err}{color used for error bars}
+
+\item{at}{a vector of x-coodinates for each element of \code{x}}
 
 \item{add}{logical; if \code{TRUE}, adds to existing plot}
 
 \item{...}{additional arguments passed to \code{\link{boxplot}} or further
 to \code{\link{par}}}
 }
+\value{
+See \code{\link{boxplot}}
+}
 \description{
-An alternative to \code{\link{boxplot}} with lines connecting quantiles of
-each box.
+An alternative to \code{\link{boxplot}} with lines connecting median and
+quantiles of each box.
 }
 \examples{
 set.seed(1)
@@ -37,7 +53,9 @@ x <- lapply(0:10, function(x) rnorm(25, x / 2, sd = 0.5))
 boxplot(x)
 boxline(x, add = TRUE)
 
-boxline(x, col = c('red', 'orange', 'yellow'), alpha = 0.5, pch = 16L)
+boxline(x, col.probs = c('red', 'orange', 'yellow'), alpha = 0.5,
+        pch = 16L, col.med = 'red')
+boxline(x, probs = NULL, err = 'sd', add = TRUE, col.err = 'cyan')
 boxplot(x, add = TRUE, axes = FALSE, col = 'transparent')
 
 }

@@ -556,20 +556,30 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 
 #' Boxline
 #' 
-#' An alternative to \code{\link{boxplot}} with lines connecting quantiles of
-#' each box.
+#' An alternative to \code{\link{boxplot}} with lines connecting median and
+#' quantiles of each box.
 #' 
 #' @param x a list of vectors
 #' @param probs a vector of probabilities; see \code{\link{quantile}}
-#' @param at a vector of x-coodinates for each vector of \code{x}
-#' @param col a vector of colors for each \code{prob}, recycled as needed
-#' @param pch optional plotting character to used for the median point of
-#' each element of \code{x}
-#' @param alpha optional vector of opacity for each \code{prob}; see
+#' @param col.probs a vector of colors for each \code{probs}, recycled as needed
+#' @param alpha optional vector of opacity for each \code{probs}; see
 #' \code{\link{adjustcolor}}
+#' @param col.med color used for median line
+#' @param pch optional plotting character used for the median point of each
+#' @param err optional error bars around each median value; possible values
+#' are \code{"none"} (default), \code{"sd"} (standard deviation), \code{"se"}
+#' (standard error), \code{"ci"} (confidence interval), and \code{"quantile"}
+#' (quantile)
+#' @param err.alpha the alpha level used when \code{err} is \code{"ci"} or
+#' \code{"quantile"}
+#' @param col.err color used for error bars
+#' @param at a vector of x-coodinates for each element of \code{x}
 #' @param add logical; if \code{TRUE}, adds to existing plot
 #' @param ... additional arguments passed to \code{\link{boxplot}} or further
 #' to \code{\link{par}}
+#' 
+#' @return
+#' See \code{\link{boxplot}}
 #' 
 #' @examples
 #' set.seed(1)
@@ -577,37 +587,77 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 #' boxplot(x)
 #' boxline(x, add = TRUE)
 #' 
-#' boxline(x, col = c('red', 'orange', 'yellow'), alpha = 0.5, pch = 16L)
+#' boxline(x, col.probs = c('red', 'orange', 'yellow'), alpha = 0.5,
+#'         pch = 16L, col.med = 'red')
+#' boxline(x, probs = NULL, err = 'sd', add = TRUE, col.err = 'cyan')
 #' boxplot(x, add = TRUE, axes = FALSE, col = 'transparent')
 #' 
 #' @export
 
-boxline <- function(x, probs = c(0.75, 0.90, 0.99), at = seq_along(x),
-                    col = 2L, pch = NULL, alpha = NULL, add = FALSE, ...) {
+boxline <- function(x, probs = c(0.75, 0.90, 0.99),
+                    col.probs = 2L, alpha = NULL,
+                    col.med = 1L, pch = NULL,
+                    err = c('none', 'sd', 'se', 'ci', 'quantile'),
+                    err.alpha = 0.05, col.err = col.med,
+                    at = seq_along(x), add = FALSE, ...) {
   probs <- unique(sort(c(0.5, probs), decreasing = TRUE))
   lprob <- length(probs)
   
-  lo <- sapply(x, function(xx) quantile(xx, probs))
-  hi <- sapply(x, function(xx) quantile(xx, 1 - probs))
+  ## complete x
+  cx <- lapply(x, sort)
+  hi <- sapply(cx, function(xx) quantile(xx, probs))
+  lo <- sapply(cx, function(xx) quantile(xx, 1 - probs))
   
   alp <- if (is.null(alpha))
     seq(0.25, 0.75, length.out = lprob)
   else rep_len(alpha, lprob)
-  col <- rep_len(col, lprob)
-  col <- Vectorize(adjustcolor, c('col', 'alpha.f'))(col = col, alpha.f = alp)
   
-  if (!add)
-    bp <- boxplot(x, border = NA, at = at, ...)
+  ## vector of color/alpha for each quantile polygon
+  col.probs <- rep_len(col.probs, lprob)
+  col.probs <- Vectorize(adjustcolor, c('col', 'alpha.f'))(
+    col = col.probs, alpha.f = alp)
+  
+  bp <- boxplot(x, border = NA, at = at, plot = !add, ...)
   
   for (ii in seq_along(probs[-1L])) {
     polygon(c(at, rev(at)), c(lo[ii, ], rev(lo[ii + 1L, ])),
-            col = col[ii], border = NA)
+            col = col.probs[ii], border = NA)
     polygon(c(at, rev(at)), c(hi[ii, ], rev(hi[ii + 1L, ])),
-            col = col[ii], border = NA)
+            col = col.probs[ii], border = NA)
   }
   
-  lines(at, sapply(x, function(xx) quantile(xx, 0.5)),
-        col = 1L, lwd = 2L, type = if (is.null(pch)) 'l' else 'o', pch = pch)
+  med <- sapply(cx, function(xx) quantile(xx, 0.5))
+  col.med <- rep_len(col.med, length(x))
   
-  invisible(at)
+  ## optional error bars around each element of x
+  err <- match.arg(err)
+  err.alpha <- err.alpha[1L]
+  if (!err %in% 'none') {
+    pm <- switch(err,
+      sd = sd,
+      se = function(xx) sd(xx) / sqrt(length(xx)),
+      ci = function(xx) {
+        qt((1 - err.alpha) / 2 + 0.5, length(xx) - 1) *
+          sd(xx) / sqrt(length(xx))
+      },
+      quantile = TRUE
+    )
+    
+    if (isTRUE(pm)) {
+      hi <- sapply(cx, function(xx) quantile(xx, 1 - err.alpha))
+      lo <- sapply(cx, function(xx) quantile(xx, err.alpha))
+      arrows(at, hi, at, lo, col = col.err,
+             code = 3L, angle = 90, length = 0.1, lwd = 2)
+    } else {
+      z <- sapply(cx, pm)
+      arrows(at, med + z, at, med - z, col = col.err,
+             code = 3L, angle = 90, length = 0.1, lwd = 2)
+    }
+  }
+  
+  ## median points for each element of x
+  lines(at, med, col = col.med, lwd = 2L, pch = pch,
+        type = if (is.null(pch)) 'l' else 'o')
+  
+  invisible(bp)
 }
