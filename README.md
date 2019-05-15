@@ -1,6 +1,9 @@
 plotr
+====
 
 More plotting functions and examples.
+
+to install:
 
 ```r
 # install.packages('devtools')
