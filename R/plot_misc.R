@@ -564,7 +564,7 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 #' @param col.probs a vector of colors for each \code{probs}, recycled as needed
 #' @param alpha optional vector of opacity for each \code{probs}; see
 #' \code{\link{adjustcolor}}
-#' @param col.med color used for median line
+#' @param col.med,lwd.med color and line width used for median line
 #' @param pch optional plotting character used for the median point of each
 #' @param err optional error bars around each median value; possible values
 #' are \code{"none"} (default), \code{"sd"} (standard deviation), \code{"se"}
@@ -572,7 +572,7 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 #' (quantile)
 #' @param err.alpha the alpha level used when \code{err} is \code{"ci"} or
 #' \code{"quantile"}
-#' @param col.err color used for error bars
+#' @param col.err,lwd.err color and line width used for error bars
 #' @param at a vector of x-coodinates for each element of \code{x}
 #' @param add logical; if \code{TRUE}, adds to existing plot
 #' @param ... additional arguments passed to \code{\link{boxplot}} or further
@@ -596,9 +596,9 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 
 boxline <- function(x, probs = c(0.75, 0.90, 0.99),
                     col.probs = 2L, alpha = NULL,
-                    col.med = 1L, pch = NULL,
+                    col.med = 1L, lwd.med = 2, pch = NULL,
                     err = c('none', 'sd', 'se', 'ci', 'quantile'),
-                    err.alpha = 0.05, col.err = col.med,
+                    err.alpha = 0.05, col.err = col.med, lwd.err = lwd.med,
                     at = seq_along(x), add = FALSE, ...) {
   probs <- unique(sort(c(0.5, probs), decreasing = TRUE))
   lprob <- length(probs)
@@ -647,16 +647,16 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99),
       hi <- sapply(cx, function(xx) quantile(xx, 1 - err.alpha))
       lo <- sapply(cx, function(xx) quantile(xx, err.alpha))
       arrows(at, hi, at, lo, col = col.err,
-             code = 3L, angle = 90, length = 0.1, lwd = 2)
+             code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
     } else {
       z <- sapply(cx, pm)
       arrows(at, med + z, at, med - z, col = col.err,
-             code = 3L, angle = 90, length = 0.1, lwd = 2)
+             code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
     }
   }
   
   ## median points for each element of x
-  lines(at, med, col = col.med, lwd = 2L, pch = pch,
+  lines(at, med, col = col.med, lwd = lwd.med, pch = pch,
         type = if (is.null(pch)) 'l' else 'o')
   
   invisible(bp)

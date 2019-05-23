@@ -5,9 +5,9 @@
 \title{Boxline}
 \usage{
 boxline(x, probs = c(0.75, 0.9, 0.99), col.probs = 2L, alpha = NULL,
-  col.med = 1L, pch = NULL, err = c("none", "sd", "se", "ci",
-  "quantile"), err.alpha = 0.05, col.err = col.med,
-  at = seq_along(x), add = FALSE, ...)
+  col.med = 1L, lwd.med = 2, pch = NULL, err = c("none", "sd",
+  "se", "ci", "quantile"), err.alpha = 0.05, col.err = col.med,
+  lwd.err = lwd.med, at = seq_along(x), add = FALSE, ...)
 }
 \arguments{
 \item{x}{a list of vectors}
@@ -19,7 +19,7 @@ boxline(x, probs = c(0.75, 0.9, 0.99), col.probs = 2L, alpha = NULL,
 \item{alpha}{optional vector of opacity for each \code{probs}; see
 \code{\link{adjustcolor}}}
 
-\item{col.med}{color used for median line}
+\item{col.med, lwd.med}{color and line width used for median line}
 
 \item{pch}{optional plotting character used for the median point of each}
 
@@ -31,7 +31,7 @@ are \code{"none"} (default), \code{"sd"} (standard deviation), \code{"se"}
 \item{err.alpha}{the alpha level used when \code{err} is \code{"ci"} or
 \code{"quantile"}}
 
-\item{col.err}{color used for error bars}
+\item{col.err, lwd.err}{color and line width used for error bars}
 
 \item{at}{a vector of x-coodinates for each element of \code{x}}
 
