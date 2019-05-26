@@ -1,4 +1,4 @@
-### some random plot things
+### some less useful plots
 # waffle, histr, shist, propfall, bibar, dose_esc, boxline
 ###
 
