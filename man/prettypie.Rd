@@ -5,15 +5,17 @@
 \alias{prettypie2}
 \title{prettypie}
 \usage{
-prettypie(dat, main = NULL, sub = NULL, note = NULL)
+prettypie(dat, main = NULL, sub = NULL, note = NULL, ...)
 
-prettypie2(x, group = 1, labels = NA, col = NULL, radius = c(0.7,
-  1))
+prettypie2(x, group = 1, labels = NA, col.group = NULL,
+  radius = c(0.7, 1), ...)
 }
 \arguments{
 \item{dat}{data}
 
 \item{main, sub, note}{overall title, sub-title, and note for plot}
+
+\item{...}{additional graphical parameters passed to \code{\link{par}}}
 
 \item{x}{numeric vector representing the size for each slice}
 
@@ -22,9 +24,9 @@ prettypie2(x, group = 1, labels = NA, col = NULL, radius = c(0.7,
 \item{labels}{vector of labels for individual slices; if \code{NA}, no
 labels will be drawn; if \code{NULL}, slices will be labeled sequentially}
 
-\item{col}{colors for each group of slices}
-
 \item{radius}{radius for inner and outer pie (usually in [0,1])}
+
+\item{col}{colors for each group of slices}
 }
 \description{
 A pie chart. \code{prettypie} is stupid, ignore it; use \code{prettypie2},
@@ -61,6 +63,10 @@ dev.off()
 ## basic usage
 prettypie2(mtcars$mpg)
 
-with(mtcars, prettypie2(mpg, interaction(gear, cyl), rownames(mtcars)))
+prettypie2(mtcars$mpg, group = mtcars$gear)
+
+with(mtcars,
+  prettypie2(mpg, interaction(gear, cyl), rownames(mtcars), cex = 0.8)
+)
 
 }

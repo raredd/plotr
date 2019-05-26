@@ -4,22 +4,24 @@
 \alias{bump}
 \title{bump chart}
 \usage{
-bump(mat, adj = 0.5, ...)
+bump(mat, adj = 0.1, ...)
 }
 \arguments{
 \item{mat}{an \code{n x t} matrix with \code{n} observations and \code{t}
 timepoints}
 
-\item{adj}{label position adjustment}
+\item{adj}{label position adjustment, larger values move labels farther
+from start/end positions}
 
-\item{...}{additional graphical parameters passed to \code{par}}
+\item{...}{additional graphical parameters passed to \code{\link{par}}}
 }
 \description{
 A bump chart
 }
 \examples{
 mat <- replicate(5, sample(1:10))
-dimnames(mat) <- list(rownames(mtcars)[1:nrow(mat)], paste0('time', 1:ncol(mat)))
-bump(mat, mar = c(2,4,2,9), adj = .1, bg = 'snow')
+dimnames(mat) <- list(rownames(mtcars)[1:nrow(mat)],
+                      paste0('time', 1:ncol(mat)))
+bump(mat, mar = c(2, 0, 2, 9))
 
 }

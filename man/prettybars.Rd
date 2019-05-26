@@ -58,24 +58,30 @@ A barplot.
 \examples{
 set.seed(1)
 x <- setNames(round(runif(10), 2) * 100, LETTERS[1:10])
-prettybars(x, FUN = NULL, fun.lab = NULL, cex.y = 1.2,
-           bg = 'white', emph = 'F', digits = 2)
+
+prettybars(
+  x, FUN = NULL, fun.lab = NULL, cex.y = 1.2,
+  bg = 'white', emph = 'F', digits = 2
+)
 
 x <- setNames(mtcars$mpg, rownames(mtcars))
-prettybars(x, emph = rownames(mtcars)[mtcars$hp < 100], extra.margin = 1,
-           FUN = median, fun.lab = 'overall median mpg',
-           title = 'motor trend cars', sub = '   (miles per gallon)',
-           note = 'vehicles with less than 100 hp in bold')
+prettybars(
+  x, emph = rownames(mtcars)[mtcars$hp < 100], extra.margin = 1,
+  FUN = median, fun.lab = 'overall median mpg',
+  title = 'motor trend cars', sub = '   (miles per gallon)',
+  note = 'vehicles with less than 100 hp in bold'
+)
 
 prettybars(mtcars$mpg, y = rownames(mtcars), col.bg = 'snow',
-           emph = rownames(mtcars)[grepl('Merc', rownames(mtcars))],
-           extra.margin = 1, col.emph = 'cyan2',
-           FUN = quantile, probs = c(.25, .5, .75), na.rm = TRUE,
-           fun.lab = c('lower quartile','median','upper quartile'),
-           note = "if you buy a Mercedes,\\nget ready to pay for lots of gas",
-           title = 'motor trend cars', sub = '   (miles per gallon)') 
+  emph = rownames(mtcars)[grepl('Merc', rownames(mtcars))],
+  extra.margin = 1, col.emph = 'cyan2',
+  FUN = quantile, probs = c(.25, .5, .75), na.rm = TRUE,
+  fun.lab = c('lower quartile','median','upper quartile'),
+  note = "if you buy a Mercedes,\\nget ready to pay for lots of gas",
+  title = 'motor trend cars', sub = '   (miles per gallon)'
+)
 
 }
 \seealso{
-\code{\link{prettybars2}}; \code{\link{bibar}}
+\code{\link{prettybars2}}; \code{\link{bibar}}; \code{\link{minbars}}
 }

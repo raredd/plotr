@@ -21,16 +21,18 @@ barmap(x, db = "worldHires", region, labels = NULL, cols = NULL)
 Creates a barplot in the shape of a map region.
 }
 \examples{
-op <- par(mar = c(0,0,0,0))
+op <- par(mar = c(0, 0, 0, 0))
 barmap(1, region = 'Germany')
 
-barmap(c(1,1,1) / 3, region = 'Germany', cols = c('red', 'black', 'gold'))
+barmap(c(1, 1, 1) / 3, region = 'Germany', cols = c('red', 'black', 'gold'))
  
-voteGermany2013 <- read.table(header = TRUE, text = "Party Result
-                              1 CDU/CSU   49.4
-                              2     SPD   30.5
-                              3   LINKE   10.2
-                              4  GRUENE   10.0")
+voteGermany2013 <- read.table(
+  header = TRUE, text = "Party Result
+                         1 CDU/CSU   49.4
+                         2     SPD   30.5
+                         3   LINKE   10.2
+                         4  GRUENE   10.0"
+)
  
 with(voteGermany2013,
      barmap(Result / 100, region = 'Germany',

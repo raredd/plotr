@@ -7,9 +7,9 @@
 prettybars2(x, lab.y = colnames(x), n.y = ncol(x),
   lab.group = rownames(x), n.group = nrow(x),
   col.group = adjustcolor(seq.int(n.group), alpha.f = 0.5),
-  col.line = "skyblue3", extra.margin = 0, col.bg = "snow",
-  cex.y = 0.7, notext = FALSE, title = paste0("prettybar of ", m$x),
-  sub = paste0("     n = ", sum(x)), note = NULL,
+  col.line = "skyblue3", col.bg = par("bg"), cex.y = 0.7,
+  notext = FALSE, title = paste("prettybar of", m$x),
+  sub = paste0("n = ", sum(x)), note = NULL,
   subnote = "subnote: here is a subnote", legend = 1L, ...)
 }
 \arguments{
@@ -27,8 +27,6 @@ prettybars2(x, lab.y = colnames(x), n.y = ncol(x),
 \item{col.group}{color for each group level}
 
 \item{col.line}{color of origin line}
-
-\item{extra.margin}{extra left spacing for long \code{lab.y} labels}
 
 \item{col.bg}{background color}
 
@@ -52,15 +50,16 @@ A barplot.
 \examples{
 set.seed(1)
 f <- function(...) sample(1:5, 100, replace = TRUE, prob = c(...))
-dat <- data.frame(q1 = f(.1, .2, .3, .3, .1),
-                  q2 = f(.1, .4, .1, .3, .1),
-                  q3 = f(.1, .2, .3, .3, .1),
-                  q4 = f(.1, .1, .3, .3, .1),
-                  q5 = f(.2, .1, .2, .3, .2),
-                  q6 = f(.1, .3, .3, .2, .1),
-                  q7 = f(.1, .4, .1, .1, .3))
-dat <- stack(dat)
-dat <- within(dat, {
+dat <- data.frame(
+  q1 = f(.1, .2, .3, .3, .1),
+  q2 = f(.1, .4, .1, .3, .1),
+  q3 = f(.1, .2, .3, .3, .1),
+  q4 = f(.1, .1, .3, .3, .1),
+  q5 = f(.2, .1, .2, .3, .2),
+  q6 = f(.1, .3, .3, .2, .1),
+  q7 = f(.1, .4, .1, .1, .3)
+)
+dat <- within(stack(dat), {
   values <- factor(values, levels = 1:5, labels = c('NA','SA','A','D','SD'))
 })
 
@@ -69,27 +68,26 @@ cols <- c(
   grey(.9),
   adjustcolor(c('cadetblue', 'lightblue', 'lightpink', 'red'), alpha.f = 0.5)
 )
-               
+
 ## compare:
 barplot(tdat, horiz = TRUE, las = 1, col = cols, border = NA)
-prettybars2(tdat, lab.y = paste('Question #', 1:7), extra.margin = 3,
-            col.group = cols)
+prettybars2(tdat, lab.y = paste('Question #', 1:7), col.group = cols, las = 1L)
 
-## using bibar
-par(mar = c(5, 8, 4, 2))
-at <- bibar(t(tdat), 3:2, 4:5, 1, col = cols,
-            xlim = c(-80, 50), axes = FALSE)
+
+## using plotr::bibar
+par(mar = c(3, 8, 4, 2))
+at <- bibar(t(tdat), 3:2, 4:5, 1, col = cols, xlim = c(-80, 50), axes = FALSE)
 
 axis(1, pretty(c(-80, 50)), abs(pretty(c(-80, 50))))
 abline(v = 0, col = 'lightblue', lwd = 4)
 text(-85, at, sprintf('Question # \%s', 1:7), xpd = NA, adj = 1)
 
-legend('topleft', inset = c(0, -0.2), xpd = NA, fill = cols[2:3],
+legend('topleft', inset = c(0, -0.1), xpd = NA, fill = cols[2:3],
        legend = rownames(tdat)[2:3], horiz = TRUE, bty = 'n')
-legend('topright', inset = c(0, -0.2), xpd = NA, fill = cols[4:5],
+legend('topright', inset = c(0, -0.1), xpd = NA, fill = cols[4:5],
        legend = rownames(tdat)[4:5], horiz = TRUE, bty = 'n')
 
 }
 \seealso{
-\code{\link{prettybars}}; \code{\link{bibar}}
+\code{\link{prettybars}}; \code{\link{bibar}}; \code{\link{bibar}}
 }
