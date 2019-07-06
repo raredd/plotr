@@ -661,3 +661,259 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99),
   
   invisible(bp)
 }
+
+#' Inset barplot
+#' 
+#' Draw a \code{\link{barplot}} with inset bars.
+#' 
+#' @inheritParams graphics::barplot.default
+#' @param height a matrix of data describing the bars which make up the plot,
+#' usually a main/total bar and one or more smaller or subsets of the total;
+#' bars are grouped by columns; the first row will be the main bar and other
+#' rows will be minor bars
+#' @param r distance (in user coordinates) each inset bar is from the edge
+#' of the main bar
+#' @param alpha numeric value in \code{[0,1]} for the alpha transparency;
+#' either a vector equal to \code{nrow(height)} (recycled as needed) or a
+#' matrix having the same dimensions of \code{height}
+#' @param col colors for each bar; if a vector, each \code{col} is applied to
+#' a group of bars with \code{alpha} transparency added to each minor bar;
+#' alternatively, a matrix of colors having the same dimensions of
+#' \code{height} to set each bar color
+#' 
+#' @return
+#' A numeric vector with the midpoint of each main bar (i.e., identical to a
+#' call to \code{barplot(..., beside = FALSE)}).
+#' 
+#' Additionally, a list attribute (\code{attr(., "coords")}) where each list
+#' element corresponds to a group of bars. The matrices contain coordinates
+#' of each rectangle plus midpoints.
+#' 
+#' @examples
+#' set.seed(1)
+#' tbl <- sapply(1:3, function(x) sort(rpois(3, 10), decreasing = TRUE))
+#' barplot(tbl, col = 1:3)
+#' inbar(tbl, col = 1:3)
+#' inbar(tbl, col = matrix(rainbow(length(tbl)), nrow(tbl)))
+#' 
+#' inbar(
+#'   tbl, col = 1:3, r = c(0.5, 0.8), alpha = c(1, 0.5, 0.25),
+#'   horiz = TRUE, names.arg = 1:3,
+#'   legend.text = 1:3, xlim = c(0, 20), border = NA
+#' )
+#' 
+#' 
+#' ## inbar returns rect coordinates for future use
+#' co <- inbar(tbl)
+#' co <- do.call('rbind', attr(co, 'coords'))
+#' points(co[, 'midpoint'], co[, 'ytop'], xpd = NA)
+#' 
+#' @export
+
+inbar <- function(height, width = 1, r = NULL, alpha = r, space = NULL,
+                  names.arg = NULL, legend.text = NULL, horiz = FALSE,
+                  density = NULL, angle = 45, col = NULL, border = par('fg'),
+                  main = NULL, sub = NULL, xlab = NULL, ylab = NULL,
+                  xlim = NULL, ylim = NULL, xpd = TRUE, log = '',
+                  axes = TRUE, axisnames = TRUE, cex.axis = par('cex.axis'),
+                  cex.names = par('cex.axis'), plot = TRUE, axis.lty = 0,
+                  offset = 0, add = FALSE, ann = !add && par('ann'),
+                  args.legend = NULL, ...) {
+  stopifnot(
+    is.matrix(height),
+    is.character(log)
+  )
+  beside <- FALSE
+  force(alpha)
+  
+  if (is.null(space))
+    space <- if (is.matrix(height) && beside)
+      c(0, 1) else 0.2
+  space <- space * mean(width)
+  
+  if (plot && axisnames && is.null(names.arg))
+    names.arg <- if (is.matrix(height))
+      colnames(height) else names(height)
+  
+  if (is.logical(legend.text)) 
+    legend.text <- if (legend.text && is.matrix(height))
+      rownames(height)
+  
+  logx <- logy <- FALSE
+  if (log != '') {
+    logx <- length(grep('x', log)) > 0L
+    logy <- length(grep('y', log)) > 0L
+  }
+  if ((logx || logy) && !is.null(density))
+    stop('Cannot use shading lines in bars when log scale is used')
+  
+  NR <- nrow(height)
+  NC <- ncol(height)
+  
+  if (is.matrix(r)) {
+    stopifnot(
+      ncol(r) == NC,
+      nrow(r) == NR
+    )
+  } else {
+    r <- c(0, if (is.null(r))
+      (seq.int(NR)[-1L]) / 10 else rep_len(r, NR - 1L))
+    r <- matrix(r, NR, NC)
+  }
+  
+  alpha <- if (is.null(alpha)) {
+    1 - r
+  } else if (is.matrix(alpha)) {
+    stopifnot(
+      ncol(alpha) == NC,
+      nrow(alpha) == NR
+    )
+    alpha
+  } else {
+    matrix(rep_len(alpha, NR), NR, NC)
+  }
+  
+  if (is.matrix(col)) {
+    stopifnot(
+      ncol(col) == NC,
+      nrow(col) == NR
+    )
+    ocol <- col[1L, ]
+  } else {
+    col <- ocol <- if (is.null(col))
+      gray.colors(NC) else seq.int(NC)
+    col <- sapply(seq_along(col), function(ii)
+      colorRampPalette(c('white', col[ii]))(100)[(alpha[, ii]) * 100])
+    if (!is.matrix(col))
+      col <- matrix(col, NR, NC)
+  }
+  
+  width <- rep_len(width, NC)
+  
+  offset <- rep_len(as.vector(offset), length(width))
+  delta <- width / 2
+  w.r <- cumsum(space + width)
+  w.m <- w.r - delta
+  w.l <- w.m - delta
+  
+  log.dat <- (logx && horiz) || (logy && !horiz)
+  rAdj <- offset + (if (log.dat) 0.9 * height else -0.01 * height)
+  
+  rectbase <- if (log.dat) {
+    if (min(height + offset, na.rm = TRUE) <= 0) 
+      stop('log scale error: at least one \'height + offset\' value <= 0')
+    if (logx && !is.null(xlim) && min(xlim) <= 0) 
+      stop('log scale error: \'xlim\' <= 0')
+    if (logy && !is.null(ylim) && min(ylim) <= 0) 
+      stop('log scale error: \'ylim\' <= 0')
+    if (logy && !horiz && !is.null(ylim)) 
+      ylim[1L]
+    else if (logx && horiz && !is.null(xlim)) 
+      xlim[1L]
+    else 0.9 * min(height, na.rm = TRUE)
+  } else 0
+  
+  if (horiz) {
+    if (is.null(xlim))
+      xlim <- range(rAdj, height + offset, na.rm = TRUE)
+    if (is.null(ylim))
+      ylim <- c(min(w.l), max(w.r))
+  } else {
+    if (is.null(xlim))
+      xlim <- c(min(w.l), max(w.r))
+    if (is.null(ylim))
+      ylim <- range(rAdj, height + offset, na.rm = TRUE)
+  }
+  
+  xyrect <- function(x1, y1, x2, y2, horizontal = TRUE, plot = TRUE, ...) {
+    res <- if (horizontal) {
+      if (plot)
+        rect(x1, y1, x2, y2, ...)
+      c(x1, y1, x2, y2, (y2 - y1) / 2 + y1)
+    } else {
+      if (plot)
+        rect(y1, x1, y2, x2, ...)
+      c(y1, x1, y2, x2, (y2 - y1) / 2 + y1)
+    }
+    
+    setNames(res, c('xleft', 'ybottom', 'xright', 'ytop', 'midpoint'))
+  }
+  
+  if (plot) {
+    dev.hold()
+    opar <- if (horiz)
+      par(xaxs = 'i', xpd = xpd) else par(yaxs = 'i', xpd = xpd)
+    on.exit({
+      dev.flush()
+      par(opar)
+    })
+    
+    if (!add) {
+      plot.new()
+      plot.window(xlim, ylim, log = log, ...)
+    }
+    
+    co <- lapply(seq.int(NC), function(cc)
+      t(sapply(seq.int(NR), function(rr)
+        xyrect(
+          rectbase + offset[cc], w.l[cc], height[rr, cc] + offset[cc],
+          w.r[cc] - r[rr, cc], horizontal = horiz, angle = angle,
+          density = density, col = col[rr, cc], border = border
+        )
+      ))
+    )
+    
+    if (axisnames && !is.null(names.arg)) {
+      at.l <- if (length(names.arg) != length(w.m)) {
+        if (length(names.arg) == NC)
+          colMeans(w.m)
+        else stop('incorrect number of names')
+      } else w.m
+      
+      axis(if (horiz) 2 else 1, at = at.l, labels = names.arg,
+           lty = axis.lty, cex.axis = cex.names, ...)
+    }
+    
+    if (!is.null(legend.text)) {
+      legend.col <- rep_len(ocol, length(legend.text))
+      if ((horiz & beside) || (!horiz & !beside)) {
+        legend.text <- rev(legend.text)
+        legend.col <- rev(legend.col)
+        density <- rev(density)
+        angle <- rev(angle)
+      }
+      xy <- par('usr')
+      if (is.null(args.legend)) {
+        legend(
+          xy[2L] - xinch(0.1), xy[4L] - yinch(0.1), legend.text, angle = angle,
+          density = density, fill = legend.col, xjust = 1, yjust = 1
+        )
+      } else {
+        args.legend1 <- list(
+          x = xy[2L] - xinch(0.1), y = xy[4L] - yinch(0.1),
+          legend = legend.text, angle = angle, density = density,
+          fill = legend.col, xjust = 1, yjust = 1
+        )
+        args.legend1[names(args.legend)] <- args.legend
+        
+        do.call('legend', args.legend1)
+      }
+    }
+    if (ann)
+      title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...)
+    if (axes)
+      axis(if (horiz) 1 else 2, cex.axis = cex.axis, ...)
+    
+    invisible(structure(w.m, coords = co))
+  } else {
+    co <- lapply(seq.int(NC), function(cc)
+      t(sapply(seq.int(NR), function(rr)
+        xyrect(
+          rectbase + offset[cc], w.l[cc], height[rr, cc] + offset[cc],
+          w.r[cc] - r[rr, cc], horizontal = horiz, plot = FALSE
+        )
+      ))
+    )
+    structure(w.m, coords = co)
+  }
+}
