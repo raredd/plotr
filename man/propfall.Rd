@@ -44,13 +44,14 @@ dat[, vars] <- t(apply(dat[, vars], 1L, function(x) x / sum(x)))
 dat <- dat[, vars]
 dat$group <- colnames(dat)[max.col(dat)]
 
-cols <- c('grey', 'lightpink', 'indianred1', 'indianred3')
+cols <- c('grey', 'lightpink', 'indianred1')
 propfall(dat[, 1:3])
 propfall(dat[, 1:3], group = dat$group, col = cols)
 
 ## use the return value to add labels or identify observations
 bp <- propfall(
-  dat[, 1:3], col = cols, group = dat$group, order = c('disp', 'wt', 'mpg'),
+  dat[, 1:3], col = cols, group = dat$group,
+  order = c('disp', 'wt', 'mpg'),
   group.order = c('mpg', 'wt', 'disp')
 )
 text(bp$bp, 0, labels = rownames(dat)[bp$o], srt = 90, col = 0, adj = 0)

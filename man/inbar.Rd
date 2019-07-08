@@ -162,3 +162,6 @@ co <- do.call('rbind', attr(co, 'coords'))
 points(co[, 'midpoint'], co[, 'ytop'], xpd = NA)
 
 }
+\seealso{
+\code{\link{tracebar}}
+}

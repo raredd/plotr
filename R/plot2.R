@@ -311,13 +311,14 @@ shist <- function(x, ..., col = grey.colors(length(x) + 1L),
 #' dat <- dat[, vars]
 #' dat$group <- colnames(dat)[max.col(dat)]
 #' 
-#' cols <- c('grey', 'lightpink', 'indianred1', 'indianred3')
+#' cols <- c('grey', 'lightpink', 'indianred1')
 #' propfall(dat[, 1:3])
 #' propfall(dat[, 1:3], group = dat$group, col = cols)
 #' 
 #' ## use the return value to add labels or identify observations
 #' bp <- propfall(
-#'   dat[, 1:3], col = cols, group = dat$group, order = c('disp', 'wt', 'mpg'),
+#'   dat[, 1:3], col = cols, group = dat$group,
+#'   order = c('disp', 'wt', 'mpg'),
 #'   group.order = c('mpg', 'wt', 'disp')
 #' )
 #' text(bp$bp, 0, labels = rownames(dat)[bp$o], srt = 90, col = 0, adj = 0)
@@ -357,20 +358,25 @@ propfall <- function(data, group, order, group.order = unique(group),
   mm <- t(as.matrix(sp[, seq_along(col)]))
   
   tt <- table(factor(group, group.order))
-  times <- rawr::interleave(which = 'rbind',
-                            matrix(tt), matrix(1L, length(tt))
+  times <- rawr::interleave(
+    which = 'rbind', matrix(tt), matrix(1L, length(tt))
   )
   
   mm[is.na(mm)] <- 0
   
-  par(mar = c(3,4.5,2,1))
+  op <- par(mar = c(3, 4.5, 2, 1))
+  on.exit(par(op))
+  
   bp <- barplot(mm, col = col, space = 0, ..., border = NA)
   
-  text(c(0, head(cumsum(tt), -1L)) + seq_along(group.order), par('usr')[4L],
-       group.order, xpd = NA, adj = 0, pos = 3L)
-  legend(0, par('usr')[3L], xpd = NA, horiz = TRUE,
-         bty = 'n', lty = 1, lwd = 7,
-         legend = order, col = col)
+  text(
+    c(0, head(cumsum(tt), -1L)) + seq_along(group.order), par('usr')[4L],
+    group.order, xpd = NA, adj = 0, pos = 3L
+  )
+  legend(
+    0, par('usr')[3L], xpd = NA, horiz = TRUE, bty = 'n',
+    lty = 1L, lwd = 7, legend = order, col = col
+  )
   
   invisible(list(bp = bp, o = o))
 }
@@ -689,6 +695,9 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99),
 #' element corresponds to a group of bars. The matrices contain coordinates
 #' of each rectangle plus midpoints.
 #' 
+#' @seealso
+#' \code{\link{tracebar}}
+#' 
 #' @examples
 #' set.seed(1)
 #' tbl <- sapply(1:3, function(x) sort(rpois(3, 10), decreasing = TRUE))
@@ -916,4 +925,74 @@ inbar <- function(height, width = 1, r = NULL, alpha = r, space = NULL,
     )
     structure(w.m, coords = co)
   }
+}
+
+#' Tracing barplot
+#' 
+#' Draw a \code{\link{barplot}} with polygons tracing each row.
+#' 
+#' @param height a matrix of data describing the bars which make up the plot,
+#' usually a main/total bar and one or more smaller or subsets of the total;
+#' bars are grouped by columns; the first row will be the main bar and other
+#' rows will be minor bars
+#' @param col colors for each row of \code{height}
+#' @param alpha numeric value in \code{[0,1]} for the alpha transparency of
+#' polygons
+#' @param pad numeric vector of length one or two controlling the horizontal
+#' and vertical padding, respectively
+#' @param ... additional arguments passed to \code{\link{barplot}}
+#' 
+#' @inherit inbar return
+#' 
+#' @seealso
+#' \code{\link{inbar}}
+#' 
+#' @examples
+#' set.seed(1)
+#' tbl <- sapply(1:3, function(x) sort(rpois(3, 10), decreasing = TRUE))
+#' tracebar(tbl)
+#' 
+#' tracebar(replace(tbl, 5, 0), col = 1:3, space = 0.5)
+#' 
+#' @export
+
+tracebar <- function(height, col = NULL, pad = 0.05, alpha = 0.75, ...) {
+  ht <- apply(height, 2L, function(x) cumsum(x))
+  cd <- inbar(ht, r = 0, plot = FALSE, ...)
+  co <- attr(cd, 'coords')
+  ht <- rbind(0, ht)
+  
+  if (is.null(col))
+    col <- gray.colors(nrow(ht))
+  
+  barplot(height, col = col, beside = FALSE, horiz = FALSE, plot = TRUE, ...)
+  
+  pad <- rep_len(pad, 2L)
+  
+  for (ii in seq_along(co[-1L])) {
+    ## current and next group
+    x <- cbind(co[[ii]], co[[ii + 1L]])
+    
+    for (jj in seq.int(nrow(height))) {
+      y  <- x[jj, ]
+      
+      ## get padding for x and y
+      px <- pad[1L] * abs(y[[3L]] - y[[6L]])
+      py <- pad[2L] * max(height)
+      
+      xx <- c(y[3L] + px, y[6L] - px, y[6L] - px, y[3L] + px, y[3L] + px)
+      yy <- c(ht[jj, ii] + py, ht[jj, ii + 1L] + py, ht[jj + 1L, ii + 1L] - py,
+              ht[jj + 1L, ii] - py, ht[jj + 1L, ii] - py)
+      
+      ## handle overlap
+      if (diff(yy[2:3]) < 0)
+        yy[2:3] <- mean(yy[2:3])
+      if (diff(yy[c(1L, 5L)]) < 0)
+        yy[c(1L, 4:5)] <- mean(yy[c(1L, 5L)])
+      
+      polygon(xx, yy, col = adjustcolor(col[jj], alpha.f = alpha), border = NA)
+    }
+  }
+  
+  invisible(cd)
 }
