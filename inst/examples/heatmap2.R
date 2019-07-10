@@ -1,14 +1,31 @@
 ## sort and plot a matrix of integers
-
+##
 ## helpers - required
 ##   psum - pairwise sum of vectors
 ##   sort_matrix - sort matrix by values in rows or columns
 ##   waffle - create a "waffle chart"
+##   rescaler - rescales numeric vectors
+##   tcol - add transparency to colors
+##
 
-## misc - required for vis
-##   rawr::tcol - add transparency to colors
-##   rawr::rescaler - rescale vector of values
+rescaler <- function (x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
+  ## rawr::rescaler
+  (x - from[1L]) / diff(from) * diff(to) + to[1L]
+}
 
+tcol <- function(col, alpha = 1) {
+  ## rawr::tcol
+  col <- replace(col, col %in% 0, NA)
+  dat <- data.frame(col = col, alpha = alpha, stringsAsFactors = FALSE)
+  nas <- !complete.cases(dat)
+  dat$alpha[is.na(dat$alpha)] <- 0
+  
+  x <- t(col2rgb(dat$col))
+  x <- rgb(x, alpha = dat$alpha * 255, maxColorValue = 255)
+  
+  x <- replace(x, nas, NA)
+  tolower(replace(x, dat$col %in% 'transparent', 'transparent'))
+}
 
 psum <- function(..., na.rm = FALSE) {
   ## rawr::psum - pairwise sum of vectors
@@ -121,7 +138,7 @@ w <- do_waffle(cbind(mat, mat), colsep = 33, mar = c(0,4,9,1))
 cols <- c('dodgerblue2','tomato','purple')
 mat3 <- mtcars[colnames(w$matrix), c('mpg', 'wt', 'hp')]
 mat3[] <- lapply(seq_along(mat3), function(x)
-  rawr::tcol(cols[x], alpha = rescaler(mat3[, x], c(.2, .8))))
+  tcol(cols[x], alpha = rescaler(mat3[, x], c(.2, .8))))
 par(fig = c(0,1,0,.2), mar = c(1/2,4,1/2,1), new = TRUE)
 w <- waffle(t(mat3), reset_par = FALSE)
 text(0, w$centers[1:3, 'y'], c('mpg', 'wt', 'hp'), pos = 2, xpd = NA, cex = .8)
