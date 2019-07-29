@@ -1,5 +1,5 @@
 ### some less useful plots
-# waffle, histr, shist, propfall, bibar, dose_esc, boxline
+# waffle, histr, shist, propfall, bibar, dose_esc, boxline, toxplot
 ###
 
 
@@ -995,4 +995,196 @@ tracebar <- function(height, col = NULL, pad = 0.05, alpha = 0.75, ...) {
   }
   
   invisible(cd)
+}
+
+#' toxplot
+#' 
+#' Draw a toxicity summary plot.
+#' 
+#' @param data an \code{\link{ftable}} or a data frame with columns for toxicity
+#' category, description, and grade (in that order)
+#' @param headers a vector of labels for text column headers
+#' @param widths the relative width of each column
+#' @param total total number of patients (for percentages)
+#' @param show.n logical; if \code{TRUE}, the count for each bar is shown
+#' @param col.bars a vector of colors for each column of \code{ftable}
+#' @param col.bg,alpha.bg background color for text columns with alternating
+#' \code{alpha.bg} transparency
+#' @param digits number of places past the decimal to keep for percentages
+#' @param xaxis.at x-axis tick positions, scaled to \code{[0,1]}
+#' @param legend logical; if \code{TRUE}, a legend for the \code{col.bars} is
+#' shown
+#' @param args.legend an optional \emph{named} list of arguments passed to
+#' \code{\link{legend}}
+#' 
+#' @examples
+#' ## example from rawr::tabler_by
+#' set.seed(1)
+#' 
+#' f <- function(x, ...) sample(x, 100, replace = TRUE, ...)
+#' tox <- data.frame(
+#'   id = rep(1:10, 10), phase = 1:2,
+#'   code = f(rawr::ctcae_v4$tox_code[1:100]),
+#'   grade = f(1:3, prob = c(.6, .3, .1)),
+#'   stringsAsFactors = FALSE
+#' )
+#' tox <- cbind(tox, rawr::match_ctc(tox$code)[, c('tox_cat', 'tox_desc')])
+#' 
+#' tbl <- ftable(
+#'   Category = tox$tox_cat,
+#'   Description = tox$tox_desc,
+#'   Grade = tox$grade
+#' )
+#' 
+#' ## these are equivalent ways to call toxplot
+#' toxplot(tbl)
+#' toxplot(tox[, c('tox_cat', 'tox_desc', 'grade')])
+#' 
+#' \dontrun{
+#' pdf('~/desktop/test.pdf', height = 10, width = 12)
+#' toxplot(tbl, xaxis.at = 0:1, args.legend = list(horiz = FALSE, cex = 2),
+#'         col.bg = 'orchid', total = 15, widths = c(1, 1, 0.5, 2))
+#' dev.off()
+#' }
+#' 
+#' @export
+
+toxplot <- function(data, headers = NULL, widths = c(1, 1, 1, 2),
+                    total = max(rowSums(tbl)), show.n = TRUE,
+                    col.bars = NULL, col.bg = 'grey',
+                    alpha.bg = c(0.25, 0.5), digits = 0L, xaxis.at = 0:5 / 5,
+                    legend = TRUE, args.legend = list()) {
+  if (inherits(data, 'ftable')) {
+    headers <- if (is.null(headers))
+      c(names(attr(data, 'row.vars')), 'N (%)') else rep_len(headers, 3L)
+    
+    ftbl <- rawr::writeftable(data)
+    ftbl <- as.matrix(rawr::locf(as.data.frame(ftbl)))
+    ftbl <- ftbl[rowSums(data) > 0, ]
+    
+    ftbl[, 1L] <- paste(' ', ftbl[, 1L])
+    ftbl[, 1L][duplicated(ftbl[, 1L])] <- ''
+  } else {
+    nn <- names(data)
+    suppressWarnings({
+      ftbl <- rawr::tabler_by(data, nn[1:2], nn[3L])
+    })
+    ftbl <- cbind(paste(' ', rownames(ftbl)), ftbl)
+    
+    headers <- if (is.null(headers))
+      c(nn[1:2], 'N (%)') else rep_len(headers, 3L)
+  }
+  
+  tbl <- ftbl[, -(1:3)]
+  tbl <- matrix(as.integer(tbl), nrow(tbl))
+  ftbl[, 3L] <- sprintf('%s (%s) ', rowSums(tbl),
+                        rawr::roundr(rowSums(tbl) / total * 100, digits))
+  
+  ndcx <- function(x) {
+    grconvertX(x, 'ndc')
+  }
+  ndcy <- function(x) {
+    grconvertY(x, 'ndc')
+  }
+
+  nr <- nrow(ftbl)
+  nc <- 3L
+  
+  if (is.null(col.bars))
+    col.bars <- c('lightblue', 'dodgerblue2', 'mediumpurple1', 'purple3', 'tomato')
+  col.bars <- rep_len(col.bars, ncol(tbl))
+  
+  
+  layout(t(seq.int(nc + 1L)), widths = rep_len(widths, 4L))
+  mm <- c(4, 2, 3, 2)
+  par(yaxs = 'i', mar = mm)
+  
+  dat <- as.matrix(tbl)
+  dat <- dat[seq.int(nrow(dat)), ]
+  dat <- t(dat)
+  
+  
+  ## text panels
+  bp <- barplot(
+    dat, horiz = TRUE, col = NA, border = NA, space = 0,
+    axes = FALSE, axisnames = FALSE
+  )
+  co1 <- plotr::coords(to = 'ndc')
+  
+  barplot(
+    dat, horiz = TRUE, col = NA, border = NA, space = 0,
+    axes = FALSE, axisnames = FALSE
+  )
+  co2 <- plotr::coords(to = 'ndc')
+  
+  par(mar = mm - c(0, 0, 0, 2))
+  barplot(
+    dat, horiz = TRUE, col = NA, border = NA, space = 0,
+    axes = FALSE, axisnames = FALSE
+  )
+  co3 <- plotr::coords(to = 'ndc')
+  
+  pad <- 0
+  rect(
+    ndcx(co1$plot$x[1L] - pad), ndcy(co1$plot$y[1L]),
+    ndcx(co3$plot$x[2L]), ndcy(co3$plot$y[2L]), xpd = NA
+  )
+  
+  # dat <- dat[rev(seq.int(nrow(dat))), ]
+  # xx <- apply(dat, 2L, function(x) head(c(0, cumsum(x)), -1L) + x / 2)
+  # yy <- bp[col(dat)]
+  
+  df <- diff(bp)[1L] / 2
+  yb <- c(ndcy(co1$plot$y[1L]), unique(bp) - df, ndcy(co3$plot$y[2L]))
+  aa <- rep_len(alpha.bg, 2L)
+  
+  for (ii in seq.int(nrow(tbl) + 1L)) {
+    rect(
+      ndcx(co1$plot$x[1L] - pad), yb[ii],
+      ndcx(co3$plot$x[2L]), yb[ii + 1L],
+      col = adjustcolor(col.bg[1L], ifelse(ii %% 2L == 0L, aa[1L], aa[2L])),
+      xpd = NA, border = NA
+    )
+  }
+  
+  ## text columns
+  text(ndcx(co1$plot$x[1L]), bp, rev(ftbl[, 1L]), xpd = NA, adj = 0)
+  text(ndcx(co2$plot$x[1L]), bp, rev(ftbl[, 2L]), xpd = NA, adj = 0)
+  text(ndcx(co3$plot$x[2L]), bp, rev(ftbl[, 3L]), xpd = NA, adj = 1)
+  
+  ## headers
+  text(c(ndcx(co1$plot$x[1L]), ndcx(co2$plot$x[1L])),
+       grconvertY(nrow(tbl) + 0.5), headers[1:2],
+       xpd = NA, adj = 0, font = 2L)
+  text(ndcx(co3$plot$x[2L]), grconvertY(nrow(tbl) + 0.5), headers[3L],
+       xpd = NA, adj = 1, font = 2L)
+  
+  
+  ## barplot
+  par(mar = mm - c(0, 2, 0, 0))
+  dat <- dat[, rev(seq.int(ncol(dat)))]
+  # dat <- dat[rev(seq.int(nrow(dat))), ]
+  xx <- apply(dat, 2L, function(x) head(c(0, cumsum(x)), -1L) + x / 2)
+  yy <- bp[col(dat)]
+  
+  barplot(
+    dat, horiz = TRUE, col = col.bars, border = 'white', space = 0,
+    axes = FALSE, axisnames = FALSE
+  )
+  
+  lbl <- xaxis.at * 100
+  lbl[length(lbl)] <- paste0(lbl[length(lbl)], '%')
+  axis(1L, max(colSums(dat)) * xaxis.at, lbl, mgp = c(3, 1.5, 0.5))
+  
+  if (show.n)
+    text(xx, yy, dat, col = ifelse(dat == 0, 'transparent', 'black'))
+  
+  largs <- list(
+    par('usr')[2L], grconvertY(nrow(tbl) + 1.5), paste('Grade', seq_along(col.bars)),
+    fill = col.bars, border = NA, horiz = TRUE, bty = 'n', xpd = NA, xjust = 1
+  )
+  if (legend)
+    do.call('legend', modifyList(largs, args.legend))
+  
+  invisible(ftbl)
 }
