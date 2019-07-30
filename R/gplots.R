@@ -2040,7 +2040,7 @@ gspineplot.formula <- function(formula, data = NULL, breaks = NULL, tol.ylab = 0
   m <- match.call(expand.dots = FALSE)
   m$grid <- m$col.grid <- m$col.acc <- NULL
   m <- m[c(1L, match(c("formula", "data", "subset"), names(m), 0L))]
-  require(stats, quietly = TRUE)
+  # require(stats, quietly = TRUE)
   m[[1L]] <- quote(stats::model.frame)
   mf <- eval.parent(m)
   if (NCOL(mf) != 2L) 
@@ -2224,7 +2224,7 @@ gpairs.formula <- function(formula, data = NULL, ..., subset,
   m$... <- grid <- col.grid <- col.acc <- NULL
   m$na.action <- na.action
   m[[1L]] <- quote(stats::model.frame)
-  require(stats, quietly = TRUE)
+  # require(stats, quietly = TRUE)
   mf <- eval(m, parent.frame())
   gpairs(mf, ..., grid = grid, col.grid = col.grid, col.acc = col.acc)
 }

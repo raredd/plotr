@@ -28,6 +28,8 @@ is performed; this is useful for on-the-fly clustering}
 determined by \code{type}; for \code{plot.dimr}, additional arguments
 passed to plotting functions or further to \code{\link{par}}}
 
+\item{x}{an object of class \code{"dimr"}}
+
 \item{group}{a length \code{c} vector identifying the group of each sample;
 use \code{FALSE} for none or \code{TRUE} to use k-means clusters}
 
@@ -112,5 +114,5 @@ title(xlab = 'MPG', ylab = 'Weight', outer = TRUE, cex.lab = 2)
 }
 \seealso{
 \code{\link[Rtsne]{Rtsne}}; \code{\link[rsvd]{rpca}};
-\code{\link[stats]{pca}}; \code{\link[stats]{kmeans}}
+\code{\link[stats]{prcomp}}; \code{\link[stats]{kmeans}}
 }

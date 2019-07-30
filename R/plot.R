@@ -137,6 +137,7 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' @param ... for \code{dimr}, additional arguments passed to the algorithm
 #' determined by \code{type}; for \code{plot.dimr}, additional arguments
 #' passed to plotting functions or further to \code{\link{par}}
+#' @param x an object of class \code{"dimr"}
 #' @param group a length \code{c} vector identifying the group of each sample;
 #' use \code{FALSE} for none or \code{TRUE} to use k-means clusters
 #' @param group2 a list of data to plot, usually samples in \code{data}, each
@@ -167,7 +168,7 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' 
 #' @seealso
 #' \code{\link[Rtsne]{Rtsne}}; \code{\link[rsvd]{rpca}};
-#' \code{\link[stats]{pca}}; \code{\link[stats]{kmeans}}
+#' \code{\link[stats]{prcomp}}; \code{\link[stats]{kmeans}}
 #' 
 #' @examples
 #' ## feature x sample matrix

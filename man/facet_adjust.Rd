@@ -24,11 +24,15 @@ facet_adjust(x, pos = c("up", "down"), newpage = is.null(vp),
 Adjusts labels on x-axes when using \code{\link[ggplot2]{facet_wrap}}.
 }
 \examples{
+\dontrun{
 library('ggplot2')
 ## missing some labels 
-(tmp <- ggplot(diamonds[1:100, ], aes(carat, price, colour = clarity)) + 
-  geom_point() + facet_wrap( ~ cut))
-facet_adjust(tmp)
-facet_adjust(tmp, pos = 'down')
+p <- ggplot(diamonds[1:100, ], aes(carat, price, colour = clarity)) +
+  geom_point() + facet_wrap( ~ cut)
+p
+
+facet_adjust(p)
+facet_adjust(p, pos = 'down')
+}
 
 }

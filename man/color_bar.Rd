@@ -9,6 +9,8 @@ color_bar(colors, x = NULL, y = x, labels = NULL,
   cex.y = 1, ...)
 }
 \arguments{
+\item{colors}{vector of color names (or hexadecimal) from low to high}
+
 \item{x}{numeric vector of data}
 
 \item{y}{optional numeric vector of data; to color by a variable other than
@@ -26,8 +28,6 @@ scale the bar down (or up)}
 \item{cex.x, cex.y}{scaling parameters}
 
 \item{...}{additional graphical parameters passed to \code{\link{par}}}
-
-\item{cols}{vector of color names (or hexadecimal) from low to high}
 }
 \value{
 An \code{\link{invisible}} vector of colors (hexadecimal format)
@@ -41,8 +41,8 @@ Continuous color bar legend.
 \examples{
 plot.new()
 color_bar(c('black','red','white','blue'), at.x = 0, at.y = 0)
-text(x = 0, y = seq(0, par('usr')[4], length = 6), pos = 4, xpd = TRUE,
-     labels = pretty(seq(0, par('usr')[4]), n = 6), cex = .8, offset = .75)
+text(x = 0, y = seq(0, par('usr')[4], length.out = 6), pos = 4, xpd = TRUE,
+     labels = pretty(seq(0, par('usr')[4]), n = 6), cex = 0.8, offset = 0.75)
 
 
 ## calling color_bar once in the col argument will color x accordingly
@@ -50,9 +50,9 @@ text(x = 0, y = seq(0, par('usr')[4], length = 6), pos = 4, xpd = TRUE,
 
 ## compare
 plot(mtcars$mpg, pch = 19, cex = 2, 
-     col = rawr:::col_scaler(mtcars$mpg, c('yellow','red')))
+     col = rawr:::col_scaler(mtcars$mpg, c('yellow', 'red')))
 plot(mtcars$mpg, pch = 19, cex = 2,
-     col = color_bar(c('yellow','red'), mtcars$mpg, labels = mtcars$mpg))
+     col = color_bar(c('yellow', 'red'), mtcars$mpg, labels = mtcars$mpg))
 
 
 ## plot a color_bar legend by a variable other than x
@@ -63,13 +63,13 @@ plot(mtcars$mpg, pch = 19, cex = 2,
 with(mtcars, {
   plot(mpg, pch = 19, cex = 2,
        main = 'color by weight (red = heavier)',
-       col = rawr:::col_scaler(wt, c('yellow','red')))
+       col = rawr:::col_scaler(wt, c('yellow', 'red')))
 })
 
 with(mtcars, {
   plot(mpg, pch = 19, cex = 2,
        main = 'color by weight (red = heavier)',
-       col = color_bar(c('yellow','red'), x = wt, y = mpg, labels = wt))
+       col = color_bar(c('yellow', 'red'), x = wt, y = mpg, labels = wt))
 })
 
 }

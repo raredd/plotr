@@ -24,9 +24,9 @@ prettypie2(x, group = 1, labels = NA, col.group = NULL,
 \item{labels}{vector of labels for individual slices; if \code{NA}, no
 labels will be drawn; if \code{NULL}, slices will be labeled sequentially}
 
-\item{radius}{radius for inner and outer pie (usually in [0,1])}
+\item{col.group}{colors for each group of slices}
 
-\item{col}{colors for each group of slices}
+\item{radius}{radius for inner and outer pie (usually in [0,1])}
 }
 \description{
 A pie chart. \code{prettypie} is stupid, ignore it; use \code{prettypie2},

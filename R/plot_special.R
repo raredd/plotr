@@ -423,7 +423,7 @@ prettypie <- function(dat, main = NULL, sub = NULL, note = NULL, ...) {
 #' @param group vector identifying groups of slices (used by \code{col})
 #' @param labels vector of labels for individual slices; if \code{NA}, no
 #' labels will be drawn; if \code{NULL}, slices will be labeled sequentially
-#' @param col colors for each group of slices
+#' @param col.group colors for each group of slices
 #' @param radius radius for inner and outer pie (usually in [0,1])
 #' 
 #' @examples

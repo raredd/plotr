@@ -15,6 +15,9 @@ or values accepted by \code{\link{xy.coords}}; if missing, the user
 will be prompted to select the bottom-left and top-right coordinates for
 the plotting region}
 
+\item{log}{character, \code{"x"}, \code{"y"} or both, as for
+\code{\link{plot}}; sets negative values to \code{NA} and gives a warning}
+
 \item{size}{the size of the plot in inches if \code{x} and \code{y} are
 length 1}
 
@@ -87,7 +90,7 @@ set.seed(1)
 tmp <- rnorm(25)
 qqnorm(tmp)
 qqline(tmp)
-pars <- subplot(hist(tmp, ann = F), 0, -1)
+pars <- subplot(hist(tmp, ann = FALSE), 0, -1)
 
 ## wrong way to add a reference line to histogram
 abline(v = 0, col = 2, lwd = 2)

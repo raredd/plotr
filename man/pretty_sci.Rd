@@ -65,6 +65,6 @@ text(1:5, -1, pretty_sci(1 / x, limit = -1, simplify = FALSE))
 
 }
 \seealso{
-\code{\link[sfsmisc]{pretty10exp}}; \code{\link{roundr}};
+\code{\link[sfsmisc]{pretty10exp}}; \code{\link[rawr]{roundr}};
 \code{\link{format}}; \code{\link{sprintf}}
 }

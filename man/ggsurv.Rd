@@ -44,8 +44,8 @@ observatons at each \code{tick} timepoint; color of text inherits from
 
 \item{pval}{two-element numeric vector corresponding to x- and y-coordinates
 to plot a p-value; p-value based on log-rank test for significant 
-differences in Kaplan-Meier curves (see \code{\link{survdiff}}); if 
-\code{NULL}, no test is performed (default)}
+differences in Kaplan-Meier curves (see \code{\link[survival]{survdiff}});
+if \code{NULL}, no test is performed (default)}
 
 \item{basehaz}{logical; if \code{TRUE}, returns baseline survival curve of a 
 \code{\link[survival]{coxph}} object; see \code{\link[survival]{basehaz}}}

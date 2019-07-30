@@ -151,8 +151,8 @@ ggwidths <- function(..., moreArgs) {
 #' @param col.atrisk optional color for at risk text, e.g., 'black'
 #' @param pval two-element numeric vector corresponding to x- and y-coordinates
 #' to plot a p-value; p-value based on log-rank test for significant 
-#' differences in Kaplan-Meier curves (see \code{\link{survdiff}}); if 
-#' \code{NULL}, no test is performed (default)
+#' differences in Kaplan-Meier curves (see \code{\link[survival]{survdiff}});
+#' if \code{NULL}, no test is performed (default)
 #' @param basehaz logical; if \code{TRUE}, returns baseline survival curve of a 
 #' \code{\link[survival]{coxph}} object; see \code{\link[survival]{basehaz}}
 #' @param ticks three-element numeric vector corresponding to the "from," "to,"
@@ -537,7 +537,7 @@ ggsurv <- function(s,
   
   if (!missing(pval)) {
     # log-rank/Mantel-Haenszel (rho = 0)
-    sdiff <- survdiff(eval(s$call$formula), data = eval(s$call$data), rho = 0)
+    sdiff <- survival::survdiff(eval(s$call$formula), data = eval(s$call$data))
     pval.chisq <- pchisq(sdiff$chisq, length(sdiff$n) - 1, lower.tail = FALSE)
     pvaltxt <- ifelse(pval.chisq < 0.001, 'p < 0.001', 
                       paste('p =', signif(pval.chisq, 3)))
@@ -793,48 +793,59 @@ ggmultiplot <- function(..., plotlist = NULL, ncol = 1L, layout = NULL) {
 #' \code{facet_adjust} object that inherits \code{\link[gtable]{gtable}} class
 #' 
 #' @examples
+#' \dontrun{
 #' library('ggplot2')
 #' ## missing some labels 
-#' (tmp <- ggplot(diamonds[1:100, ], aes(carat, price, colour = clarity)) + 
-#'   geom_point() + facet_wrap( ~ cut))
-#' facet_adjust(tmp)
-#' facet_adjust(tmp, pos = 'down')
+#' p <- ggplot(diamonds[1:100, ], aes(carat, price, colour = clarity)) +
+#'   geom_point() + facet_wrap( ~ cut)
+#' p
+#' 
+#' facet_adjust(p)
+#' facet_adjust(p, pos = 'down')
+#' }
 #' 
 #' @export
 
 facet_adjust <- function(x, pos = c('up', 'down'), 
                          newpage = is.null(vp), vp = NULL) {
-  
   pos <- match.arg(pos)
   p <- ggplot_build(x)
   gtable <- ggplot_gtable(p)
-  ## dev.off() ## this prevented plots from being rendered in knitr
+  # dev.off() ## this prevented plots from being rendered in knitr
+  
   ## finding dimensions
-  dims <- apply(p$panel$layout[2:3], 2, max)
-  nrow <- dims[1]
-  ncol <- dims[2]
+  # dims <- apply(p$panel$layout[2:3], 2L, max)
+  dims <- apply(p$layout$layout[2:3], 2L, max)
+  nrow <- dims[1L]
+  ncol <- dims[2L]
+  
   ## number of panels in plot
-  panels <- sum(grepl('panel', names(gtable$grobs)))
+  # panels <- sum(grepl('panel', names(gtable$grobs)))
+  panels <- sum(grepl('panel', gtable$layout$name))
   space <- ncol * nrow
+  
   ## missing panels
   n <- space - panels
+  
   ## check if modifications are needed
   if (panels != space) {
     ## indices of panels to fix
-    idx <- (space - ncol - n + 1):(space - ncol)
+    idx <- (space - ncol - n + 1L):(space - ncol)
+    
     ## copy x-axis of last existing panel to the chosen panels in row above
-    gtable$grobs[paste0('axis_b', idx)] <- list(
-      gtable$grobs[[paste0('axis_b', panels)]])
+    gtable$grobs[paste0('axis_b', idx)] <-
+      list(gtable$grobs[[paste0('axis_b', panels)]])
+    
     if (pos == 'down') {
       ## shift labels down to same level as x-axis of last panel
-      rows <- grep(sprintf('axis_b\\-[%s-%s]', idx[1], idx[n]),
+      rows <- grep(sprintf('axis_b\\-[%s-%s]', idx[1L], idx[n]),
                    gtable$layout$name)
       lastAxis <- grep(paste0('axis_b\\-', panels), gtable$layout$name)
-      gtable$layout[rows, c('t','b')] <- gtable$layout[lastAxis, c('t')]
+      gtable$layout[rows, c('t', 'b')] <- gtable$layout[lastAxis, 't']
     }
   }
-  class(gtable) <- c('facet_adjust','gtable','ggplot','gg')
-  gtable
+  
+  structure(gtable, class = c('facet_adjust', 'gtable', 'ggplot', 'gg'))
 }
 
 #' facet_adjust print method
@@ -956,11 +967,11 @@ ggcaterpillar <- function(re, qq  =  TRUE, likeDotplot  =  TRUE) {
 #' 
 #' @examples
 #' library('ggplot2')
-#' tmp <- rescaler(matrix(1:25, 5))
+#' tmp <- rawr::rescaler(matrix(1:25, 5))
 #' diag(tmp) <- 1
 #' colnames(tmp) <- rownames(tmp) <- LETTERS[1:5]
 #' ggheat(cors = tmp, limits = c(0, 1))
-#' ggheat(cors = tmp, gradn = NULL, gradc = c('white','red'))
+#' ggheat(cors = tmp, gradn = NULL, gradc = c('white', 'red'))
 #' 
 #' @export
 
@@ -1099,11 +1110,11 @@ ggheat2 <- function(data, corr = cor(data, use = 'pairwise.complete'),
   dd <- as.data.frame(dd * lower.tri(dd))
   rn <- names(dd)
   dd <- data.frame(row = rn, dd)
-  dd <- melt(dd, varying = list(2:ncol(dd)))
+  dd <- reshape2::melt(dd, varying = list(2:ncol(dd)))
   
   corr <- as.data.frame(corr * lower.tri(corr))
   corr <- cbind.data.frame(row = rn, corr)
-  corr <- melt(corr, varying = list(2:ncol(corr)))
+  corr <- reshape2::melt(corr, varying = list(2:ncol(corr)))
   corr$value[corr$value == 0] <- NA
   
   if (!is.null(nbreaks)) {

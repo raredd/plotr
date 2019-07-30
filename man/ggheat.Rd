@@ -35,11 +35,11 @@ package, etc.
 }
 \examples{
 library('ggplot2')
-tmp <- rescaler(matrix(1:25, 5))
+tmp <- rawr::rescaler(matrix(1:25, 5))
 diag(tmp) <- 1
 colnames(tmp) <- rownames(tmp) <- LETTERS[1:5]
 ggheat(cors = tmp, limits = c(0, 1))
-ggheat(cors = tmp, gradn = NULL, gradc = c('white','red'))
+ggheat(cors = tmp, gradn = NULL, gradc = c('white', 'red'))
 
 }
 \seealso{

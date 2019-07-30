@@ -17,15 +17,21 @@ Imports:
     stats,
     utils
 Suggests:
+    gtable,
     Hmisc,
     igraph,
+    iplotr,
     knitr,
+    lattice,
+    lme4,
     mapdata,
     maps,
     plotrix,
+    reshape2,
     rgl,
     rsvd,
     Rtsne,
+    survival,
     testthat,
     vegan
 License: GPL-2

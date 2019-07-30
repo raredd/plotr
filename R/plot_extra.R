@@ -12,7 +12,7 @@
 #' 
 #' Continuous color bar legend.
 #' 
-#' @param cols vector of color names (or hexadecimal) from low to high
+#' @param colors vector of color names (or hexadecimal) from low to high
 #' @param x numeric vector of data
 #' @param y optional numeric vector of data; to color by a variable other than
 #' \code{x}, \code{y} must be specified for \code{labels} coordinates to work 
@@ -33,8 +33,8 @@
 #' @examples
 #' plot.new()
 #' color_bar(c('black','red','white','blue'), at.x = 0, at.y = 0)
-#' text(x = 0, y = seq(0, par('usr')[4], length = 6), pos = 4, xpd = TRUE,
-#'      labels = pretty(seq(0, par('usr')[4]), n = 6), cex = .8, offset = .75)
+#' text(x = 0, y = seq(0, par('usr')[4], length.out = 6), pos = 4, xpd = TRUE,
+#'      labels = pretty(seq(0, par('usr')[4]), n = 6), cex = 0.8, offset = 0.75)
 #' 
 #' 
 #' ## calling color_bar once in the col argument will color x accordingly
@@ -42,9 +42,9 @@
 #' 
 #' ## compare
 #' plot(mtcars$mpg, pch = 19, cex = 2, 
-#'      col = rawr:::col_scaler(mtcars$mpg, c('yellow','red')))
+#'      col = rawr:::col_scaler(mtcars$mpg, c('yellow', 'red')))
 #' plot(mtcars$mpg, pch = 19, cex = 2,
-#'      col = color_bar(c('yellow','red'), mtcars$mpg, labels = mtcars$mpg))
+#'      col = color_bar(c('yellow', 'red'), mtcars$mpg, labels = mtcars$mpg))
 #' 
 #' 
 #' ## plot a color_bar legend by a variable other than x
@@ -55,13 +55,13 @@
 #' with(mtcars, {
 #'   plot(mpg, pch = 19, cex = 2,
 #'        main = 'color by weight (red = heavier)',
-#'        col = rawr:::col_scaler(wt, c('yellow','red')))
+#'        col = rawr:::col_scaler(wt, c('yellow', 'red')))
 #' })
 #' 
 #' with(mtcars, {
 #'   plot(mpg, pch = 19, cex = 2,
 #'        main = 'color by weight (red = heavier)',
-#'        col = color_bar(c('yellow','red'), x = wt, y = mpg, labels = wt))
+#'        col = color_bar(c('yellow', 'red'), x = wt, y = mpg, labels = wt))
 #' })
 #'
 #' @export
@@ -878,6 +878,8 @@ polygon2 <- function(x, y = NULL, radius, sides = 6, srt = 0,
 #' or values accepted by \code{\link{xy.coords}}; if missing, the user
 #' will be prompted to select the bottom-left and top-right coordinates for
 #' the plotting region
+#' @param log character, \code{"x"}, \code{"y"} or both, as for
+#' \code{\link{plot}}; sets negative values to \code{NA} and gives a warning
 #' @param size the size of the plot in inches if \code{x} and \code{y} are
 #' length 1
 #' @param vadj vertical adjustment of the plot when \code{y} is a scalar; the
@@ -934,7 +936,7 @@ polygon2 <- function(x, y = NULL, radius, sides = 6, srt = 0,
 #' tmp <- rnorm(25)
 #' qqnorm(tmp)
 #' qqline(tmp)
-#' pars <- subplot(hist(tmp, ann = F), 0, -1)
+#' pars <- subplot(hist(tmp, ann = FALSE), 0, -1)
 #' 
 #' ## wrong way to add a reference line to histogram
 #' abline(v = 0, col = 2, lwd = 2)
@@ -1334,9 +1336,9 @@ arrows2 <- function(x0, y0, x1 = x0, y1 = y0, size = 1, width = 0.1 / cin,
 #' p <- matrix(c(rep(-1:1, 2), rep(-1:1, each = 2)), ncol = 2)
 #' points(p)
 #' 
-#' carrows(p1 <- p[2, ], p2 <- p[1, ], pad = .3)
+#' carrows(p1 <- p[2, ], p2 <- p[1, ], pad = 0.3)
 #' carrows(p1 <- p[4, ], p2 <- p[5, ], dir = c(0, 1), col = 3)
-#' carrows(p1 <- p[6, ], p2 <- p[3, ], lwd = 10, pad = c(.05, .1))
+#' carrows(p1 <- p[6, ], p2 <- p[3, ], lwd = 10, pad = c(0.05, 0.1))
 #' carrows(p1 <- p[1, ], p2 <- p[6, ], flip = TRUE)
 #' carrows(p1 <- p[1, ], p2 <- p[5, ], dir = c(1, 0))
 #' 
@@ -1350,7 +1352,7 @@ carrows <- function(p1, p2, arc, degree = FALSE, pad = 0.01 * 1:2,
                     size = 1, width = size / 2, curve = 1, fill = col,
                     border = NA) {
   code_ <- function(x) c(2L, 0L, 1L)[match(x, -1:1)]
-  pad_  <- function(x, pad) ht(x, -length(x) * (1 - pad))
+  pad_  <- function(x, pad) rawr::ht(x, -length(x) * (1 - pad))
   
   ## try to guess code for arrows2
   slope <- (p2[2L] - p1[2L]) / (p2[1L] - p1[1L])
@@ -1375,8 +1377,8 @@ carrows <- function(p1, p2, arc, degree = FALSE, pad = 0.01 * 1:2,
   yy <- centers[2L] + radius * sin(th)
   lines(pad_(xx, pad[2L]), pad_(yy, pad[2L]), col = col, lwd = lwd, lty = lty)
   
-  xx <- ht(xx, 4L)
-  yy <- ht(yy, 4L)
+  xx <- rawr::ht(xx, 4L)
+  yy <- rawr::ht(yy, 4L)
   arrows2(xx[1L], yy[1L], xx[2L], yy[2L], size = size, width = width,
           curve = curve, code = dir[1L] %||% code, col = col, lty = 0,
           lwd = 0, fill = fill, border = border)
@@ -1469,7 +1471,7 @@ laxis <- function(side = 1L, nticks = 5L, labels = TRUE, digits = 0L,
 #' scientific format
 #' 
 #' @seealso
-#' \code{\link[sfsmisc]{pretty10exp}}; \code{\link{roundr}};
+#' \code{\link[sfsmisc]{pretty10exp}}; \code{\link[rawr]{roundr}};
 #' \code{\link{format}}; \code{\link{sprintf}}
 #' 
 #' @return
@@ -1514,7 +1516,7 @@ pretty_sci <- function(x, digits = 0L, base = 10,
   sapply(seq_along(l), function(y)
     if (abs(om[y]) > limit)
       parse_sci(l[[y]], digits, base, simplify)
-    else roundr(l[[y]], digits))
+    else rawr::roundr(l[[y]], digits))
 }
 
 #' @rdname pretty_sci
@@ -1531,8 +1533,8 @@ parse_sci <- function(x, digits = 0L, base = 10, simplify = TRUE) {
   x <- to_sci_(x, digits, base)
   x <- strsplit(x, 'e[+]?[0]?')
   
-  xbg <- sapply(x, function(y) roundr(as.numeric(y[[1]]), digits))
-  xsm <- sapply(x, '[[', 2)
+  xbg <- sapply(x, function(y) rawr::roundr(as.numeric(y[[1L]]), digits))
+  xsm <- sapply(x, '[[', 2L)
   txt <- do.call('sprintf', list(fmt = '"%s"%%*%%%s^%s', xbg, base, xsm))
   
   parse(text = if (simplify)
@@ -1544,7 +1546,7 @@ to_sci_ <- function(x, digits, base) {
   # base <- 2; digits = 1; x <- 1.1 * base ^ (1:5)
   # rawr:::to_sci_(x, 1, base)
   stopifnot(is.numeric(x))
-  xbg <- roundr(x / base ^ oom(x, base), digits)
+  xbg <- rawr::roundr(x / base ^ oom(x, base), digits)
   xsm <- formatC(oom(x, base), width = 2, flag = 0)
   sprintf('%se+%s', xbg, xsm)
 }
