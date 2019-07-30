@@ -1,5 +1,5 @@
 ### some less useful plots
-# waffle, histr, shist, propfall, bibar, dose_esc, boxline, toxplot
+# waffle, histr, shist, propfall, bibar, dose_esc, boxline, toxplot, tableplot
 ###
 
 
@@ -530,7 +530,7 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
   pls <- sapply(Map(`:`, pls_idx, pls_idx + 1L), function(ii)
     mean(x[ii]))
   arr_idx <- which(diff(y) > 0) + 1L
-  arr <- roll_fun(x, 2L, mean)[arr_idx[arr_idx <= n]]
+  arr <- rawr::roll_fun(x, 2L, mean)[arr_idx[arr_idx <= n]]
   
   plot.new()
   plot.window(
@@ -1187,4 +1187,222 @@ toxplot <- function(data, headers = NULL, widths = c(1, 1, 1, 2),
     do.call('legend', modifyList(largs, args.legend))
   
   invisible(ftbl)
+}
+
+#' tableplot
+#' 
+#' Add a table to a base plot.
+#' 
+#' @param x,y the x- and y-coordinates to be used or a keyword; see
+#' \code{\link{xy.coords}}
+#' @param table a data frame or matrix
+#' @param title optional title for the table
+#' @param cex,cex.title text size for table, title
+#' @param bg background color for each table cell, recycled as needed
+#' @param xjust,yjust table position relative to \code{x} and \code{y}
+#' @param xpad,ypad padding around text in cells as a proportion of the max
+#' width and height of the strings in each column
+#' @param col.table,col.title,col.colnames,col.rownames colors for table,
+#' title, column names, and row names
+#' @param font.table,font.title,font.colnames,font.rownames fonts for table,
+#' title, column names, and row names
+#' @param show.colnames,show.rownames logical; if \code{TRUE}, column and row
+#' names of \code{table} are added
+#' @param hlines,vlines logical; if \code{TRUE}, horizontal and/or vertical
+#' lines are drawn between table cells
+#' @param frame.colnames,frame.title,frame.table logical; if \code{TRUE},
+#' draws a frame around the object
+#' @param frame.type the type of framing for column names, title, and table,
+#' respectively; options are \code{"box"} or \code{"line"}
+#' 
+#' @seealso
+#' \code{\link[plotrix]{addtable2plot}}
+#' 
+#' @examples
+#' plot(mpg ~ wt, mtcars)
+#' tableplot(
+#'   'topright', table = head(mtcars, 3),
+#'   title = 'mtcars data set', cex.title = 2
+#' )
+#' tableplot(
+#'   par('usr')[1], 35, head(mtcars, 3)[, 1:3],
+#'   show.rownames = TRUE, col.rownames = 'red',
+#'   font.colnames = 2, hlines = TRUE
+#' )
+#' 
+#' @export
+
+tableplot <- function(x, y = NULL, table, title = NULL,
+                      bg = 'transparent', cex = 1, cex.title = cex,
+                      xjust = 0, yjust = 1, xpad = 0.25, ypad = 0.75,
+                      col.table = 1L, col.title = col.table,
+                      col.colnames = col.table, col.rownames = col.table,
+                      font.table = 1L, font.title = font.table,
+                      font.colnames = font.table, font.rownames = font.table,
+                      show.colnames = TRUE, show.rownames = FALSE, 
+                      hlines = FALSE, vlines = FALSE,
+                      frame.colnames = FALSE, frame.title = FALSE, frame.table = FALSE,
+                      frame.type = c('box', 'box', 'line')) {
+  if (is.null(y)) {
+    if (is.character(x)) {
+      pos <- plotrix::get.tablepos(x)
+      x <- pos$x
+      y <- pos$y
+      xjust <- pos$xjust
+      yjust <- pos$yjust
+      
+    } else {
+      y <- x$y %||% x$x
+      x <- x$x
+    }
+  }
+  
+  tdim <- dim(table)
+  drop <- any(grepl('top', x))
+  
+  if (tdim[1L] == 1L)
+    hlines <- FALSE
+  if (tdim[2L] == 1L)
+    vlines <- FALSE
+  if (is.null(dim(bg)))
+    bg <- matrix(bg, tdim[1L], tdim[2L])
+  
+  cnames <- colnames(table)
+  if (is.null(cnames) && show.colnames)
+    cnames <- seq.int(tdim[2L])
+  rnames <- rownames(table)
+  if (is.null(rnames) && show.rownames) 
+    rnames <- seq.int(tdim[1L])
+  
+  if (par('xlog'))
+    x <- log10(x)
+  cellwidth <- rep_len(0, tdim[2L])
+  
+  if (show.colnames) {
+    for (cc in seq.int(tdim[2L])) {
+      cw <- strwidth(c(cnames[cc], format(table[, cc])), cex = cex)
+      cellwidth[cc] <- max(cw) * (1 + xpad)
+    }
+    nvcells <- tdim[1L] + 1L
+  } else {
+    nvcells <- tdim[1L]
+    for (cc in seq.int(tdim[2L])) {
+      cw <- strwidth(format(table[, cc]), cex = cex)
+      cellwidth[cc] <- max(cw) * (1 + xpad)
+    }
+  }
+  
+  if (show.rownames) {
+    nhcells <- tdim[2L] + 1L
+    rowname.width <- max(strwidth(rnames, cex = cex)) * (1 + xpad)
+  } else {
+    nhcells <- tdim[2L]
+    rowname.width <- 0
+  }
+  
+  if (par('ylog'))
+    y <- log10(y)
+  cellheight <- strheight(c(cnames, rnames, c(unlist(table))), cex = cex)
+  cellheight <- max(cellheight) * (1 + ypad)
+  
+  titleheight <- strheight(title, cex = cex.title) * (1 + ypad)
+  
+  if (!is.null(title) & drop)
+    y <- y - cellheight - titleheight / 2
+  ytop <- y + yjust * nvcells * cellheight
+  
+  op <- par(xlog = FALSE, ylog = FALSE, xpd = TRUE)
+  on.exit(par(op))
+  
+  ## x-coodinates of center of each column
+  xat <- x + show.rownames * rowname.width - xjust *
+    (sum(cellwidth) + rowname.width)
+  xat <- xat + c(0, cumsum(cellwidth[-length(cellwidth)])) + cellwidth / 2
+  
+  if (show.colnames) {
+    text(xat, ytop - 0.5 * cellheight, cnames, cex = cex,
+         col = col.colnames, font = font.colnames, adj = c(0.5, 0.5))
+  }
+  
+  ## plot each table row
+  for (rr in seq.int(tdim[1L])) {
+    xleft <- x - xjust * (sum(cellwidth) + rowname.width)
+    
+    if (show.rownames) {
+      text(xleft + 0.5 * rowname.width,
+           ytop - (rr + show.colnames - 0.5) * cellheight, rnames[rr],
+           cex = cex, col = col.rownames, font = font.rownames)
+      xleft <- xleft + rowname.width
+    }
+    
+    for (cc in seq.int(tdim[2L])) {
+      rect(
+        xleft, ytop - (rr + show.colnames - 1) * cellheight,
+        xleft + cellwidth[cc], ytop - (rr + show.colnames) * cellheight,
+        col = bg[rr, cc], border = bg[rr, cc]
+      )
+      xleft <- xleft + cellwidth[cc]
+    }
+    
+    text(xat, ytop - (rr + show.colnames - 0.5) * cellheight, table[rr, ],
+         cex = cex, col = col.table, font = font.table)
+  }
+  
+  ## grid lines in table
+  if (vlines) {
+    xleft <- x + show.rownames * rowname.width - xjust *
+      (sum(cellwidth) + rowname.width)
+    segments(
+      xleft + cumsum(cellwidth[-tdim[2L]]),
+      ytop - show.colnames * cellheight,
+      xleft + cumsum(cellwidth[-tdim[2L]]),
+      ytop - (show.colnames + tdim[1L]) * cellheight
+    )
+  }
+  if (hlines) {
+    xleft <- x + show.rownames * rowname.width - xjust *
+      (sum(cellwidth) + rowname.width)
+    segments(
+      xleft, ytop - show.colnames * cellheight -
+        cumsum(rep(cellheight, tdim[1L] - 1)),
+      xleft + sum(cellwidth),
+      ytop - show.colnames * cellheight -
+        cumsum(rep(cellheight, tdim[1L] - 1))
+    )
+  }
+  
+  if (!is.null(title)) {
+    xleft <- x - xjust * (sum(cellwidth) + rowname.width)
+    text(xat[1L] - cellwidth[1L] / 2 * 0.75, ytop + titleheight / 2, title,
+         cex = cex.title, col = col.title, adj = 0, font = font.title)
+  }
+  
+  ## framing table, column names, title
+  frame.type <- rep_len(frame.type, 3L)
+  
+  if (frame.table) {
+    xleft <- x + show.rownames * rowname.width - xjust * 
+      (sum(cellwidth) + rowname.width)
+    yt <- if (frame.type[3L] == 'line')
+      ytop - (tdim[1L] + show.colnames) * cellheight
+    else ytop - cellheight
+    rect(xleft, yt, xleft + sum(cellwidth),
+         ytop - (tdim[1L] + show.colnames) * cellheight)
+  }
+  if (frame.colnames & show.colnames) {
+    xleft <- x + show.rownames * rowname.width - xjust * 
+      (sum(cellwidth) + rowname.width)
+    yt <- if (frame.type[1L] == 'line')
+      ytop - cellheight else ytop
+    rect(xleft, yt, xleft + sum(cellwidth), ytop - cellheight)
+  }
+  if (frame.title & !is.null(title)) {
+    xleft <- x + show.rownames * rowname.width - xjust * 
+      (sum(cellwidth) + rowname.width)
+    yt <- if (frame.type[[2L]] == 'line')
+      ytop else ytop + titleheight
+    rect(xleft, yt, xleft + sum(cellwidth), ytop)
+  }
+  
+  invisible(NULL)
 }
