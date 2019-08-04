@@ -49,6 +49,10 @@ draws a frame around the object}
 \item{frame.type}{the type of framing for column names, title, and table,
 respectively; options are \code{"box"} or \code{"line"}}
 }
+\value{
+A list with components \code{table}, \code{colnames}, \code{title}, and
+\code{outline} giving the coordinates of the rectangle for each.
+}
 \description{
 Add a table to a base plot.
 }

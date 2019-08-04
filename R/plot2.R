@@ -1215,6 +1215,10 @@ toxplot <- function(data, headers = NULL, widths = c(1, 1, 1, 2),
 #' @param frame.type the type of framing for column names, title, and table,
 #' respectively; options are \code{"box"} or \code{"line"}
 #' 
+#' @return
+#' A list with components \code{table}, \code{colnames}, \code{title}, and
+#' \code{outline} giving the coordinates of the rectangle for each.
+#' 
 #' @seealso
 #' \code{\link[plotrix]{addtable2plot}}
 #' 
@@ -1258,7 +1262,11 @@ tableplot <- function(x, y = NULL, table, title = NULL,
   }
   
   tdim <- dim(table)
+  ## lower legend if keyword position is on top row
   drop <- any(grepl('top', x))
+  
+  ## framing table, column names, title
+  frame.type <- rep_len(frame.type, 3L)
   
   if (tdim[1L] == 1L)
     hlines <- FALSE
@@ -1278,6 +1286,7 @@ tableplot <- function(x, y = NULL, table, title = NULL,
     x <- log10(x)
   cellwidth <- rep_len(0, tdim[2L])
   
+  ## calculate cell heights/widths
   if (show.colnames) {
     for (cc in seq.int(tdim[2L])) {
       cw <- strwidth(c(cnames[cc], format(table[, cc])), cex = cex)
@@ -1300,13 +1309,12 @@ tableplot <- function(x, y = NULL, table, title = NULL,
     rowname.width <- 0
   }
   
-  if (par('ylog'))
-    y <- log10(y)
-  cellheight <- strheight(c(cnames, rnames, c(unlist(table))), cex = cex)
-  cellheight <- max(cellheight) * (1 + ypad)
-  
+  cellheight  <- strheight(c(cnames, rnames, c(unlist(table))), cex = cex)
+  cellheight  <- max(cellheight) * (1 + ypad)
   titleheight <- strheight(title, cex = cex.title) * (1 + ypad)
   
+  if (par('ylog'))
+    y <- log10(y)
   if (!is.null(title) & drop)
     y <- y - cellheight - titleheight / 2
   ytop <- y + yjust * nvcells * cellheight
@@ -1319,19 +1327,21 @@ tableplot <- function(x, y = NULL, table, title = NULL,
     (sum(cellwidth) + rowname.width)
   xat <- xat + c(0, cumsum(cellwidth[-length(cellwidth)])) + cellwidth / 2
   
-  if (show.colnames) {
-    text(xat, ytop - 0.5 * cellheight, cnames, cex = cex,
-         col = col.colnames, font = font.colnames, adj = c(0.5, 0.5))
-  }
+  if (show.colnames)
+    text(
+      xat, ytop - 0.5 * cellheight, cnames, cex = cex, col = col.colnames,
+      font = font.colnames, adj = c(0.5, 0.5)
+    )
   
   ## plot each table row
   for (rr in seq.int(tdim[1L])) {
     xleft <- x - xjust * (sum(cellwidth) + rowname.width)
     
     if (show.rownames) {
-      text(xleft + 0.5 * rowname.width,
-           ytop - (rr + show.colnames - 0.5) * cellheight, rnames[rr],
-           cex = cex, col = col.rownames, font = font.rownames)
+      text(
+        xleft + 0.5 * rowname.width, ytop - (rr + show.colnames - 0.5) * cellheight,
+        rnames[rr], cex = cex, col = col.rownames, font = font.rownames
+      )
       xleft <- xleft + rowname.width
     }
     
@@ -1344,65 +1354,68 @@ tableplot <- function(x, y = NULL, table, title = NULL,
       xleft <- xleft + cellwidth[cc]
     }
     
-    text(xat, ytop - (rr + show.colnames - 0.5) * cellheight, table[rr, ],
-         cex = cex, col = col.table, font = font.table)
+    text(
+      xat, ytop - (rr + show.colnames - 0.5) * cellheight, table[rr, ],
+      cex = cex, col = col.table, font = font.table
+    )
   }
   
+  xleft <- x + show.rownames * rowname.width - xjust *
+    (sum(cellwidth) + rowname.width)
+  xright <- xleft + sum(cellwidth)
+  
   ## grid lines in table
-  if (vlines) {
-    xleft <- x + show.rownames * rowname.width - xjust *
-      (sum(cellwidth) + rowname.width)
+  if (vlines)
     segments(
       xleft + cumsum(cellwidth[-tdim[2L]]),
       ytop - show.colnames * cellheight,
       xleft + cumsum(cellwidth[-tdim[2L]]),
       ytop - (show.colnames + tdim[1L]) * cellheight
     )
-  }
-  if (hlines) {
-    xleft <- x + show.rownames * rowname.width - xjust *
-      (sum(cellwidth) + rowname.width)
+  if (hlines)
     segments(
       xleft, ytop - show.colnames * cellheight -
         cumsum(rep(cellheight, tdim[1L] - 1)),
-      xleft + sum(cellwidth),
-      ytop - show.colnames * cellheight -
+      xright, ytop - show.colnames * cellheight -
         cumsum(rep(cellheight, tdim[1L] - 1))
+    )
+  
+  if (!is.null(title)) {
+    text(
+      xat[1L] - cellwidth[1L] / 2 * 0.75, ytop + titleheight / 2, title,
+      cex = cex.title, col = col.title, adj = 0, font = font.title
     )
   }
   
-  if (!is.null(title)) {
-    xleft <- x - xjust * (sum(cellwidth) + rowname.width)
-    text(xat[1L] - cellwidth[1L] / 2 * 0.75, ytop + titleheight / 2, title,
-         cex = cex.title, col = col.title, adj = 0, font = font.title)
-  }
+  co <- list(
+    table = {
+      yt <- if (frame.type[3L] == 'line')
+        ytop - (tdim[1L] + show.colnames) * cellheight
+      else ytop - cellheight
+      c(xleft, yt, xright, ytop - (tdim[1L] + show.colnames) * cellheight)
+    },
+    colnames = {
+      yt <- if (frame.type[1L] == 'line')
+        ytop - cellheight else ytop
+      c(xleft, yt, xright, ytop - cellheight)
+    },
+    title = {
+      yt <- if (frame.type[[2L]] == 'line')
+        ytop else ytop + titleheight
+      c(xleft, yt, xright, ytop)
+    }
+  )
+  co$outline <- c(
+    xleft, min(do.call('rbind', co)[, 2L]), xright, ytop + titleheight
+  )
+  co <- lapply(co, setNames, c('xleft', 'ybottom', 'xright', 'ytop'))
   
-  ## framing table, column names, title
-  frame.type <- rep_len(frame.type, 3L)
+  if (frame.table)
+    do.call('rect', as.list(co$table))
+  if (frame.colnames & show.colnames)
+    do.call('rect', as.list(co$colnames))
+  if (frame.title & !is.null(title))
+    do.call('rect', as.list(co$title))
   
-  if (frame.table) {
-    xleft <- x + show.rownames * rowname.width - xjust * 
-      (sum(cellwidth) + rowname.width)
-    yt <- if (frame.type[3L] == 'line')
-      ytop - (tdim[1L] + show.colnames) * cellheight
-    else ytop - cellheight
-    rect(xleft, yt, xleft + sum(cellwidth),
-         ytop - (tdim[1L] + show.colnames) * cellheight)
-  }
-  if (frame.colnames & show.colnames) {
-    xleft <- x + show.rownames * rowname.width - xjust * 
-      (sum(cellwidth) + rowname.width)
-    yt <- if (frame.type[1L] == 'line')
-      ytop - cellheight else ytop
-    rect(xleft, yt, xleft + sum(cellwidth), ytop - cellheight)
-  }
-  if (frame.title & !is.null(title)) {
-    xleft <- x + show.rownames * rowname.width - xjust * 
-      (sum(cellwidth) + rowname.width)
-    yt <- if (frame.type[[2L]] == 'line')
-      ytop else ytop + titleheight
-    rect(xleft, yt, xleft + sum(cellwidth), ytop)
-  }
-  
-  invisible(NULL)
+  invisible(co)
 }
