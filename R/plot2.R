@@ -623,15 +623,6 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99),
   col.probs <- Vectorize(adjustcolor, c('col', 'alpha.f'))(
     col = col.probs, alpha.f = alp)
   
-  bp <- boxplot(x, border = NA, at = at, plot = !add, ...)
-  
-  for (ii in seq_along(probs[-1L])) {
-    polygon(c(at, rev(at)), c(lo[ii, ], rev(lo[ii + 1L, ])),
-            col = col.probs[ii], border = NA)
-    polygon(c(at, rev(at)), c(hi[ii, ], rev(hi[ii + 1L, ])),
-            col = col.probs[ii], border = NA)
-  }
-  
   med <- sapply(cx, function(xx) quantile(xx, 0.5))
   col.med <- rep_len(col.med, length(x))
   
@@ -652,13 +643,31 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99),
     if (isTRUE(pm)) {
       hi <- sapply(cx, function(xx) quantile(xx, 1 - err.alpha))
       lo <- sapply(cx, function(xx) quantile(xx, err.alpha))
-      arrows(at, hi, at, lo, col = col.err,
-             code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
+      ylim <- extendrange(c(unlist(hi), unlist(lo)))
     } else {
       z <- sapply(cx, pm)
+      ylim <- extendrange(c(med + z, med - z))
+    }
+  }
+  
+  bp <- if (!err %in% 'none')
+    boxplot(x, border = NA, at = at, plot = !add, ylim = ylim, ...)
+  else boxplot(x, border = NA, at = at, plot = !add, ...)
+  
+  for (ii in seq_along(probs[-1L])) {
+    polygon(c(at, rev(at)), c(lo[ii, ], rev(lo[ii + 1L, ])),
+            col = col.probs[ii], border = NA)
+    polygon(c(at, rev(at)), c(hi[ii, ], rev(hi[ii + 1L, ])),
+            col = col.probs[ii], border = NA)
+  }
+  
+  if (!err %in% 'none') {
+    if (isTRUE(pm))
+    arrows(at, hi, at, lo, col = col.err,
+         code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
+    else
       arrows(at, med + z, at, med - z, col = col.err,
              code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
-    }
   }
   
   ## median points for each element of x
