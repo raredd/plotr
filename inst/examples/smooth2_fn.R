@@ -3,7 +3,8 @@
 ###
 
 
-loess_smooth <- function(x, y = NULL, ..., conf = 0.95, n = 1000L, sd = TRUE) {
+loess_smooth <- function(x, y = NULL, ..., conf = 0.95, n = 1000L, sd = TRUE,
+                         fix_extremes = FALSE) {
   xy <- xy.coords(x, y)
   na <- is.na(xy$x) | is.na(xy$y)
   
@@ -22,6 +23,11 @@ loess_smooth <- function(x, y = NULL, ..., conf = 0.95, n = 1000L, sd = TRUE) {
   se <- if (sd)
     sd <- sqrt(pmax(0, predict(lr, data.frame(xx = x0))))
   else pr$se.fit
+  
+  if (fix_extremes) {
+    x0[c(1L, n)] <- xy$x[c(1L, length(xy$x))]
+    pr$fit[c(1L, n)] <- xy$y[c(1L, length(xy$y))]
+  }
   
   res <- list(
     model = lo, x = x0, y = pr$fit, sd = sd, xy = xy,
