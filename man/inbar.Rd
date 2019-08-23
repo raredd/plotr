@@ -4,15 +4,15 @@
 \alias{inbar}
 \title{Inset barplot}
 \usage{
-inbar(height, width = 1, r = NULL, alpha = r, space = NULL,
-  names.arg = NULL, legend.text = NULL, horiz = FALSE,
-  density = NULL, angle = 45, col = NULL, border = par("fg"),
-  main = NULL, sub = NULL, xlab = NULL, ylab = NULL, xlim = NULL,
-  ylim = NULL, xpd = TRUE, log = "", axes = TRUE,
-  axisnames = TRUE, cex.axis = par("cex.axis"),
-  cex.names = par("cex.axis"), plot = TRUE, axis.lty = 0,
-  offset = 0, add = FALSE, ann = !add && par("ann"),
-  args.legend = NULL, ...)
+inbar(height, width = 1, r = NULL, alpha = if (group.col) r else 1,
+  space = NULL, names.arg = NULL, legend.text = NULL,
+  horiz = FALSE, density = NULL, angle = 45, col = NULL,
+  group.col = TRUE, border = par("fg"), main = NULL, sub = NULL,
+  xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, xpd = TRUE,
+  log = "", axes = TRUE, axisnames = TRUE,
+  cex.axis = par("cex.axis"), cex.names = par("cex.axis"),
+  plot = TRUE, axis.lty = 0, offset = 0, add = FALSE, ann = !add
+  && par("ann"), args.legend = NULL, ...)
 }
 \arguments{
 \item{height}{a matrix of data describing the bars which make up the plot,
@@ -70,6 +70,10 @@ matrix having the same dimensions of \code{height}}
 a group of bars with \code{alpha} transparency added to each minor bar;
 alternatively, a matrix of colors having the same dimensions of
 \code{height} to set each bar color}
+
+\item{group.col}{logical; if \code{TRUE} (default), columns of \code{height}
+are treated as groups and mapped to one color; if \code{FALSE}, each row
+is mapped to \code{col} and recycled for each column of \code{height}}
 
 \item{border}{the color to be used for the border of the bars.
     Use \code{border = NA} to omit borders.  If there are shading
@@ -148,6 +152,11 @@ tbl <- sapply(1:3, function(x) sort(rpois(3, 10), decreasing = TRUE))
 barplot(tbl, col = 1:3)
 inbar(tbl, col = 1:3)
 inbar(tbl, col = matrix(rainbow(length(tbl)), nrow(tbl)))
+
+## compare group.col = TRUE (default)
+inbar(tbl, col = 1:3)
+## compare group.col = FALSE
+inbar(tbl, col = 1:3, group.col = FALSE)
 
 inbar(
   tbl, col = 1:3, r = c(0.5, 0.8), alpha = c(1, 0.5, 0.25),

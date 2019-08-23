@@ -695,6 +695,9 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99),
 #' a group of bars with \code{alpha} transparency added to each minor bar;
 #' alternatively, a matrix of colors having the same dimensions of
 #' \code{height} to set each bar color
+#' @param group.col logical; if \code{TRUE} (default), columns of \code{height}
+#' are treated as groups and mapped to one color; if \code{FALSE}, each row
+#' is mapped to \code{col} and recycled for each column of \code{height}
 #' 
 #' @return
 #' A numeric vector with the midpoint of each main bar (i.e., identical to a
@@ -714,6 +717,11 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99),
 #' inbar(tbl, col = 1:3)
 #' inbar(tbl, col = matrix(rainbow(length(tbl)), nrow(tbl)))
 #' 
+#' ## compare group.col = TRUE (default)
+#' inbar(tbl, col = 1:3)
+#' ## compare group.col = FALSE
+#' inbar(tbl, col = 1:3, group.col = FALSE)
+#' 
 #' inbar(
 #'   tbl, col = 1:3, r = c(0.5, 0.8), alpha = c(1, 0.5, 0.25),
 #'   horiz = TRUE, names.arg = 1:3,
@@ -728,9 +736,11 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99),
 #' 
 #' @export
 
-inbar <- function(height, width = 1, r = NULL, alpha = r, space = NULL,
+inbar <- function(height, width = 1, r = NULL,
+                  alpha = if (group.col) r else 1, space = NULL,
                   names.arg = NULL, legend.text = NULL, horiz = FALSE,
-                  density = NULL, angle = 45, col = NULL, border = par('fg'),
+                  density = NULL, angle = 45, col = NULL, group.col = TRUE,
+                  border = par('fg'),
                   main = NULL, sub = NULL, xlab = NULL, ylab = NULL,
                   xlim = NULL, ylim = NULL, xpd = TRUE, log = '',
                   axes = TRUE, axisnames = TRUE, cex.axis = par('cex.axis'),
@@ -799,9 +809,12 @@ inbar <- function(height, width = 1, r = NULL, alpha = r, space = NULL,
     ocol <- col[1L, ]
   } else {
     col <- ocol <- if (is.null(col))
-      gray.colors(NC) else seq.int(NC)
-    col <- sapply(seq_along(col), function(ii)
-      colorRampPalette(c('white', col[ii]))(100)[(alpha[, ii]) * 100])
+      gray.colors(NC) else rep_len(col, NC)
+    col <- if (group.col)
+      sapply(seq_along(col), function(ii)
+        colorRampPalette(c('white', col[ii]))(100)[(alpha[, ii]) * 100])
+    else sapply(seq.int(NC), function(ii)
+      Vectorize(adjustcolor)(col, alpha[, ii]))
     if (!is.matrix(col))
       col <- matrix(col, NR, NC)
   }
