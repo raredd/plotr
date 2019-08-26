@@ -1,5 +1,9 @@
 ### some useful plots
-# scattergram, dimr, plot.dimr
+# scattergram, dimr, plot.dimr, loess_smooth, do_poly
+# 
+# s3 methods
+# loess_smooth.default, loess_smooth.formula, plot.loess_smooth,
+# print.loess_smooth
 # 
 # unexported:
 # gridplot, wss, guess_k
@@ -469,5 +473,141 @@ guess_k <- function(data, how = c('wss'), ...) {
   switch(
     how,
     wss = wss(data, ...)
+  )
+}
+
+#' Fit loess curves
+#' 
+#' Add a smooth curve computed by \code{\link{loess}} to a scatter plot.
+#' 
+#' @param x,y the x- and y-axes for the plot
+#' @param ... additional arguments passed to or from other methods
+#' @param formula a formula of the form \code{y ~ x} giving the x- and y-
+#' axes for the plot
+#' @param data a data frame (or list) from which the variables in
+#' \code{formula} should be taken
+#' @param conf the confidence interval to calculate
+#' @param n the number of points at which to evaluate the smooth curve
+#' @param sd logical; if \code{TRUE}, the standard deviation of the square
+#' of the residuals are used to calculate the confidence intervals; otherwise,
+#' the standard errors from \code{\link{predict.loess}} are used
+#' @param fix_extremes logical; if \code{TRUE}, the extremes of the fitted
+#' lines will run through \code{{x_1, y_1}} and \code{{x_n, y_n}}
+#' @param ci type of confidence interval to plot, one of \code{"none"} for
+#' no plotting, \code{"lines"} for lines only, or \code{"band"} for a
+#' semi-transparent color band
+#' 
+#' @seealso
+#' \code{\link{loess.smooth}}
+#' 
+#' @examples
+#' plot(mpg ~ wt, mtcars)
+#' lo <- loess_smooth(mpg ~ wt, mtcars)
+#' lines(lo$x, lo$y)
+#' lines(lo$x, lo$upper, lty = 2)
+#' lines(lo$x, lo$lower, lty = 2)
+#' 
+#' plot(lo)
+#' plot(lo, ci = 'lines')
+#' plot(lo, ci = 'band')
+#' 
+#' @export
+
+loess_smooth <- function(x, ...) {
+  UseMethod('loess_smooth')
+}
+
+#' @rdname loess_smooth
+#' @export
+loess_smooth.formula <- function(formula, data, ...) {
+  xy <- all.vars(formula)
+  if (length(xy) != 2L)
+    stop('\'formula\' should be of the form y ~ x')
+  
+  d <- as.list(data)
+  x <- d[[xy[2L]]]
+  y <- d[[xy[1L]]]
+  
+  loess_smooth(x, y, ...)
+}
+
+#' @rdname loess_smooth
+#' @export
+loess_smooth.default <- function(x, y = NULL, ..., conf = 0.95, n = 50L,
+                                 sd = TRUE, fix_extremes = FALSE) {
+  xy <- xy.coords(x, y)
+  na <- is.na(xy$x) | is.na(xy$y)
+  
+  xy$x <- xy$x[!na]
+  xy$y <- xy$y[!na]
+  
+  xx <- xy$x
+  yy <- xy$y
+  x0 <- seq(min(xx), max(xx), length.out = n)
+  
+  ci <- qnorm((1 - conf) / 2, lower.tail = FALSE)
+  lo <- loess(yy ~ xx, ...)
+  pr <- predict(lo, data.frame(xx = x0), se = TRUE)
+  
+  se <- if (sd) {
+    lr <- loess(I(residuals(lo) ^ 2) ~ xx, ...)
+    sd <- sqrt(pmax(0, predict(lr, data.frame(xx = x0))))
+  } else pr$se.fit
+  
+  if (fix_extremes) {
+    x0[c(1L, n)] <- xy$x[c(1L, length(xy$x))]
+    pr$fit[c(1L, n)] <- xy$y[c(1L, length(xy$y))]
+  }
+  
+  res <- list(
+    model = lo, x = x0, y = unname(pr$fit), sd = sd, xy = xy,
+    lower = pr$fit - ci * se, upper = pr$fit + ci * se,
+    call = match.call()
+  )
+  
+  invisible(
+    structure(res, class = 'loess_smooth')
+  )
+}
+
+#' @rdname loess_smooth
+#' @export
+print.loess_smooth <- function(x, ...) {
+  print(x$model)
+  
+  invisible(x)
+}
+
+#' @rdname loess_smooth
+#' @export
+plot.loess_smooth <- function(x, y, ..., xlab = NULL, ylab = NULL,
+                              ci = c('none', 'lines', 'band')) {
+  stopifnot(
+    inherits(x, 'loess_smooth')
+  )
+  
+  x$xy$xlab <- xlab %||% x$xy$xlab %||% 'x'
+  x$xy$ylab <- ylab %||% x$xy$ylab %||% 'y'
+  
+  plot(x$xy, xlab = x$xy$xlab, ylab = x$xy$ylab, ...)
+  lines(x)
+  
+  switch(
+    match.arg(ci),
+    none = NULL,
+    lines = {
+      lines(x$x, x$upper, lty = 2L)
+      lines(x$x, x$lower, lty = 2L)
+    },
+    band = do_poly(x$x, x$lower, x$upper)
+  )
+  
+  invisible(NULL)
+}
+
+do_poly <- function(x, y1, y2, col = 'grey', alpha = 0.5) {
+  polygon(
+    c(x, rev(x)), c(y1, rev(y2)), border = NA,
+    col = adjustcolor(col, alpha.f = alpha)
   )
 }
