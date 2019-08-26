@@ -17,7 +17,8 @@ loess_smooth(x, ...)
 
 \method{print}{loess_smooth}(x, ...)
 
-\method{plot}{loess_smooth}(x, y, ..., xlab = NULL, ylab = NULL,
+\method{plot}{loess_smooth}(x, y, ..., col.line = 1L,
+  col.ci = col.line, alpha.ci = 0.5, xlab = NULL, ylab = NULL,
   ci = c("none", "lines", "band"))
 }
 \arguments{
@@ -41,6 +42,11 @@ the standard errors from \code{\link{predict.loess}} are used}
 
 \item{fix_extremes}{logical; if \code{TRUE}, the extremes of the fitted
 lines will run through \code{{x_1, y_1}} and \code{{x_n, y_n}}}
+
+\item{col.line, col.ci}{colors for the smoothed curve and confidence
+intervals (lines or band)}
+
+\item{alpha.ci}{alpha transparency for the confidence band}
 
 \item{ci}{type of confidence interval to plot, one of \code{"none"} for
 no plotting, \code{"lines"} for lines only, or \code{"band"} for a

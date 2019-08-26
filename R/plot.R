@@ -493,6 +493,9 @@ guess_k <- function(data, how = c('wss'), ...) {
 #' the standard errors from \code{\link{predict.loess}} are used
 #' @param fix_extremes logical; if \code{TRUE}, the extremes of the fitted
 #' lines will run through \code{{x_1, y_1}} and \code{{x_n, y_n}}
+#' @param col.line,col.ci colors for the smoothed curve and confidence
+#' intervals (lines or band)
+#' @param alpha.ci alpha transparency for the confidence band
 #' @param ci type of confidence interval to plot, one of \code{"none"} for
 #' no plotting, \code{"lines"} for lines only, or \code{"band"} for a
 #' semi-transparent color band
@@ -580,7 +583,8 @@ print.loess_smooth <- function(x, ...) {
 
 #' @rdname loess_smooth
 #' @export
-plot.loess_smooth <- function(x, y, ..., xlab = NULL, ylab = NULL,
+plot.loess_smooth <- function(x, y, ..., col.line = 1L, col.ci = col.line,
+                              alpha.ci = 0.5, xlab = NULL, ylab = NULL,
                               ci = c('none', 'lines', 'band')) {
   stopifnot(
     inherits(x, 'loess_smooth')
@@ -590,16 +594,16 @@ plot.loess_smooth <- function(x, y, ..., xlab = NULL, ylab = NULL,
   x$xy$ylab <- ylab %||% x$xy$ylab %||% 'y'
   
   plot(x$xy, xlab = x$xy$xlab, ylab = x$xy$ylab, ...)
-  lines(x)
+  lines(x, col = col.line)
   
   switch(
     match.arg(ci),
     none = NULL,
     lines = {
-      lines(x$x, x$upper, lty = 2L)
-      lines(x$x, x$lower, lty = 2L)
+      lines(x$x, x$upper, col = col.ci, lty = 2L)
+      lines(x$x, x$lower, col = col.ci, lty = 2L)
     },
-    band = do_poly(x$x, x$lower, x$upper)
+    band = do_poly(x$x, x$lower, x$upper, col = col.ci, alpha = alpha.ci)
   )
   
   invisible(NULL)
