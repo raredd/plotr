@@ -211,8 +211,8 @@ histr <- function(x, ..., lines.pars, rug.pars, poly.pars, reset_par = TRUE) {
 #' shist(x)
 #' shist(x, heights.main = 0.75)
 #' shist(x, heights = c(5,1,1,1,3))
-#' shist(x, col = rainbow(5), total = FALSE,
-#'       ylim = c(0, 150), las = 1L, breaks = 10)
+#' shist(x, col = terrain.colors(length(x)), total = FALSE,
+#'       ylim = c(0, 200), las = 1L, breaks = 10)
 #' 
 #' @export
 
@@ -244,18 +244,21 @@ shist <- function(x, ..., col = grey.colors(length(x) + 1L),
   heights <- rep_len(heights, length(x))
   
   layout(seq_along(x), heights = heights)
-  par(mar = c(0,0,0,0), oma = par('mar'))
+  par(mar = c(0, 0, 0, 0), oma = c(5, 4, 4, 2) + 0.1)
+  suppressWarnings({
+    par(...)
+  })
   
   res <- vector('list', length(x))
   for (ii in seq_along(x)) {
     xii <- x[[ii]]
     
-    res[[ii]] <- h <- hist(
-      xii, ..., xpd = NA,
-      main = '', xlab = '', ylab = '',
-      xlim = xlim, ylim = ylim,
-      axes = FALSE, col = col[ii]
-    )
+    suppressWarnings({
+      res[[ii]] <- h <- hist(
+        xii, ..., xpd = NA, ann = FALSE, axes = FALSE,
+        xlim = xlim, ylim = ylim, col = col[ii]
+      )
+    })
     
     axis(2L)
     

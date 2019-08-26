@@ -48,7 +48,7 @@ x <- lapply(sample(1:10, 4), rpois, n = 500)
 shist(x)
 shist(x, heights.main = 0.75)
 shist(x, heights = c(5,1,1,1,3))
-shist(x, col = rainbow(5), total = FALSE,
-      ylim = c(0, 150), las = 1L, breaks = 10)
+shist(x, col = terrain.colors(length(x)), total = FALSE,
+      ylim = c(0, 200), las = 1L, breaks = 10)
 
 }
