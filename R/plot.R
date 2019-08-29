@@ -1,12 +1,12 @@
 ### some useful plots
-# scattergram, dimr, plot.dimr, loess_smooth, do_poly
+# scattergram, dimr, plot.dimr, loess_smooth
 # 
 # s3 methods
 # loess_smooth.default, loess_smooth.formula, plot.loess_smooth,
 # print.loess_smooth
 # 
 # unexported:
-# gridplot, wss, guess_k
+# gridplot, wss, guess_k, do_poly
 ###
 
 
