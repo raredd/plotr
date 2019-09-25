@@ -1028,9 +1028,9 @@ tracebar <- function(height, col = NULL, pad = 0.05, alpha = 0.75, ...) {
 #' 
 #' @param data an \code{\link{ftable}} or a data frame with columns for toxicity
 #' category, description, and grade (in that order)
+#' @param total total number of patients (for percentages)
 #' @param headers a vector of labels for text column headers
 #' @param widths the relative width of each column
-#' @param total total number of patients (for percentages)
 #' @param show.n logical; if \code{TRUE}, the count for each bar is shown
 #' @param col.bars a vector of colors for each column of \code{ftable}
 #' @param col.bg,alpha.bg background color for text columns with alternating
@@ -1062,21 +1062,20 @@ tracebar <- function(height, col = NULL, pad = 0.05, alpha = 0.75, ...) {
 #' )
 #' 
 #' ## these are equivalent ways to call toxplot
-#' toxplot(tbl)
-#' toxplot(tox[, c('tox_cat', 'tox_desc', 'grade')])
+#' toxplot(tbl, length(unique(tox$id)))
+#' toxplot(tox[, c('tox_cat', 'tox_desc', 'grade')], length(unique(tox$id)))
 #' 
 #' \dontrun{
 #' pdf('~/desktop/test.pdf', height = 10, width = 12)
-#' toxplot(tbl, xaxis.at = 0:1, args.legend = list(horiz = FALSE, cex = 2),
-#'         col.bg = 'orchid', total = 15, widths = c(1, 1, 0.5, 2))
+#' toxplot(tbl, xaxis.at = 0:3 / 10, args.legend = list(horiz = FALSE,
+#'         cex = 2), col.bg = 'orchid', total = 15, widths = c(1, 1, 0.5, 2))
 #' dev.off()
 #' }
 #' 
 #' @export
 
-toxplot <- function(data, headers = NULL, widths = c(1, 1, 1, 2),
-                    total = max(rowSums(tbl)), show.n = TRUE,
-                    col.bars = NULL, col.bg = 'grey',
+toxplot <- function(data, total, headers = NULL, widths = c(1, 1, 1, 2),
+                    show.n = TRUE, col.bars = NULL, col.bg = 'grey',
                     alpha.bg = c(0.25, 0.5), digits = 0L, xaxis.at = 0:5 / 5,
                     legend = TRUE, args.legend = list()) {
   if (inherits(data, 'ftable')) {
@@ -1155,10 +1154,6 @@ toxplot <- function(data, headers = NULL, widths = c(1, 1, 1, 2),
     ndcx(co3$plot$x[2L]), ndcy(co3$plot$y[2L]), xpd = NA
   )
   
-  # dat <- dat[rev(seq.int(nrow(dat))), ]
-  # xx <- apply(dat, 2L, function(x) head(c(0, cumsum(x)), -1L) + x / 2)
-  # yy <- bp[col(dat)]
-  
   df <- diff(bp)[1L] / 2
   yb <- c(ndcy(co1$plot$y[1L]), unique(bp) - df, ndcy(co3$plot$y[2L]))
   aa <- rep_len(alpha.bg, 2L)
@@ -1198,8 +1193,9 @@ toxplot <- function(data, headers = NULL, widths = c(1, 1, 1, 2),
   )
   
   lbl <- xaxis.at * 100
-  lbl[length(lbl)] <- paste0(lbl[length(lbl)], '%')
-  axis(1L, max(colSums(dat)) * xaxis.at, lbl, mgp = c(3, 1.5, 0.5))
+  # lbl[length(lbl)] <- paste0(lbl[length(lbl)], '%')
+  lbl[1L] <- paste0(lbl[1L], '%')
+  axis(1L, total * xaxis.at, lbl, mgp = c(3, 1.5, 0.5))
   
   if (show.n)
     text(xx, yy, dat, col = ifelse(dat == 0, 'transparent', 'black'))

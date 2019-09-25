@@ -4,20 +4,20 @@
 \alias{toxplot}
 \title{toxplot}
 \usage{
-toxplot(data, headers = NULL, widths = c(1, 1, 1, 2),
-  total = max(rowSums(tbl)), show.n = TRUE, col.bars = NULL,
-  col.bg = "grey", alpha.bg = c(0.25, 0.5), digits = 0L,
-  xaxis.at = 0:5/5, legend = TRUE, args.legend = list())
+toxplot(data, total, headers = NULL, widths = c(1, 1, 1, 2),
+  show.n = TRUE, col.bars = NULL, col.bg = "grey",
+  alpha.bg = c(0.25, 0.5), digits = 0L, xaxis.at = 0:5/5,
+  legend = TRUE, args.legend = list())
 }
 \arguments{
 \item{data}{an \code{\link{ftable}} or a data frame with columns for toxicity
 category, description, and grade (in that order)}
 
+\item{total}{total number of patients (for percentages)}
+
 \item{headers}{a vector of labels for text column headers}
 
 \item{widths}{the relative width of each column}
-
-\item{total}{total number of patients (for percentages)}
 
 \item{show.n}{logical; if \code{TRUE}, the count for each bar is shown}
 
@@ -59,13 +59,13 @@ tbl <- ftable(
 )
 
 ## these are equivalent ways to call toxplot
-toxplot(tbl)
-toxplot(tox[, c('tox_cat', 'tox_desc', 'grade')])
+toxplot(tbl, length(unique(tox$id)))
+toxplot(tox[, c('tox_cat', 'tox_desc', 'grade')], length(unique(tox$id)))
 
 \dontrun{
 pdf('~/desktop/test.pdf', height = 10, width = 12)
-toxplot(tbl, xaxis.at = 0:1, args.legend = list(horiz = FALSE, cex = 2),
-        col.bg = 'orchid', total = 15, widths = c(1, 1, 0.5, 2))
+toxplot(tbl, xaxis.at = 0:3 / 10, args.legend = list(horiz = FALSE,
+        cex = 2), col.bg = 'orchid', total = 15, widths = c(1, 1, 0.5, 2))
 dev.off()
 }
 
