@@ -4,37 +4,51 @@
 \alias{toxplot}
 \title{toxplot}
 \usage{
-toxplot(data, total, headers = NULL, widths = c(1, 1, 1, 2),
-  show.n = TRUE, col.bars = NULL, col.bg = "grey",
-  alpha.bg = c(0.25, 0.5), digits = 0L, xaxis.at = 0:5/5,
-  legend = TRUE, args.legend = list())
+toxplot(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
+  order = c("none", "decreasing", "increasing"), label.bars = c("n",
+  "percent", "none"), col.bars = NULL, digits.bar = digits,
+  widths = c(1, 1, 2), space = 1, xaxis.at = NULL, col.bg = "grey",
+  alpha.bg = c(0.25, 0.5), legend = TRUE, args.legend = list(), ...)
 }
 \arguments{
-\item{data}{an \code{\link{ftable}} or a data frame with columns for toxicity
-category, description, and grade (in that order)}
+\item{ftable}{a two- or three-dimensional \code{\link{ftable}}}
 
 \item{total}{total number of patients (for percentages)}
 
+\item{digits}{number of places past the decimal to keep for percentages}
+
 \item{headers}{a vector of labels for text column headers}
 
-\item{widths}{the relative width of each column}
+\item{xlim}{the x-axis limits for the bar plot}
 
-\item{show.n}{logical; if \code{TRUE}, the count for each bar is shown}
+\item{order}{optional ordering for the rows, one of \code{"none"} (default),
+\code{"decreasing"}, or \code{"increasing"}; note that 3-d tables should
+not be re-ordered}
+
+\item{label.bars}{optional text on each bar, one of \code{"n"} (default),
+\code{"percent"}, or \code{"none"}}
 
 \item{col.bars}{a vector of colors for each column of \code{ftable}}
 
+\item{widths}{the relative width of each column}
+
+\item{space}{additional space between final text column and bar plot}
+
+\item{xaxis.at}{x-axis tick positions}
+
 \item{col.bg, alpha.bg}{background color for text columns with alternating
 \code{alpha.bg} transparency}
-
-\item{digits}{number of places past the decimal to keep for percentages}
-
-\item{xaxis.at}{x-axis tick positions, scaled to \code{[0,1]}}
 
 \item{legend}{logical; if \code{TRUE}, a legend for the \code{col.bars} is
 shown}
 
 \item{args.legend}{an optional \emph{named} list of arguments passed to
 \code{\link{legend}}}
+
+\item{...}{additional graphical parameters passed to \code{\link{par}}}
+
+\item{digits.bars}{number of places past the decimal to keep for
+\code{label.bars} text}
 }
 \description{
 Draw a toxicity summary plot.
@@ -52,21 +66,28 @@ tox <- data.frame(
 )
 tox <- cbind(tox, rawr::match_ctc(tox$code)[, c('tox_cat', 'tox_desc')])
 
-tbl <- ftable(
+t1 <- ftable(
   Category = tox$tox_cat,
   Description = tox$tox_desc,
   Grade = tox$grade
 )
+t2 <- ftable(
+  Description = tox$tox_desc,
+  Grade = tox$grade
+)
+n <- 25
 
-## these are equivalent ways to call toxplot
-toxplot(tbl, length(unique(tox$id)))
-toxplot(tox[, c('tox_cat', 'tox_desc', 'grade')], length(unique(tox$id)))
 
-\dontrun{
-pdf('~/desktop/test.pdf', height = 10, width = 12)
-toxplot(tbl, xaxis.at = 0:3 / 10, args.legend = list(horiz = FALSE,
-        cex = 2), col.bg = 'orchid', total = 15, widths = c(1, 1, 0.5, 2))
-dev.off()
-}
+## basic usage
+toxplot(t1, n) ## three column
+toxplot(t2, n) ## two column
+
+
+toxplot(
+  t2, n, widths = c(1, 3), label.bars = 'percent',
+  headers = c('Toxicity description', 'N (\%)'),
+  order = 'dec', xlim = c(0, 10), xaxis.at = c(0, 5, 10),
+  args.legend = list(x = 'bottomright', horiz = FALSE, cex = 2)
+)
 
 }
