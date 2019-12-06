@@ -1216,7 +1216,7 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
   ## barplot
   if (is.null(col.bars))
     col.bars <- c('lightblue', 'dodgerblue2', 'mediumpurple1', 'purple3', 'tomato')
-  col.bars <- rep_len(col.bars, ncol(tbl))
+  # col.bars <- rep_len(col.bars, ncol(tbl))
   
   par(mar = mm - c(0, 2, 0, 0))
   dat <- dat[, rev(seq.int(ncol(dat)))]
@@ -1248,9 +1248,9 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
   
   if (legend) {
     largs <- list(
-      x = par('usr')[2L], y = grconvertY(nrow(tbl) + 1.5),
-      legend = paste('Grade', seq_along(col.bars)), fill = col.bars,
-      border = NA, horiz = TRUE, bty = 'n', xpd = NA, xjust = 1
+      x = par('usr')[2L], y = grconvertY(nrow(tbl) + 2.5), xpd = NA,
+      legend = seq_along(col.bars), title = expression(bold(Grade)),
+      fill = col.bars, border = NA, horiz = TRUE, bty = 'n', xjust = 1
     )
     do.call('legend', modifyList(largs, args.legend))
   }
