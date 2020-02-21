@@ -33,11 +33,12 @@ Suggests:
     Rtsne,
     survival,
     testthat,
+    umap,
     vegan
 License: GPL-2
 LazyData: yes
 URL: https://github.com/raredd/plotr
 Roxygen: list(wrap = FALSE)
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Encoding: UTF-8

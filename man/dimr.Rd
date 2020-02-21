@@ -5,11 +5,22 @@
 \alias{plot.dimr}
 \title{Dimension reduction}
 \usage{
-dimr(data, type = c("tsne", "pca", "rpca"), k = NULL, ...)
+dimr(data, type = c("tsne", "pca", "rpca", "umap"), k = NULL, ...)
 
-\method{plot}{dimr}(x, group = TRUE, group2 = NULL, k = NULL,
-  col = NULL, labels = FALSE, vegan = FALSE, legend = TRUE,
-  args.legend = list(), plot3d = FALSE, iplot = FALSE, ...)
+\method{plot}{dimr}(
+  x,
+  group = TRUE,
+  group2 = NULL,
+  k = NULL,
+  col = NULL,
+  labels = FALSE,
+  vegan = FALSE,
+  legend = TRUE,
+  args.legend = list(),
+  plot3d = FALSE,
+  iplot = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{an \code{r x c} matrix-like object with \code{r} features and
@@ -68,9 +79,9 @@ dimensions of \code{object}}
 }
 \description{
 Wrapper function to perform and plot methods of dimensionality reduction
-including \code{\link[Rtsne]{Rtsne}}, \code{\link[rsvd]{rpca}}, and
-\code{\link[stats]{prcomp}} with optional \code{\link[stats]{kmeans}}
-clusters.
+including \code{\link[Rtsne]{Rtsne}}, \code{\link[rsvd]{rpca}},
+\code{\link[stats]{prcomp}}, and\code{\link[umap]{umap}}, with optional
+\code{\link[stats]{kmeans}} clustering.
 }
 \examples{
 ## feature x sample matrix
@@ -78,6 +89,7 @@ dat <- t(unique(iris[, 1:4]))
 grp <- unique(iris)$Species
 
 tsne <- dimr(dat)
+umap <- dimr(dat, type = 'umap')
 pca  <- dimr(dat, type = 'pca')
 rpca <- dimr(dat, type = 'rpca')
 pca2 <- dimr(dat, type = 'pca', scale. = TRUE) ## same as rpca
@@ -114,5 +126,6 @@ title(xlab = 'MPG', ylab = 'Weight', outer = TRUE, cex.lab = 2)
 }
 \seealso{
 \code{\link[Rtsne]{Rtsne}}; \code{\link[rsvd]{rpca}};
-\code{\link[stats]{prcomp}}; \code{\link[stats]{kmeans}}
+\code{\link[stats]{prcomp}}; \code{\link[umap]{umap}},
+\code{\link[stats]{kmeans}}
 }

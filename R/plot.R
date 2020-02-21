@@ -125,9 +125,9 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' Dimension reduction
 #' 
 #' Wrapper function to perform and plot methods of dimensionality reduction
-#' including \code{\link[Rtsne]{Rtsne}}, \code{\link[rsvd]{rpca}}, and
-#' \code{\link[stats]{prcomp}} with optional \code{\link[stats]{kmeans}}
-#' clusters.
+#' including \code{\link[Rtsne]{Rtsne}}, \code{\link[rsvd]{rpca}},
+#' \code{\link[stats]{prcomp}}, and\code{\link[umap]{umap}}, with optional
+#' \code{\link[stats]{kmeans}} clustering.
 #' 
 #' @param data an \code{r x c} matrix-like object with \code{r} features and
 #' \code{c} samples
@@ -172,7 +172,8 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' 
 #' @seealso
 #' \code{\link[Rtsne]{Rtsne}}; \code{\link[rsvd]{rpca}};
-#' \code{\link[stats]{prcomp}}; \code{\link[stats]{kmeans}}
+#' \code{\link[stats]{prcomp}}; \code{\link[umap]{umap}},
+#' \code{\link[stats]{kmeans}}
 #' 
 #' @examples
 #' ## feature x sample matrix
@@ -180,6 +181,7 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' grp <- unique(iris)$Species
 #' 
 #' tsne <- dimr(dat)
+#' umap <- dimr(dat, type = 'umap')
 #' pca  <- dimr(dat, type = 'pca')
 #' rpca <- dimr(dat, type = 'rpca')
 #' pca2 <- dimr(dat, type = 'pca', scale. = TRUE) ## same as rpca
@@ -215,14 +217,10 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' 
 #' @export
 
-dimr <- function(data, type = c('tsne', 'pca', 'rpca'), k = NULL, ...) {
+dimr <- function(data, type = c('tsne', 'pca', 'rpca', 'umap'), k = NULL, ...) {
   type <- match.arg(type)
   dims <- pmin(nrow(data), 3L)
   data <- t(data)
-  
-  k <- k %||% guess_k(data, 'wss')
-  if (is.na(k))
-    k <- 3L
   
   set.seed(1L)
   res <- switch(
@@ -233,6 +231,14 @@ dimr <- function(data, type = c('tsne', 'pca', 'rpca'), k = NULL, ...) {
       )
       list(object = object, x = object$Y[, seq.int(dims)], type = 't-SNE')
     },
+    umap = {
+      no <- list(...)
+      no$n_components <- no$n_components %||% dims
+      oo <- umap::umap.defaults
+      
+      object <- umap::umap(data, modifyList(oo, no))
+      list(object = object, x = object$layout[, seq.int(dims)], type = 'UMAP')
+    },
     pca = {
       object <- stats::prcomp(data, ...)
       list(obect = object, x = object$x[, seq.int(dims)], type = 'PC')
@@ -242,6 +248,10 @@ dimr <- function(data, type = c('tsne', 'pca', 'rpca'), k = NULL, ...) {
       list(object = object, x = object$x[, seq.int(dims)], type = 'rPC')
     }
   )
+  
+  k <- k %||% guess_k(data, 'wss')
+  if (is.na(k))
+    k <- 3L
   
   km <- stats::kmeans(res$x[, 1:2], k, 1e4L)
   
@@ -472,6 +482,7 @@ guess_k <- function(data, how = c('wss'), ...) {
   
   switch(
     how,
+    ## silhouette
     wss = wss(data, ...)
   )
 }
