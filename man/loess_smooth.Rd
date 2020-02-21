@@ -12,14 +12,29 @@ loess_smooth(x, ...)
 
 \method{loess_smooth}{formula}(formula, data, ...)
 
-\method{loess_smooth}{default}(x, y = NULL, ..., conf = 0.95,
-  n = 50L, sd = TRUE, fix_extremes = FALSE)
+\method{loess_smooth}{default}(
+  x,
+  y = NULL,
+  ...,
+  conf = 0.95,
+  n = 50L,
+  sd = TRUE,
+  fix_extremes = FALSE
+)
 
 \method{print}{loess_smooth}(x, ...)
 
-\method{plot}{loess_smooth}(x, y, ..., col.line = 1L,
-  col.ci = col.line, alpha.ci = 0.5, xlab = NULL, ylab = NULL,
-  ci = c("none", "lines", "band"))
+\method{plot}{loess_smooth}(
+  x,
+  y,
+  ...,
+  col.line = 1L,
+  col.ci = col.line,
+  alpha.ci = 0.5,
+  xlab = NULL,
+  ylab = NULL,
+  ci = c("none", "lines", "band")
+)
 }
 \arguments{
 \item{x, y}{the x- and y-axes for the plot}

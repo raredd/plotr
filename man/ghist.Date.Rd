@@ -5,13 +5,33 @@
 \alias{ghist.POSIXt}
 \title{ghistogram of a date or date-time object}
 \usage{
-\method{ghist}{Date}(x, breaks, ..., xlab = deparse(substitute(x)),
-  plot = TRUE, freq = FALSE, start.on.monday = TRUE, format,
-  grid = TRUE, col.grid = "grey90", col.acc = "white")
+\method{ghist}{Date}(
+  x,
+  breaks,
+  ...,
+  xlab = deparse(substitute(x)),
+  plot = TRUE,
+  freq = FALSE,
+  start.on.monday = TRUE,
+  format,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 
-\method{ghist}{POSIXt}(x, breaks, ..., xlab = deparse(substitute(x)),
-  plot = TRUE, freq = FALSE, start.on.monday = TRUE, format,
-  grid = TRUE, col.grid = "grey90", col.acc = "white")
+\method{ghist}{POSIXt}(
+  x,
+  breaks,
+  ...,
+  xlab = deparse(substitute(x)),
+  plot = TRUE,
+  freq = FALSE,
+  start.on.monday = TRUE,
+  format,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{x}{an object inheriting from class \code{"POSIXt"} or \code{"Date"}.}
@@ -25,8 +45,8 @@
     date-time objects.
  }
 
-\item{...}{\link{graphical parameters}, or arguments to
-    \code{\link{hist.default}} such as \code{include.lowest},
+\item{...}{\link[graphics]{graphical parameters}, or arguments to
+    \code{\link[graphics]{hist.default}} such as \code{include.lowest},
       \code{right} and \code{labels}.}
 
 \item{xlab}{a character string giving the label for the x axis, if plotted.}

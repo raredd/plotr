@@ -4,17 +4,33 @@
 \alias{gplot.histogram}
 \title{gplot histograms}
 \usage{
-\method{gplot}{histogram}(x, freq = equidist, density = NULL,
-  angle = 45, col = "white", border = par("fg"), lty = NULL,
+\method{gplot}{histogram}(
+  x,
+  freq = equidist,
+  density = NULL,
+  angle = 45,
+  col = "white",
+  border = par("fg"),
+  lty = NULL,
   main = paste("Histogram of", paste(x$xname, collapse = "\\n")),
-  sub = NULL, xlab = x$xname, ylab, xlim = range(x$breaks),
-  ylim = NULL, axes = TRUE, labels = FALSE, add = FALSE,
-  ann = TRUE, grid = TRUE, col.grid = "grey90", col.acc = "white",
-  ...)
+  sub = NULL,
+  xlab = x$xname,
+  ylab,
+  xlim = range(x$breaks),
+  ylim = NULL,
+  axes = TRUE,
+  labels = FALSE,
+  add = FALSE,
+  ann = TRUE,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white",
+  ...
+)
 }
 \arguments{
 \item{x}{a \code{histogram} object, or a list with components
-    \code{density}, \code{mid}, etc, see \code{\link{hist}} for
+    \code{density}, \code{mid}, etc, see \code{\link[graphics]{hist}} for
     information about the components of \code{x}.}
 
 \item{freq}{logical; if \code{TRUE}, the
@@ -24,17 +40,17 @@
     default is true for equidistant \code{breaks} and false otherwise.}
 
 \item{density}{select shading of bars by lines:
-    see \code{\link{rect}}.}
+    see \code{\link[graphics]{rect}}.}
 
 \item{angle}{select shading of bars by lines:
-    see \code{\link{rect}}.}
+    see \code{\link[graphics]{rect}}.}
 
 \item{col}{a colour to be used to fill the bars.  The default of
     \code{NULL} yields unfilled bars.}
 
 \item{border}{the color of the border around the bars.}
 
-\item{lty}{the line type used for the bars, see also \code{\link{lines}}.}
+\item{lty}{the line type used for the bars, see also \code{\link[graphics]{lines}}.}
 
 \item{main}{these arguments to \code{title} have useful
     defaults here.}
@@ -69,7 +85,7 @@
 
 \item{col.acc}{\code{grid} accent color}
 
-\item{...}{further \link{graphical parameters} to
+\item{...}{further \link[graphics]{graphical parameters} to
     \code{title} and \code{axis}.}
 }
 \description{

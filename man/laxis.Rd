@@ -4,8 +4,16 @@
 \alias{laxis}
 \title{Add a logarithmic axis}
 \usage{
-laxis(side = 1L, nticks = 5L, labels = TRUE, digits = 0L,
-  base = 10, limit = base^3, simplify = TRUE, ...)
+laxis(
+  side = 1L,
+  nticks = 5L,
+  labels = TRUE,
+  digits = 0L,
+  base = 10,
+  limit = base^3,
+  simplify = TRUE,
+  ...
+)
 }
 \arguments{
 \item{side}{an integer specifying which side of the plot the axis is to be

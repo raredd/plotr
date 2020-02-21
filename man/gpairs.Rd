@@ -8,16 +8,37 @@
 \usage{
 gpairs(x, ...)
 
-\method{gpairs}{default}(x, labels, panel = points, ...,
-  lower.panel = panel, upper.panel = panel, diag.panel = NULL,
-  text.panel = textPanel, label.pos = 0.5 + has.diag/3,
-  line.main = 3, cex.labels = NULL, font.labels = 1,
-  row1attop = TRUE, gap = 1, log = "", grid = TRUE,
-  col.grid = "grey90", col.acc = "white")
+\method{gpairs}{default}(
+  x,
+  labels,
+  panel = points,
+  ...,
+  lower.panel = panel,
+  upper.panel = panel,
+  diag.panel = NULL,
+  text.panel = textPanel,
+  label.pos = 0.5 + has.diag/3,
+  line.main = 3,
+  cex.labels = NULL,
+  font.labels = 1,
+  row1attop = TRUE,
+  gap = 1,
+  log = "",
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 
-\method{gpairs}{formula}(formula, data = NULL, ..., subset,
-  na.action = stats::na.pass, grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+\method{gpairs}{formula}(
+  formula,
+  data = NULL,
+  ...,
+  subset,
+  na.action = stats::na.pass,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{x}{the coordinates of points given as numeric columns of a
@@ -28,7 +49,7 @@ gpairs(x, ...)
 \item{...}{
     arguments to be passed to or from methods.
 
-    Also, \link{graphical parameters} can be given as can arguments to
+    Also, \link[graphics]{graphical parameters} can be given as can arguments to
     \code{plot} such as \code{main}.  \code{par("oma")} will be set
     appropriately unless specified.
   }
@@ -53,7 +74,7 @@ gpairs(x, ...)
 \item{label.pos}{\code{y} position of labels in the text panel.}
 
 \item{line.main}{if \code{main} is specified, \code{line.main} gives
-    the \code{line} argument to \code{\link{mtext}()} which draws the
+    the \code{line} argument to \code{\link[graphics]{mtext}()} which draws the
     title.  You may want to specify \code{oma} when changing \code{line.main}.}
 
 \item{cex.labels}{graphics parameters for the text panel.}
@@ -67,7 +88,7 @@ gpairs(x, ...)
 \item{gap}{distance between subplots, in margin lines.}
 
 \item{log}{a character string indicating if logarithmic axes are to be
-    used, see \code{\link{plot.default}} \emph{or} a numeric vector of
+    used, see \code{\link[graphics]{plot.default}} \emph{or} a numeric vector of
     indices specifying the indices of those variables where logarithmic
     axes should be used for both x and y.  \code{log = "xy"} specifies
     logarithmic axes for all variables.}

@@ -4,8 +4,7 @@
 \alias{propfall}
 \title{propfall}
 \usage{
-propfall(data, group, order, group.order = unique(group), col = NULL,
-  ...)
+propfall(data, group, order, group.order = unique(group), col = NULL, ...)
 }
 \arguments{
 \item{data}{a data frame (or object to be coerced)}

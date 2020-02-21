@@ -8,30 +8,62 @@
 \usage{
 gspineplot(x, ...)
 
-\method{gspineplot}{default}(x, y = NULL, breaks = NULL,
-  tol.ylab = 0.05, off = NULL, ylevels = NULL, col = NULL,
-  main = "", xlab = NULL, ylab = NULL, xaxlabels = NULL,
-  yaxlabels = NULL, xlim = NULL, ylim = c(0, 1), axes = TRUE, ...,
-  grid = TRUE, col.grid = "grey90", col.acc = "white")
+\method{gspineplot}{default}(
+  x,
+  y = NULL,
+  breaks = NULL,
+  tol.ylab = 0.05,
+  off = NULL,
+  ylevels = NULL,
+  col = NULL,
+  main = "",
+  xlab = NULL,
+  ylab = NULL,
+  xaxlabels = NULL,
+  yaxlabels = NULL,
+  xlim = NULL,
+  ylim = c(0, 1),
+  axes = TRUE,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 
-\method{gspineplot}{formula}(formula, data = NULL, breaks = NULL,
-  tol.ylab = 0.05, off = NULL, ylevels = NULL, col = NULL,
-  main = "", xlab = NULL, ylab = NULL, xaxlabels = NULL,
-  yaxlabels = NULL, xlim = NULL, ylim = c(0, 1), axes = TRUE, ...,
-  subset = NULL, grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+\method{gspineplot}{formula}(
+  formula,
+  data = NULL,
+  breaks = NULL,
+  tol.ylab = 0.05,
+  off = NULL,
+  ylevels = NULL,
+  col = NULL,
+  main = "",
+  xlab = NULL,
+  ylab = NULL,
+  xaxlabels = NULL,
+  yaxlabels = NULL,
+  xlim = NULL,
+  ylim = c(0, 1),
+  axes = TRUE,
+  ...,
+  subset = NULL,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{x}{an object, the default method expects either a single variable
     (interpreted to be the explanatory variable) or a 2-way table.  See
     details.}
 
-\item{...}{additional arguments passed to \code{\link{rect}}.}
+\item{...}{additional arguments passed to \code{\link[graphics]{rect}}.}
 
 \item{y}{a \code{"factor"} interpreted to be the dependent variable}
 
 \item{breaks}{if the explanatory variable is numeric, this controls how
-    it is discretized. \code{breaks} is passed to \code{\link{hist}} and can
+    it is discretized. \code{breaks} is passed to \code{\link[graphics]{hist}} and can
     be a list of arguments.}
 
 \item{tol.ylab}{convenience tolerance parameter for y-axis annotation.

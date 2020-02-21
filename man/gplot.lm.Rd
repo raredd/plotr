@@ -4,21 +4,33 @@
 \alias{gplot.lm}
 \title{gplot diagnostics for an lm object}
 \usage{
-\method{gplot}{lm}(x, which = c(1L:3L, 5L), grid = TRUE,
-  col.grid = "grey90", col.acc = "white",
+\method{gplot}{lm}(
+  x,
+  which = c(1L:3L, 5L),
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white",
   caption = list("Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
-  "Cook's distance", "Residuals vs Leverage",
-  expression("Cook's dist vs Leverage  " * h[ii]/(1 - h[ii]))),
-  panel = if (add.smooth) panel.smooth else points, sub.caption = NULL,
-  main = "", ask = prod(par("mfcol")) < length(which) &&
-  dev.interactive(), ..., id.n = 3, labels.id = names(residuals(x)),
-  cex.id = 0.75, qqline = TRUE, cook.levels = c(0.5, 1),
-  add.smooth = getOption("add.smooth"), label.pos = c(4, 2),
-  cex.caption = 1)
+    "Cook's distance", "Residuals vs Leverage", expression("Cook's dist vs Leverage  " *
+    h[ii]/(1 - h[ii]))),
+  panel = if (add.smooth) panel.smooth else points,
+  sub.caption = NULL,
+  main = "",
+  ask = prod(par("mfcol")) < length(which) && dev.interactive(),
+  ...,
+  id.n = 3,
+  labels.id = names(residuals(x)),
+  cex.id = 0.75,
+  qqline = TRUE,
+  cook.levels = c(0.5, 1),
+  add.smooth = getOption("add.smooth"),
+  label.pos = c(4, 2),
+  cex.caption = 1
+)
 }
 \arguments{
-\item{x}{\code{lm} object, typically result of \code{\link{lm}} or
-    \code{\link{glm}}.}
+\item{x}{\code{lm} object, typically result of \code{\link[stats]{lm}} or
+    \code{\link[stats]{glm}}.}
 
 \item{which}{if a subset of the plots is required, specify a subset of
     the numbers \code{1:6}, see \code{caption} below (and the
@@ -62,7 +74,7 @@
 
 \item{cex.id}{magnification of point labels.}
 
-\item{qqline}{logical indicating if a \code{\link{qqline}()} should be
+\item{qqline}{logical indicating if a \code{\link[stats]{qqline}()} should be
     added to the normal Q-Q plot.}
 
 \item{cook.levels}{levels of Cook's distance at which to draw contours.}

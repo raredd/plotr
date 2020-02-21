@@ -4,12 +4,23 @@
 \alias{ggheat2}
 \title{ggheat2}
 \usage{
-ggheat2(data, corr = cor(data, use = "pairwise.complete"),
-  cluster = TRUE, nbreaks = NULL, palette = if (is.null(nbreaks))
-  c("blue", "white", "red") else 1, legend_name = expression(rho), pch,
-  cex = c(2, 6), label = FALSE, label_alpha = FALSE,
-  label_color = "black", label_digits = 2, midpoint = 0,
-  clim = c(-1, 1), ...)
+ggheat2(
+  data,
+  corr = cor(data, use = "pairwise.complete"),
+  cluster = TRUE,
+  nbreaks = NULL,
+  palette = if (is.null(nbreaks)) c("blue", "white", "red") else 1,
+  legend_name = expression(rho),
+  pch,
+  cex = c(2, 6),
+  label = FALSE,
+  label_alpha = FALSE,
+  label_color = "black",
+  label_digits = 2,
+  midpoint = 0,
+  clim = c(-1, 1),
+  ...
+)
 }
 \arguments{
 \item{data}{a data frame or matrix (observations x variables) of numeric

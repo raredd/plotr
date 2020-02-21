@@ -4,13 +4,27 @@
 \alias{prettybars}
 \title{prettybars}
 \usage{
-prettybars(x, y = names(x), emph = NULL, col.bar = grey(0.9),
-  col.emph = "magenta1", col.y = "black", col.bg = "lightblue",
-  cex.y = 0.5, FUN = mean, ..., fun.lab = "overall mean",
-  digits = 2L, title = paste0("prettybar of ", m$x), sub = NULL,
-  note = NULL, col.note = col.emph,
-  subnote = "source: github.com/raredd/rawr", extra.margin = 0,
-  pars = NULL)
+prettybars(
+  x,
+  y = names(x),
+  emph = NULL,
+  col.bar = grey(0.9),
+  col.emph = "magenta1",
+  col.y = "black",
+  col.bg = "lightblue",
+  cex.y = 0.5,
+  FUN = mean,
+  ...,
+  fun.lab = "overall mean",
+  digits = 2L,
+  title = paste0("prettybar of ", m$x),
+  sub = NULL,
+  note = NULL,
+  col.note = col.emph,
+  subnote = "source: github.com/raredd/rawr",
+  extra.margin = 0,
+  pars = NULL
+)
 }
 \arguments{
 \item{x}{numeric vector; values of bar heights}
@@ -77,7 +91,7 @@ prettybars(mtcars$mpg, y = rownames(mtcars), col.bg = 'snow',
   extra.margin = 1, col.emph = 'cyan2',
   FUN = quantile, probs = c(.25, .5, .75), na.rm = TRUE,
   fun.lab = c('lower quartile','median','upper quartile'),
-  note = "if you buy a Mercedes,\\nget ready to pay for lots of gas",
+  note = "if you buy a Mercedes,\nget ready to pay for lots of gas",
   title = 'motor trend cars', sub = '   (miles per gallon)'
 )
 

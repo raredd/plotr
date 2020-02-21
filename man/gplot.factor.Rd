@@ -4,8 +4,15 @@
 \alias{gplot.factor}
 \title{Plotting factor variables}
 \usage{
-\method{gplot}{factor}(x, y, legend.text = NULL, ..., grid = TRUE,
-  col.grid = "grey90", col.acc = "white")
+\method{gplot}{factor}(
+  x,
+  y,
+  legend.text = NULL,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{x}{numeric or factor. \code{y} may be missing.}
@@ -14,14 +21,14 @@
 
 \item{legend.text}{character vector for annotation of y axis in the
       case of a factor \code{y}: defaults to \code{levels(y)}.  This
-      sets the \code{yaxlabels} argument of \code{\link{spineplot}}.}
+      sets the \code{yaxlabels} argument of \code{\link[graphics]{spineplot}}.}
 
-\item{...}{Further arguments to \code{\link{barplot}},
-      \code{\link{boxplot}}, \code{\link{spineplot}} or
-      \code{\link{plot}} as appropriate.  All of these accept
-      \link{graphical parameters} (see \code{\link{par}}) and
+\item{...}{Further arguments to \code{\link[graphics]{barplot}},
+      \code{\link[graphics]{boxplot}}, \code{\link[graphics]{spineplot}} or
+      \code{\link[graphics]{plot}} as appropriate.  All of these accept
+      \link[graphics]{graphical parameters} (see \code{\link[graphics]{par}}) and
       annotation arguments passed
-      to \code{\link{title}} and \code{axes = FALSE}.  None accept \code{type}.
+      to \code{\link[graphics]{title}} and \code{axes = FALSE}.  None accept \code{type}.
     }
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}

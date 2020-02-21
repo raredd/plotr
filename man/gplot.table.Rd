@@ -4,9 +4,19 @@
 \alias{gplot.table}
 \title{gplot method for \code{table} objects}
 \usage{
-\method{gplot}{table}(x, type = "h", ylim = c(0, max(x)), lwd = 2,
-  xlab = NULL, ylab = NULL, frame.plot = is.num, ..., grid = TRUE,
-  col.grid = "grey90", col.acc = "white")
+\method{gplot}{table}(
+  x,
+  type = "h",
+  ylim = c(0, max(x)),
+  lwd = 2,
+  xlab = NULL,
+  ylab = NULL,
+  frame.plot = is.num,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{x}{a \code{\link{table}} (like) object.}
@@ -21,11 +31,11 @@
 
 \item{ylab}{x- and y-axis labels.}
 
-\item{frame.plot}{logical indicating if a frame (\code{\link{box}})
+\item{frame.plot}{logical indicating if a frame (\code{\link[graphics]{box}})
     should be drawn in the 1D case.  Defaults to true when \code{x} has
     \code{\link{dimnames}} coerce-able to numbers.}
 
-\item{...}{further graphical arguments, see \code{\link{plot.default}}.
+\item{...}{further graphical arguments, see \code{\link[graphics]{plot.default}}.
     \code{axes = FALSE} is accepted.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}

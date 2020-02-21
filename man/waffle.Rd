@@ -4,8 +4,7 @@
 \alias{waffle}
 \title{waffle}
 \usage{
-waffle(x, rows, horiz = TRUE, cols = seq_along(x), mat, pct = 0.85,
-  ...)
+waffle(x, rows, horiz = TRUE, cols = seq_along(x), mat, pct = 0.85, ...)
 }
 \arguments{
 \item{x}{an integer vector with counts for each group}
@@ -54,9 +53,9 @@ waffle(mat = matrix(mat, 8))
 tf <- tempfile(fileext = '.pdf')
 pdf(tf, width = 7, height = 3)
 savings <- c('Mortgage ($84,911)' = 84911,
-             'Auto and\\ntuition loans ($14,414)'=14414,
+             'Auto and\ntuition loans ($14,414)'=14414,
              'Home equity loans ($10,062)' = 10062,
-             'Credit cards\\n($8,565)' = 8565)
+             'Credit cards\n($8,565)' = 8565)
 w <- waffle(savings / 392, rows = 7, cols = c("#c7d4b6", "#a3aabd", "#a0d0de", "#97b5cf"),
             bg = 'cornsilk', mar = c(0,0,0,3))
 

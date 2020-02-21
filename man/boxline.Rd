@@ -4,10 +4,22 @@
 \alias{boxline}
 \title{Boxline}
 \usage{
-boxline(x, probs = c(0.75, 0.9, 0.99), col.probs = 2L, alpha = NULL,
-  col.med = 1L, lwd.med = 2, pch = NULL, err = c("none", "sd",
-  "se", "ci", "quantile"), err.alpha = 0.05, col.err = col.med,
-  lwd.err = lwd.med, at = seq_along(x), add = FALSE, ...)
+boxline(
+  x,
+  probs = c(0.75, 0.9, 0.99),
+  col.probs = 2L,
+  alpha = NULL,
+  col.med = 1L,
+  lwd.med = 2,
+  pch = NULL,
+  err = c("none", "sd", "se", "ci", "quantile"),
+  err.alpha = 0.05,
+  col.err = col.med,
+  lwd.err = lwd.med,
+  at = seq_along(x),
+  add = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{a list of vectors}

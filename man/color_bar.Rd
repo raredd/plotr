@@ -4,9 +4,17 @@
 \alias{color_bar}
 \title{Color legend}
 \usage{
-color_bar(colors, x = NULL, y = x, labels = NULL,
-  at.x = par("usr")[2L], at.y = par("usr")[3L], cex.x = 1,
-  cex.y = 1, ...)
+color_bar(
+  colors,
+  x = NULL,
+  y = x,
+  labels = NULL,
+  at.x = par("usr")[2L],
+  at.y = par("usr")[3L],
+  cex.x = 1,
+  cex.y = 1,
+  ...
+)
 }
 \arguments{
 \item{colors}{vector of color names (or hexadecimal) from low to high}

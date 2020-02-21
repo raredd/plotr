@@ -4,8 +4,7 @@
 \alias{facet_adjust}
 \title{Facet labeling}
 \usage{
-facet_adjust(x, pos = c("up", "down"), newpage = is.null(vp),
-  vp = NULL)
+facet_adjust(x, pos = c("up", "down"), newpage = is.null(vp), vp = NULL)
 }
 \arguments{
 \item{x}{\code{\link[ggplot2]{ggplot}} object}

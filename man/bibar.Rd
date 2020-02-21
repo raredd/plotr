@@ -4,8 +4,17 @@
 \alias{bibar}
 \title{Bi-barplot}
 \usage{
-bibar(x, left = NULL, right = NULL, sleft = NULL, sright = NULL,
-  col = NULL, xlim = NULL, ylim = NULL, axes = TRUE)
+bibar(
+  x,
+  left = NULL,
+  right = NULL,
+  sleft = NULL,
+  sright = NULL,
+  col = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  axes = TRUE
+)
 }
 \arguments{
 \item{x}{a table- or matrix-like object}

@@ -4,8 +4,13 @@
 \alias{set_panel_size}
 \title{Set panel size}
 \usage{
-set_panel_size(p = NULL, file = NULL, margin = unit(1, "cm"),
-  width = unit(4, "cm"), height = unit(4, "cm"))
+set_panel_size(
+  p = NULL,
+  file = NULL,
+  margin = unit(1, "cm"),
+  width = unit(4, "cm"),
+  height = unit(4, "cm")
+)
 }
 \arguments{
 \item{p}{a \code{\link[ggplot2]{ggplot}} object}

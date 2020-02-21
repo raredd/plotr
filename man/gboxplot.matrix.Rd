@@ -4,8 +4,14 @@
 \alias{gboxplot.matrix}
 \title{Draw a gboxplot for each column (row) of a matrix}
 \usage{
-\method{gboxplot}{matrix}(x, use.cols = TRUE, ..., grid = TRUE,
-  col.grid = "grey90", col.acc = "white")
+\method{gboxplot}{matrix}(
+  x,
+  use.cols = TRUE,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{x}{a numeric matrix.}
@@ -13,7 +19,7 @@
 \item{use.cols}{logical indicating if columns (by default) or rows
     (\code{use.cols = FALSE}) should be plotted.}
 
-\item{...}{Further arguments to \code{\link{boxplot}}.}
+\item{...}{Further arguments to \code{\link[graphics]{boxplot}}.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}
 

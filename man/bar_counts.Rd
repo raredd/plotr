@@ -4,8 +4,16 @@
 \alias{bar_counts}
 \title{Add counts to bar plots}
 \usage{
-bar_counts(data, x, fill, facet, position = c("stack", "fill"),
-  rev = FALSE, fmt = "n (p\%)", ...)
+bar_counts(
+  data,
+  x,
+  fill,
+  facet,
+  position = c("stack", "fill"),
+  rev = FALSE,
+  fmt = "n (p\%)",
+  ...
+)
 }
 \arguments{
 \item{data}{data set to use for plot and \code{x}, \code{y}}
@@ -46,7 +54,7 @@ ggplot(mt, aes(vs)) +
 ggplot(mt, aes(vs, fill = gear)) +
   geom_bar() +
   facet_wrap(~ am) +
-  bar_counts(mt, vs, gear, am, fmt = 'N = n\\np\%')
+  bar_counts(mt, vs, gear, am, fmt = 'N = n\np\%')
 
 ggplot(mt, aes(vs, fill = gear)) +
   geom_bar(position = 'fill') +
@@ -58,7 +66,7 @@ ggplot(mt, aes(vs, fill = gear)) +
 ## for ggplot2 >= 2.2.0 use geom_col with pre-computed stats
 dat <- data.frame(prop.table(with(mt, table(vs, gear))))
 dat <- within(dat, {
-  lbl <- sprintf('Gear: \%s\\n(\%s\%\%)', gear, Freq * 100)
+  lbl <- sprintf('Gear: \%s\n(\%s\%\%)', gear, Freq * 100)
 })
 
 ggplot(dat, aes(vs, Freq, fill = gear)) +

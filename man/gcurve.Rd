@@ -5,14 +5,36 @@
 \alias{gplot.function}
 \title{Draw function curves}
 \usage{
-gcurve(expr, from = NULL, to = NULL, n = 101, add = FALSE,
-  type = "l", xname = "x", xlab = xname, ylab = NULL, log = NULL,
-  xlim = NULL, ..., grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+gcurve(
+  expr,
+  from = NULL,
+  to = NULL,
+  n = 101,
+  add = FALSE,
+  type = "l",
+  xname = "x",
+  xlab = xname,
+  ylab = NULL,
+  log = NULL,
+  xlim = NULL,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 
-\method{gplot}{function}(x, y = 0, to = 1, from = y, xlim = NULL,
-  ylab = NULL, grid = TRUE, col.grid = "grey90", col.acc = "white",
-  ...)
+\method{gplot}{`function`}(
+  x,
+  y = 0,
+  to = 1,
+  from = y,
+  xlim = NULL,
+  ylab = NULL,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white",
+  ...
+)
 }
 \arguments{
 \item{expr}{The name of a function, or a \link{call} or an
@@ -31,11 +53,11 @@ gcurve(expr, from = NULL, to = NULL, n = 101, add = FALSE,
     \code{FALSE} (with a warning if a different value is supplied) if no
     graphics device is open.}
 
-\item{type}{plot type: see \code{\link{plot.default}}.}
+\item{type}{plot type: see \code{\link[graphics]{plot.default}}.}
 
 \item{xname}{character string giving the name to be used for the x axis.}
 
-\item{xlab}{labels and \link{graphical parameters}
+\item{xlab}{labels and \link[graphics]{graphical parameters}
     can also be specified as arguments.  See \sQuote{Details} for the
     interpretation of the default for \code{log}.
 
@@ -44,7 +66,7 @@ gcurve(expr, from = NULL, to = NULL, n = 101, add = FALSE,
     \code{expr}.
   }
 
-\item{ylab}{labels and \link{graphical parameters}
+\item{ylab}{labels and \link[graphics]{graphical parameters}
     can also be specified as arguments.  See \sQuote{Details} for the
     interpretation of the default for \code{log}.
 
@@ -53,7 +75,7 @@ gcurve(expr, from = NULL, to = NULL, n = 101, add = FALSE,
     \code{expr}.
   }
 
-\item{log}{labels and \link{graphical parameters}
+\item{log}{labels and \link[graphics]{graphical parameters}
     can also be specified as arguments.  See \sQuote{Details} for the
     interpretation of the default for \code{log}.
 
@@ -65,7 +87,7 @@ gcurve(expr, from = NULL, to = NULL, n = 101, add = FALSE,
 \item{xlim}{\code{NULL} or a numeric vector of length 2;
     if non-\code{NULL} it provides the defaults for \code{c(from, to)}
     and, unless \code{add = TRUE}, selects the x-limits of the plot -- see
-    \code{\link{plot.window}}.}
+    \code{\link[graphics]{plot.window}}.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}
 

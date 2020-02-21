@@ -4,9 +4,23 @@
 \alias{carrows}
 \title{Curved arrows}
 \usage{
-carrows(p1, p2, arc, degree = FALSE, pad = 0.01 * 1:2, flip = FALSE,
-  dir = NULL, col = par("col"), lwd = par("lwd"), lty = par("lty"),
-  size = 1, width = size/2, curve = 1, fill = col, border = NA)
+carrows(
+  p1,
+  p2,
+  arc,
+  degree = FALSE,
+  pad = 0.01 * 1:2,
+  flip = FALSE,
+  dir = NULL,
+  col = par("col"),
+  lwd = par("lwd"),
+  lty = par("lty"),
+  size = 1,
+  width = size/2,
+  curve = 1,
+  fill = col,
+  border = NA
+)
 }
 \arguments{
 \item{p1, p2}{vectors of length two giving the \code{{x,y}} coordinates for

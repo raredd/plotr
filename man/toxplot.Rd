@@ -4,11 +4,25 @@
 \alias{toxplot}
 \title{toxplot}
 \usage{
-toxplot(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
-  order = c("none", "decreasing", "increasing"), label.bars = c("n",
-  "percent", "none"), col.bars = NULL, digits.bar = digits,
-  widths = c(1, 1, 2), space = 1, xaxis.at = NULL, col.bg = "grey",
-  alpha.bg = c(0.25, 0.5), legend = TRUE, args.legend = list(), ...)
+toxplot(
+  ftable,
+  total,
+  digits = 0L,
+  headers = NULL,
+  xlim = NULL,
+  order = c("none", "decreasing", "increasing"),
+  label.bars = c("n", "percent", "none"),
+  col.bars = NULL,
+  digits.bar = digits,
+  widths = c(1, 1, 2),
+  space = 1,
+  xaxis.at = NULL,
+  col.bg = "grey",
+  alpha.bg = c(0.25, 0.5),
+  legend = TRUE,
+  args.legend = list(),
+  ...
+)
 }
 \arguments{
 \item{ftable}{a two- or three-dimensional \code{\link{ftable}}}

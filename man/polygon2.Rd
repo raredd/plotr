@@ -4,9 +4,20 @@
 \alias{polygon2}
 \title{polygon2}
 \usage{
-polygon2(x, y = NULL, radius, sides = 6, srt = 0, density = NULL,
-  angle = 45, border = NULL, col = NA, lty = par("lty"),
-  fillOddEven = FALSE, ...)
+polygon2(
+  x,
+  y = NULL,
+  radius,
+  sides = 6,
+  srt = 0,
+  density = NULL,
+  angle = 45,
+  border = NULL,
+  col = NA,
+  lty = par("lty"),
+  fillOddEven = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x, y}{x- and y-coordinate vectors of polygon centroids}

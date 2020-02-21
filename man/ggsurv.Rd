@@ -4,12 +4,36 @@
 \alias{ggsurv}
 \title{Survival curves with ggplot}
 \usage{
-ggsurv(s, col.surv = 1, lty.surv = 1, censor = TRUE, col.cens = 1,
-  mark = 3, confin = TRUE, confband = FALSE, col.band = NA,
-  median = FALSE, atrisk = TRUE, col.atrisk, pval, basehaz = FALSE,
-  ticks, median.ticks = TRUE, xlab, ylab, main, xlim, ylim,
-  legend = "right", legend.labels, grid = FALSE, ggdefault = FALSE,
-  plot.margin = NULL, table.margin = NULL, ...)
+ggsurv(
+  s,
+  col.surv = 1,
+  lty.surv = 1,
+  censor = TRUE,
+  col.cens = 1,
+  mark = 3,
+  confin = TRUE,
+  confband = FALSE,
+  col.band = NA,
+  median = FALSE,
+  atrisk = TRUE,
+  col.atrisk,
+  pval,
+  basehaz = FALSE,
+  ticks,
+  median.ticks = TRUE,
+  xlab,
+  ylab,
+  main,
+  xlim,
+  ylim,
+  legend = "right",
+  legend.labels,
+  grid = FALSE,
+  ggdefault = FALSE,
+  plot.margin = NULL,
+  table.margin = NULL,
+  ...
+)
 }
 \arguments{
 \item{s}{\code{\link{survfit}} or \code{survfit.cox} object}

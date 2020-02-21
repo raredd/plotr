@@ -4,8 +4,19 @@
 \alias{bpCI}
 \title{Barplot confidence intervals}
 \usage{
-bpCI(x, horiz = FALSE, ci = TRUE, ci.u, ci.l, ci.width = 0.5,
-  sig = FALSE, pvals, pch = "*", show.p = FALSE, ...)
+bpCI(
+  x,
+  horiz = FALSE,
+  ci = TRUE,
+  ci.u,
+  ci.l,
+  ci.width = 0.5,
+  sig = FALSE,
+  pvals,
+  pch = "*",
+  show.p = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{the return value of \code{\link{barplot}}, i.e., a vector or

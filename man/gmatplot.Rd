@@ -6,19 +6,56 @@
 \alias{gmatlines}
 \title{Plos columns of matrices}
 \usage{
-gmatplot(x, y, type = "p", lty = 1:5, lwd = 1, lend = par("lend"),
-  pch = NULL, col = 1:6, cex = NULL, bg = NA, xlab = NULL,
-  ylab = NULL, xlim = NULL, ylim = NULL, ..., add = FALSE,
-  verbose = getOption("verbose"), grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+gmatplot(
+  x,
+  y,
+  type = "p",
+  lty = 1:5,
+  lwd = 1,
+  lend = par("lend"),
+  pch = NULL,
+  col = 1:6,
+  cex = NULL,
+  bg = NA,
+  xlab = NULL,
+  ylab = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  ...,
+  add = FALSE,
+  verbose = getOption("verbose"),
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 
-gmatpoints(x, y, type = "p", lty = 1:5, lwd = 1, pch = NULL,
-  col = 1:6, ..., grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+gmatpoints(
+  x,
+  y,
+  type = "p",
+  lty = 1:5,
+  lwd = 1,
+  pch = NULL,
+  col = 1:6,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 
-gmatlines(x, y, type = "l", lty = 1:5, lwd = 1, pch = NULL,
-  col = 1:6, ..., grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+gmatlines(
+  x,
+  y,
+  type = "l",
+  lty = 1:5,
+  lwd = 1,
+  pch = NULL,
+  col = 1:6,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{x}{vectors or matrices of data for plotting.  The number of
@@ -33,7 +70,7 @@ gmatlines(x, y, type = "l", lty = 1:5, lwd = 1, pch = NULL,
 
 \item{type}{character string (length 1 vector) or vector of 1-character
     strings indicating the type of plot for each
-    column of \code{y}, see \code{\link{plot}} for all possible
+    column of \code{y}, see \code{\link[graphics]{plot}} for all possible
     \code{type}s.  The first character of \code{type}
     defines the first plot, the second character the second, etc.
     Characters in \code{type} are cycled through; e.g., \code{"pl"}
@@ -58,7 +95,7 @@ gmatlines(x, y, type = "l", lty = 1:5, lwd = 1, pch = NULL,
     drawn.}
 
 \item{pch}{character string or vector of 1-characters or integers for
-    plotting characters, see \code{\link{points}}.
+    plotting characters, see \code{\link[graphics]{points}}.
     The first character is the plotting-character for the first plot,
     the second for the second, etc.  The default is the digits (1
     through 9, 0) then the lowercase and uppercase letters.
@@ -72,24 +109,24 @@ gmatlines(x, y, type = "l", lty = 1:5, lwd = 1, pch = NULL,
 \item{col}{vector of colors.  Colors are used cyclically.}
 
 \item{cex}{vector of character expansion sizes, used cyclically.
-    This works as a multiple of \code{\link{par}("cex")}.  \code{NULL} is
+    This works as a multiple of \code{\link[graphics]{par}("cex")}.  \code{NULL} is
     equivalent to \code{1.0}. }
 
 \item{bg}{vector of background (fill) colors for the open plot
-    symbols given by \code{pch = 21:25} as in \code{\link{points}}.  The
+    symbols given by \code{pch = 21:25} as in \code{\link[graphics]{points}}.  The
     default \code{NA} corresponds to the one of the underlying function
-    \code{\link{plot.xy}}.}
+    \code{\link[graphics]{plot.xy}}.}
 
-\item{xlab}{titles for x and y axes, as in \code{\link{plot}}.}
+\item{xlab}{titles for x and y axes, as in \code{\link[graphics]{plot}}.}
 
-\item{ylab}{titles for x and y axes, as in \code{\link{plot}}.}
+\item{ylab}{titles for x and y axes, as in \code{\link[graphics]{plot}}.}
 
-\item{xlim}{ranges of x and y axes, as in \code{\link{plot}}.}
+\item{xlim}{ranges of x and y axes, as in \code{\link[graphics]{plot}}.}
 
-\item{ylim}{ranges of x and y axes, as in \code{\link{plot}}.}
+\item{ylim}{ranges of x and y axes, as in \code{\link[graphics]{plot}}.}
 
 \item{add}{logical.  If \code{TRUE}, plots are added to current one,
-    using \code{\link{points}} and \code{\link{lines}}.}
+    using \code{\link[graphics]{points}} and \code{\link[graphics]{lines}}.}
 
 \item{verbose}{logical.  If \code{TRUE}, write one line of what is
     done.}

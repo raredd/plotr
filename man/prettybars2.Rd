@@ -4,13 +4,24 @@
 \alias{prettybars2}
 \title{prettybars2}
 \usage{
-prettybars2(x, lab.y = colnames(x), n.y = ncol(x),
-  lab.group = rownames(x), n.group = nrow(x),
+prettybars2(
+  x,
+  lab.y = colnames(x),
+  n.y = ncol(x),
+  lab.group = rownames(x),
+  n.group = nrow(x),
   col.group = adjustcolor(seq.int(n.group), alpha.f = 0.5),
-  col.line = "skyblue3", col.bg = par("bg"), cex.y = 0.7,
-  notext = FALSE, title = paste("prettybar of", m$x),
-  sub = paste0("n = ", sum(x)), note = NULL,
-  subnote = "subnote: here is a subnote", legend = 1L, ...)
+  col.line = "skyblue3",
+  col.bg = par("bg"),
+  cex.y = 0.7,
+  notext = FALSE,
+  title = paste("prettybar of", m$x),
+  sub = paste0("n = ", sum(x)),
+  note = NULL,
+  subnote = "subnote: here is a subnote",
+  legend = 1L,
+  ...
+)
 }
 \arguments{
 \item{x}{a table of data, typically from \code{\link{table}} or 

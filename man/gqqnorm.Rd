@@ -8,14 +8,31 @@
 \usage{
 gqqnorm(y, ...)
 
-\method{gqqnorm}{default}(y, ylim, main = "Normal Q-Q Plot",
-  xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
-  plot.it = TRUE, datax = FALSE, grid = TRUE, col.grid = "grey90",
-  col.acc = "white", ...)
+\method{gqqnorm}{default}(
+  y,
+  ylim,
+  main = "Normal Q-Q Plot",
+  xlab = "Theoretical Quantiles",
+  ylab = "Sample Quantiles",
+  plot.it = TRUE,
+  datax = FALSE,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white",
+  ...
+)
 
-gqqplot(x, y, plot.it = TRUE, xlab = deparse(substitute(x)),
-  ylab = deparse(substitute(y)), ..., grid = TRUE,
-  col.grid = "grey90", col.acc = "white")
+gqqplot(
+  x,
+  y,
+  plot.it = TRUE,
+  xlab = deparse(substitute(x)),
+  ylab = deparse(substitute(y)),
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{y}{The second or only data sample.}

@@ -4,8 +4,15 @@
 \alias{widebars}
 \title{Wide bar plots}
 \usage{
-widebars(x, y, main = NULL, sub = NULL, foot = NULL, note = NULL,
-  col = c("grey90", "grey30", "lightblue2", "dodgerblue2"))
+widebars(
+  x,
+  y,
+  main = NULL,
+  sub = NULL,
+  foot = NULL,
+  note = NULL,
+  col = c("grey90", "grey30", "lightblue2", "dodgerblue2")
+)
 }
 \arguments{
 \item{x}{vector of grouping values}

@@ -4,8 +4,18 @@
 \alias{subplot}
 \title{Subplot}
 \usage{
-subplot(expr, x, y = NULL, log = NULL, size = c(1, 1), vadj = 0.5,
-  hadj = 0.5, inset = c(0, 0), type = c("plt", "fig"), pars = NULL)
+subplot(
+  expr,
+  x,
+  y = NULL,
+  log = NULL,
+  size = c(1, 1),
+  vadj = 0.5,
+  hadj = 0.5,
+  inset = c(0, 0),
+  type = c("plt", "fig"),
+  pars = NULL
+)
 }
 \arguments{
 \item{expr}{an expression defining the plot to be embedded}

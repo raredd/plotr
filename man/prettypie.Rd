@@ -7,8 +7,14 @@
 \usage{
 prettypie(dat, main = NULL, sub = NULL, note = NULL, ...)
 
-prettypie2(x, group = 1, labels = NA, col.group = NULL,
-  radius = c(0.7, 1), ...)
+prettypie2(
+  x,
+  group = 1,
+  labels = NA,
+  col.group = NULL,
+  radius = c(0.7, 1),
+  ...
+)
 }
 \arguments{
 \item{dat}{data}

@@ -4,16 +4,30 @@
 \alias{gbxp}
 \title{Draw boxplots from summaries}
 \usage{
-gbxp(z, notch = FALSE, width = NULL, varwidth = FALSE,
-  outline = TRUE, notch.frac = 0.5, log = "", border = par("fg"),
-  pars = NULL, horizontal = FALSE, add = FALSE, at = NULL,
-  show.names = NULL, ..., grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+gbxp(
+  z,
+  notch = FALSE,
+  width = NULL,
+  varwidth = FALSE,
+  outline = TRUE,
+  notch.frac = 0.5,
+  log = "",
+  border = par("fg"),
+  pars = NULL,
+  horizontal = FALSE,
+  add = FALSE,
+  at = NULL,
+  show.names = NULL,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{z}{a list containing data summaries to be used in constructing
     the plots.  These are usually the result of a call to
-    \code{\link{boxplot}}, but can be generated in any fashion.}
+    \code{\link[graphics]{boxplot}}, but can be generated in any fashion.}
 
 \item{notch}{if \code{notch} is \code{TRUE}, a notch is drawn in each
     side of the boxes.  If the notches of two plots do not overlap then
@@ -33,7 +47,7 @@ gbxp(z, notch = FALSE, width = NULL, varwidth = FALSE,
     fraction of the box width that the notches should use.}
 
 \item{log}{character, indicating if any axis should be drawn in
-    logarithmic scale, as in \code{\link{plot.default}}.}
+    logarithmic scale, as in \code{\link[graphics]{plot.default}}.}
 
 \item{border}{character or numeric (vector), the color of the box
     borders.  Is recycled for multiple boxes.  Is used as default for
@@ -41,7 +55,7 @@ gbxp(z, notch = FALSE, width = NULL, varwidth = FALSE,
     and \code{outcol} options (see below).
   }
 
-\item{pars}{\link{graphical parameters} (etc) can be passed as
+\item{pars}{\link[graphics]{graphical parameters} (etc) can be passed as
     arguments to this function, either as a list (\code{pars}) or
     normally(\code{\dots}), see the following.  (Those in \code{\dots}
     take precedence over those in \code{pars}.)
@@ -50,19 +64,19 @@ gbxp(z, notch = FALSE, width = NULL, varwidth = FALSE,
       boxplot}, i.e., vertically, when \code{horizontal} is
     false, and \code{xlim} horizontally.
     \code{xaxt}, \code{yaxt}, \code{las}, \code{cex.axis}, and
-    \code{col.axis} are passed to \code{\link{axis}}, and \code{main},
+    \code{col.axis} are passed to \code{\link[graphics]{axis}}, and \code{main},
     \code{cex.main}, \code{col.main}, \code{sub}, \code{cex.sub},
     \code{col.sub}, \code{xlab}, \code{ylab}, \code{cex.lab}, and
-    \code{col.lab} are passed to \code{\link{title}}.
+    \code{col.lab} are passed to \code{\link[graphics]{title}}.
 
     In addition, \code{axes} is accepted (see
-    \code{\link{plot.window}}), with default \code{TRUE}.
+    \code{\link[graphics]{plot.window}}), with default \code{TRUE}.
 
     The following arguments (or \code{pars} components) allow further
     customization of the boxplot graphics.  Their defaults are typically
     determined from the non-prefixed version (e.g., \code{boxlty} from
     \code{lty}), either from the specified argument or \code{pars}
-    component or the corresponding \code{\link{par}} one.
+    component or the corresponding \code{\link[graphics]{par}} one.
     \describe{
       \item{boxwex:}{a scale factor to be applied to all boxes.  When there
         are only a few groups, the appearance of the plot can be improved by

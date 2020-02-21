@@ -4,15 +4,40 @@
 \alias{inbar}
 \title{Inset barplot}
 \usage{
-inbar(height, width = 1, r = NULL, alpha = if (group.col) r else 1,
-  space = NULL, names.arg = NULL, legend.text = NULL,
-  horiz = FALSE, density = NULL, angle = 45, col = NULL,
-  group.col = TRUE, border = par("fg"), main = NULL, sub = NULL,
-  xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, xpd = TRUE,
-  log = "", axes = TRUE, axisnames = TRUE,
-  cex.axis = par("cex.axis"), cex.names = par("cex.axis"),
-  plot = TRUE, axis.lty = 0, offset = 0, add = FALSE, ann = !add
-  && par("ann"), args.legend = NULL, ...)
+inbar(
+  height,
+  width = 1,
+  r = NULL,
+  alpha = if (group.col) r else 1,
+  space = NULL,
+  names.arg = NULL,
+  legend.text = NULL,
+  horiz = FALSE,
+  density = NULL,
+  angle = 45,
+  col = NULL,
+  group.col = TRUE,
+  border = par("fg"),
+  main = NULL,
+  sub = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  xpd = TRUE,
+  log = "",
+  axes = TRUE,
+  axisnames = TRUE,
+  cex.axis = par("cex.axis"),
+  cex.names = par("cex.axis"),
+  plot = TRUE,
+  axis.lty = 0,
+  offset = 0,
+  add = FALSE,
+  ann = !add && par("ann"),
+  args.legend = NULL,
+  ...
+)
 }
 \arguments{
 \item{height}{a matrix of data describing the bars which make up the plot,
@@ -95,7 +120,7 @@ is mapped to \code{col} and recycled for each column of \code{height}}
 \item{xpd}{logical. Should bars be allowed to go outside region?}
 
 \item{log}{string specifying if axis scales should be logarithmic; see
-    \code{\link{plot.default}}.}
+    \code{\link[graphics]{plot.default}}.}
 
 \item{axes}{logical.  If \code{TRUE}, a vertical (or horizontal, if
     \code{horiz} is true) axis is drawn.}
@@ -122,18 +147,18 @@ is mapped to \code{col} and recycled for each column of \code{height}}
 
 \item{ann}{logical specifying if the default annotation (\code{main},
     \code{sub}, \code{xlab}, \code{ylab}) should appear on the plot, see
-    \code{\link{title}}.}
+    \code{\link[graphics]{title}}.}
 
 \item{args.legend}{list of additional arguments to pass to
-    \code{\link{legend}()}; names of the list are used as argument
+    \code{\link[graphics]{legend}()}; names of the list are used as argument
     names.  Only used if \code{legend.text} is supplied.}
 
 \item{...}{arguments to be passed to/from other methods.  For the
     default method these can include further arguments (such as
     \code{axes}, \code{asp} and \code{main}) and
-    \link{graphical parameters} (see \code{\link{par}}) which are passed to
-    \code{\link{plot.window}()}, \code{\link{title}()} and
-    \code{\link{axis}}.}
+    \link[graphics]{graphical parameters} (see \code{\link[graphics]{par}}) which are passed to
+    \code{\link[graphics]{plot.window}()}, \code{\link[graphics]{title}()} and
+    \code{\link[graphics]{axis}}.}
 }
 \value{
 A numeric vector with the midpoint of each main bar (i.e., identical to a

@@ -8,16 +8,44 @@
 \usage{
 gstripchart(x, ...)
 
-\method{gstripchart}{default}(x, method = "overplot", jitter = 0.1,
-  offset = 1/3, vertical = FALSE, group.names, add = FALSE,
-  at = NULL, xlim = NULL, ylim = NULL, ylab = NULL, xlab = NULL,
-  dlab = "", glab = "", log = "", pch = 0, col = par("fg"),
-  cex = par("cex"), axes = TRUE, frame.plot = axes, ...,
-  grid = TRUE, col.grid = "grey90", col.acc = "white")
+\method{gstripchart}{default}(
+  x,
+  method = "overplot",
+  jitter = 0.1,
+  offset = 1/3,
+  vertical = FALSE,
+  group.names,
+  add = FALSE,
+  at = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  ylab = NULL,
+  xlab = NULL,
+  dlab = "",
+  glab = "",
+  log = "",
+  pch = 0,
+  col = par("fg"),
+  cex = par("cex"),
+  axes = TRUE,
+  frame.plot = axes,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 
-\method{gstripchart}{formula}(x, data = NULL, dlab = NULL, ..., subset,
-  na.action = NULL, grid = TRUE, col.grid = "grey90",
-  col.acc = "white")
+\method{gstripchart}{formula}(
+  x,
+  data = NULL,
+  dlab = NULL,
+  ...,
+  subset,
+  na.action = NULL,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{x}{the data from which the plots are to be produced.  In the
@@ -30,8 +58,8 @@ gstripchart(x, ...)
     \code{g}.  \code{NA}s are allowed in the data.}
 
 \item{...}{additional parameters passed to the default method, or by
-    it to \code{\link{plot.window}}, \code{\link{points}},
-    \code{\link{axis}} and \code{\link{title}} to control the appearance
+    it to \code{\link[graphics]{plot.window}}, \code{\link[graphics]{points}},
+    \code{\link[graphics]{axis}} and \code{\link[graphics]{title}} to control the appearance
     of the plot.}
 
 \item{method}{the method to be used to separate coincident points.
@@ -58,30 +86,30 @@ gstripchart(x, ...)
     be drawn, particularly when \code{add = TRUE};
     defaults to \code{1:n} where \code{n} is the number of boxes.}
 
-\item{xlim}{plot limits: see \code{\link{plot.window}}.}
+\item{xlim}{plot limits: see \code{\link[graphics]{plot.window}}.}
 
-\item{ylim}{plot limits: see \code{\link{plot.window}}.}
+\item{ylim}{plot limits: see \code{\link[graphics]{plot.window}}.}
 
-\item{ylab}{labels: see \code{\link{title}}.}
+\item{ylab}{labels: see \code{\link[graphics]{title}}.}
 
-\item{xlab}{labels: see \code{\link{title}}.}
+\item{xlab}{labels: see \code{\link[graphics]{title}}.}
 
 \item{dlab}{alternate way to specify axis labels: see \sQuote{Details}.}
 
 \item{glab}{alternate way to specify axis labels: see \sQuote{Details}.}
 
 \item{log}{on which axes to use a log scale:  see
-    \code{\link{plot.default}}}
+    \code{\link[graphics]{plot.default}}}
 
-\item{pch}{Graphical parameters: see \code{\link{par}}.}
+\item{pch}{Graphical parameters: see \code{\link[graphics]{par}}.}
 
-\item{col}{Graphical parameters: see \code{\link{par}}.}
+\item{col}{Graphical parameters: see \code{\link[graphics]{par}}.}
 
-\item{cex}{Graphical parameters: see \code{\link{par}}.}
+\item{cex}{Graphical parameters: see \code{\link[graphics]{par}}.}
 
-\item{axes}{Axis control:  see \code{\link{plot.default}}.}
+\item{axes}{Axis control:  see \code{\link[graphics]{plot.default}}.}
 
-\item{frame.plot}{Axis control:  see \code{\link{plot.default}}.}
+\item{frame.plot}{Axis control:  see \code{\link[graphics]{plot.default}}.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}
 

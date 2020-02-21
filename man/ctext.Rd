@@ -10,8 +10,15 @@ ctext(text, cols, space = TRUE, ...)
 
 cmtext(text, cols, space = TRUE, ...)
 
-ctitle(main = NULL, sub = NULL, xlab = NULL, ylab = NULL, cols,
-  space = TRUE, ...)
+ctitle(
+  main = NULL,
+  sub = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  cols,
+  space = TRUE,
+  ...
+)
 }
 \arguments{
 \item{text}{vector of text}

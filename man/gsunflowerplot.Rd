@@ -8,23 +8,51 @@
 \usage{
 gsunflowerplot(x, ...)
 
-\method{gsunflowerplot}{default}(x, y = NULL, number, log = "",
-  digits = 6L, xlab = NULL, ylab = NULL, xlim = NULL,
-  ylim = NULL, add = FALSE, rotate = FALSE, pch = 16, cex = 0.8,
-  cex.fact = 1.5, col = par("col"), bg = NA, size = 1/8,
-  seg.col = 2, seg.lwd = 1.5, ..., grid = TRUE,
-  col.grid = "grey90", col.acc = "white")
+\method{gsunflowerplot}{default}(
+  x,
+  y = NULL,
+  number,
+  log = "",
+  digits = 6L,
+  xlab = NULL,
+  ylab = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  add = FALSE,
+  rotate = FALSE,
+  pch = 16,
+  cex = 0.8,
+  cex.fact = 1.5,
+  col = par("col"),
+  bg = NA,
+  size = 1/8,
+  seg.col = 2,
+  seg.lwd = 1.5,
+  ...,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 
-\method{gsunflowerplot}{formula}(formula, data = NULL, xlab = NULL,
-  ylab = NULL, ..., subset, na.action = NULL, grid = TRUE,
-  col.grid = "grey90", col.acc = "white")
+\method{gsunflowerplot}{formula}(
+  formula,
+  data = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  ...,
+  subset,
+  na.action = NULL,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{x}{numeric vector of \code{x}-coordinates of length \code{n},
     say, or another valid plotting structure, as for
-    \code{\link{plot.default}}, see also \code{\link{xy.coords}}.}
+    \code{\link[graphics]{plot.default}}, see also \code{\link{xy.coords}}.}
 
-\item{...}{further arguments to \code{\link{plot}} [if
+\item{...}{further arguments to \code{\link[graphics]{plot}} [if
     \code{add = FALSE}], or to be passed to or from another method.}
 
 \item{y}{numeric vector of \code{y}-coordinates of length \code{n}.}
@@ -36,7 +64,7 @@ gsunflowerplot(x, ...)
     \code{\link{xyTable}()}.}
 
 \item{log}{character indicating log coordinate scale, see
-    \code{\link{plot.default}}.}
+    \code{\link[graphics]{plot.default}}.}
 
 \item{digits}{when \code{number} is computed (i.e., not specified),
     \code{x} and \code{y} are rounded to \code{digits} significant
@@ -69,16 +97,16 @@ gsunflowerplot(x, ...)
     i.e., \code{cex / cex.fact} is used for these.}
 
 \item{col}{colors for the plot symbols, passed to
-    \code{\link{plot.default}}.}
+    \code{\link[graphics]{plot.default}}.}
 
 \item{bg}{colors for the plot symbols, passed to
-    \code{\link{plot.default}}.}
+    \code{\link[graphics]{plot.default}}.}
 
 \item{size}{of sunflower leaves in inches, 1[in] := 2.54[cm].
     Default: 1/8\\", approximately 3.2mm.}
 
 \item{seg.col}{color to be used for the \bold{seg}ments which make the
-    sunflowers leaves, see \code{\link{par}(col=)};
+    sunflowers leaves, see \code{\link[graphics]{par}(col=)};
     \code{col = "gold"} reminds of real sunflowers.}
 
 \item{seg.lwd}{numeric; the line width for the leaves' segments.}

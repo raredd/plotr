@@ -4,9 +4,18 @@
 \alias{shist}
 \title{shist}
 \usage{
-shist(x, ..., col = grey.colors(length(x) + 1L), loess = TRUE,
-  total = TRUE, xlim = NULL, ylim = NULL, heights = NULL,
-  heights.main = 0.5, reset_par = TRUE)
+shist(
+  x,
+  ...,
+  col = grey.colors(length(x) + 1L),
+  loess = TRUE,
+  total = TRUE,
+  xlim = NULL,
+  ylim = NULL,
+  heights = NULL,
+  heights.main = 0.5,
+  reset_par = TRUE
+)
 }
 \arguments{
 \item{x}{a list of numeric vectors for which the histogram is desired}

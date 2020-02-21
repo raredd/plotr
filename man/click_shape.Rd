@@ -4,8 +4,11 @@
 \alias{click_shape}
 \title{Add shapes interactively in base \code{R} graphics}
 \usage{
-click_shape(shape = c("circle", "arrow", "rect", "cyl", "line", "poly"),
-  corners = 3L, ...)
+click_shape(
+  shape = c("circle", "arrow", "rect", "cyl", "line", "poly"),
+  corners = 3L,
+  ...
+)
 }
 \arguments{
 \item{shape}{type of shape; choices are \code{'box'}, \code{'arrow'},

@@ -7,15 +7,41 @@
 \usage{
 gbarplot(height, ...)
 
-\method{gbarplot}{default}(height, width = 1, space = NULL,
-  names.arg = NULL, legend.text = NULL, beside = FALSE,
-  horiz = FALSE, density = NULL, angle = 45, col = NULL,
-  border = par("fg"), main = NULL, sub = NULL, xlab = NULL,
-  ylab = NULL, xlim = NULL, ylim = NULL, xpd = TRUE, log = "",
-  axes = TRUE, axisnames = TRUE, cex.axis = 0.8,
-  cex.names = par("cex.axis"), inside = TRUE, plot = TRUE,
-  axis.lty = 0, offset = 0, add = FALSE, args.legend = NULL,
-  grid = TRUE, col.grid = "grey90", col.acc = "white", ...)
+\method{gbarplot}{default}(
+  height,
+  width = 1,
+  space = NULL,
+  names.arg = NULL,
+  legend.text = NULL,
+  beside = FALSE,
+  horiz = FALSE,
+  density = NULL,
+  angle = 45,
+  col = NULL,
+  border = par("fg"),
+  main = NULL,
+  sub = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  xpd = TRUE,
+  log = "",
+  axes = TRUE,
+  axisnames = TRUE,
+  cex.axis = 0.8,
+  cex.names = par("cex.axis"),
+  inside = TRUE,
+  plot = TRUE,
+  axis.lty = 0,
+  offset = 0,
+  add = FALSE,
+  args.legend = NULL,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white",
+  ...
+)
 }
 \arguments{
 \item{height}{either a vector or matrix of values describing the
@@ -32,9 +58,9 @@ gbarplot(height, ...)
 \item{...}{arguments to be passed to/from other methods.  For the
     default method these can include further arguments (such as
     \code{axes}, \code{asp} and \code{main}) and
-    \link{graphical parameters} (see \code{\link{par}}) which are passed to
-    \code{\link{plot.window}()}, \code{\link{title}()} and
-    \code{\link{axis}}.}
+    \link[graphics]{graphical parameters} (see \code{\link[graphics]{par}}) which are passed to
+    \code{\link[graphics]{plot.window}()}, \code{\link[graphics]{title}()} and
+    \code{\link[graphics]{axis}}.}
 
 \item{width}{optional vector of bar widths. Re-cycled to length the
     number of bars drawn.  Specifying a single value will have no
@@ -103,7 +129,7 @@ gbarplot(height, ...)
 \item{xpd}{logical. Should bars be allowed to go outside region?}
 
 \item{log}{string specifying if axis scales should be logarithmic; see
-    \code{\link{plot.default}}.}
+    \code{\link[graphics]{plot.default}}.}
 
 \item{axes}{logical.  If \code{TRUE}, a vertical (or horizontal, if
     \code{horiz} is true) axis is drawn.}
@@ -133,7 +159,7 @@ gbarplot(height, ...)
     existing plot; defaults to \code{FALSE}.}
 
 \item{args.legend}{list of additional arguments to pass to
-    \code{\link{legend}()}; names of the list are used as argument
+    \code{\link[graphics]{legend}()}; names of the list are used as argument
     names.  Only used if \code{legend.text} is supplied.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}

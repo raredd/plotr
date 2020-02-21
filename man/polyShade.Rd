@@ -4,8 +4,16 @@
 \alias{polyShade}
 \title{Polygon shading}
 \usage{
-polyShade(x, y, from = -Inf, to = Inf, n = 1000, miny = min(y,
-  na.rm = TRUE), horiz = FALSE, ...)
+polyShade(
+  x,
+  y,
+  from = -Inf,
+  to = Inf,
+  n = 1000,
+  miny = min(y, na.rm = TRUE),
+  horiz = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x, y}{x- and y-values from the curve}

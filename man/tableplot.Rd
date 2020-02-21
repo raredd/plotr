@@ -4,15 +4,35 @@
 \alias{tableplot}
 \title{tableplot}
 \usage{
-tableplot(x, y = NULL, table, title = NULL, bg = "transparent",
-  cex = 1, cex.title = cex, xjust = 0, yjust = 1, xpad = 0.25,
-  ypad = 0.75, col.table = 1L, col.title = col.table,
-  col.colnames = col.table, col.rownames = col.table,
-  font.table = 1L, font.title = font.table,
-  font.colnames = font.table, font.rownames = font.table,
-  show.colnames = TRUE, show.rownames = FALSE, hlines = FALSE,
-  vlines = FALSE, frame.colnames = FALSE, frame.title = FALSE,
-  frame.table = FALSE, frame.type = c("box", "box", "line"))
+tableplot(
+  x,
+  y = NULL,
+  table,
+  title = NULL,
+  bg = "transparent",
+  cex = 1,
+  cex.title = cex,
+  xjust = 0,
+  yjust = 1,
+  xpad = 0.25,
+  ypad = 0.75,
+  col.table = 1L,
+  col.title = col.table,
+  col.colnames = col.table,
+  col.rownames = col.table,
+  font.table = 1L,
+  font.title = font.table,
+  font.colnames = font.table,
+  font.rownames = font.table,
+  show.colnames = TRUE,
+  show.rownames = FALSE,
+  hlines = FALSE,
+  vlines = FALSE,
+  frame.colnames = FALSE,
+  frame.title = FALSE,
+  frame.table = FALSE,
+  frame.type = c("box", "box", "line")
+)
 }
 \arguments{
 \item{x, y}{the x- and y-coordinates to be used or a keyword; see

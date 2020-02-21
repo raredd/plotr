@@ -4,9 +4,18 @@
 \alias{gplot.density}
 \title{gplot method for kernel density estimation}
 \usage{
-\method{gplot}{density}(x, main = NULL, xlab = NULL,
-  ylab = "Density", type = "l", zero.line = TRUE, grid = TRUE,
-  col.grid = "grey90", col.acc = "white", ...)
+\method{gplot}{density}(
+  x,
+  main = NULL,
+  xlab = NULL,
+  ylab = "Density",
+  type = "l",
+  zero.line = TRUE,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white",
+  ...
+)
 }
 \arguments{
 \item{x}{a \code{"density"} object.}

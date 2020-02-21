@@ -7,20 +7,39 @@
 \usage{
 ghist(x, ...)
 
-\method{ghist}{default}(x, breaks = "Sturges", freq = NULL,
-  probability = !freq, include.lowest = TRUE, right = TRUE,
-  density = NULL, angle = 45, col = "white", border = NULL,
-  main = paste("Histogram of", xname), xlim = range(breaks),
-  ylim = NULL, xlab = xname, ylab, axes = TRUE, plot = TRUE,
-  labels = FALSE, nclass = NULL, warn.unused = TRUE, grid = TRUE,
-  col.grid = "grey90", col.acc = "white", ...)
+\method{ghist}{default}(
+  x,
+  breaks = "Sturges",
+  freq = NULL,
+  probability = !freq,
+  include.lowest = TRUE,
+  right = TRUE,
+  density = NULL,
+  angle = 45,
+  col = "white",
+  border = NULL,
+  main = paste("Histogram of", xname),
+  xlim = range(breaks),
+  ylim = NULL,
+  xlab = xname,
+  ylab,
+  axes = TRUE,
+  plot = TRUE,
+  labels = FALSE,
+  nclass = NULL,
+  warn.unused = TRUE,
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white",
+  ...
+)
 }
 \arguments{
 \item{x}{a vector of values for which the histogram is desired.}
 
-\item{...}{further arguments and \link{graphical parameters} passed to
-    \code{\link{plot.histogram}} and thence to \code{\link{title}} and
-    \code{\link{axis}} (if \code{plot = TRUE}).}
+\item{...}{further arguments and \link[graphics]{graphical parameters} passed to
+    \code{\link[graphics]{plot.histogram}} and thence to \code{\link[graphics]{title}} and
+    \code{\link[graphics]{axis}} (if \code{plot = TRUE}).}
 
 \item{breaks}{one of:
     \itemize{
@@ -96,7 +115,7 @@ ghist(x, ...)
     are specified that only apply to the \code{plot = TRUE} case.}
 
 \item{labels}{logical or character string.  Additionally draw labels on top
-    of bars, if not \code{FALSE}; see \code{\link{plot.histogram}}.}
+    of bars, if not \code{FALSE}; see \code{\link[graphics]{plot.histogram}}.}
 
 \item{nclass}{numeric (integer).  For S(-PLUS) compatibility only,
     \code{nclass} is equivalent to \code{breaks} for a scalar or

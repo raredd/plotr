@@ -4,9 +4,17 @@
 \alias{gplot.formula}
 \title{Formula notation for gplot scatterplots}
 \usage{
-\method{gplot}{formula}(formula, data = parent.frame(), ..., subset,
-  ylab = varnames[response], ask = dev.interactive(), grid = TRUE,
-  col.grid = "grey90", col.acc = "white")
+\method{gplot}{formula}(
+  formula,
+  data = parent.frame(),
+  ...,
+  subset,
+  ylab = varnames[response],
+  ask = dev.interactive(),
+  grid = TRUE,
+  col.grid = "grey90",
+  col.acc = "white"
+)
 }
 \arguments{
 \item{formula}{a \code{\link{formula}}, such as \code{y ~ x}.}
@@ -22,7 +30,7 @@
 
 \item{ylab}{the y label of the plot(s).}
 
-\item{ask}{logical, see \code{\link{par}}.}
+\item{ask}{logical, see \code{\link[graphics]{par}}.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}
 
