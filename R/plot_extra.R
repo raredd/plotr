@@ -1,7 +1,7 @@
 ### plotting extras
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
 # click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot,
-# coords, fig, arrows2, carrows, laxis, pretty_sci, oom, parse_sci
+# coords, fig, arrows2, carrows, laxis, pretty_sci, oom, parse_sci, caxis
 # 
 # unexported:
 # to_sci_
@@ -1549,4 +1549,55 @@ to_sci_ <- function(x, digits, base) {
   xbg <- rawr::roundr(x / base ^ oom(x, base), digits)
   xsm <- formatC(oom(x, base), width = 2, flag = 0)
   sprintf('%se+%s', xbg, xsm)
+}
+
+#' Add a color axis
+#' 
+#' Add a color-coded axis.
+#' 
+#' @param side an integer specifying which side of the plot the axis is to be
+#' drawn on: 1=below, 2=left, 3=above, and 4=right
+#' @param prop the proportion of each section to be scaled to the axis width
+#' @param col a vector of colors equal to the length of \code{prop}
+#' @param lwd line width for the axis
+#' @param ... additional parameters passed to \code{\link{segments}}
+#' 
+#' @return
+#' A list containing the start and end positions for each \code{prop} scaled
+#' to the axis width.
+#' 
+#' @examples
+#' x <- runif(100)
+#' y <- runif(100)
+#' 
+#' plot(x, y)
+#' caxis(1, 1:4, col = 2:5)
+#' at <- caxis(3, 1:4, col = 2:5)
+#' text(at$end, par('usr')[4], paste('group', 1:4),
+#'      col = 2:5, xpd = NA, adj = c(1, -1))
+#' 
+#' @export
+
+caxis <- function(side, prop, col = NULL, lwd = 3, ...) {
+  side <- as.integer(side)[1L]
+  stopifnot(side %in% 1:4)
+  
+  u <- par('usr')
+  p <- prop / sum(prop)
+  
+  la <- length(p) + 1L
+  at <- rescale(cumsum(c(0, p)), if (side %in% c(1L, 3L)) u[1:2] else u[3:4])
+  
+  if (is.null(col))
+    col <- grey.colors(la - 1L)
+  
+  switch(
+    side,
+    segments(at[-la], u[3L], at[-1L], u[3L], col = col, lwd = lwd, ...),
+    segments(u[1L], at[-la], u[1L], at[-1L], col = col, lwd = lwd, ...),
+    segments(at[-la], u[4L], at[-1L], u[4L], col = col, lwd = lwd, ...),
+    segments(u[2L], at[-la], u[2L], at[-1L], col = col, lwd = lwd, ...)
+  )
+  
+  invisible(list(start = at[-la], end = at[-1L]))
 }
