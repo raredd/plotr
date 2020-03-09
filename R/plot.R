@@ -6,7 +6,7 @@
 # print.loess_smooth
 # 
 # unexported:
-# gridplot, wss, guess_k, do_poly
+# gridplot, caxis_pca, wss, guess_k, do_poly
 ###
 
 
@@ -152,6 +152,9 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' quantile are labelled; otherwise, a vector of labels for each point
 #' @param vegan logical; if \code{TRUE}, ordination diagrams are drawn for each
 #' k-means cluster; see \code{\link[vegan]{ordihull}}
+#' @param loadings for PCA objects, a length 1 or 2 vector giving the number
+#' of loadings to plot for each component; the highest loadings will be shown
+#' as a proportion of the axes with the sign of the eigenvector
 #' @param legend logical; if \code{TRUE}, a legend will be drawn
 #' @param args.legend a \emph{named} list of \code{\link{legend}} arguments to
 #' override defaults
@@ -191,6 +194,8 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
 #' plot(tsne, k = 3) ## perform new k-means
 #' 
 #' plot(pca, vegan = TRUE)
+#' plot(pca, loadings = c(3, 4))
+#' plot(rpca, loadings = c(3, 4))
 #' plot(pca, k = 4, vegan = TRUE)$kmeans$cluster
 #' 
 #' 
@@ -241,7 +246,7 @@ dimr <- function(data, type = c('tsne', 'pca', 'rpca', 'umap'), k = NULL, ...) {
     },
     pca = {
       object <- stats::prcomp(data, ...)
-      list(obect = object, x = object$x[, seq.int(dims)], type = 'PC')
+      list(object = object, x = object$x[, seq.int(dims)], type = 'PC')
     },
     rpca = {
       object <- rsvd::rpca(data, ...)
@@ -267,7 +272,7 @@ dimr <- function(data, type = c('tsne', 'pca', 'rpca', 'umap'), k = NULL, ...) {
 #' @export
 plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
                       col = NULL, labels = FALSE, vegan = FALSE,
-                      legend = TRUE, args.legend = list(),
+                      loadings = 0L, legend = TRUE, args.legend = list(),
                       plot3d = FALSE, iplot = FALSE, ...) {
   on.exit({
     palette('default')
@@ -350,6 +355,12 @@ plot.dimr <- function(x, group = TRUE, group2 = NULL, k = NULL,
       xlab = paste(type, '1'), ylab = paste(type, '2')
     )
     text(x, y, labels = object$lbl, pos = 3L, xpd = NA, cex = 0.7)
+    
+    if (inherits(object$object, c('prcomp', 'rpca'))) {
+      loadings <- rep_len(loadings, 2L)
+      caxis_pca(3L, object$object, 1L, loadings[1L])
+      caxis_pca(4L, object$object, 2L, loadings[2L])
+    }
     
     if (vegan) {
       xy <- cbind(x, y)
@@ -466,6 +477,42 @@ gridplot <- function(data, x, y, col = c('blue', 'red'), cex = c(0.5, 2),
     do.call('legend', modifyList(largs, args.legend))
   
   invisible(NULL)
+}
+
+caxis_pca <- function(side, pca, which, n = 5L, label = TRUE) {
+  if (n < 1L)
+    return(invisible(NULL))
+  
+  l <- pca$rotation ^ 2
+  i <- seq.int(nrow(l))
+  o <- setNames(i, rownames(l))
+  l <- l[ord <- order(l[, which], decreasing = TRUE), ]
+  s <- c('-', '+')[(pca$rotation[ord, which] > 0) + 1L]
+  
+  n <- pmin(n, nrow(l))
+  x <- l[, which]
+  x <- if (n < nrow(l)) {
+    c <- c(o[ord][seq.int(n)], rep_len(NA, nrow(l) - n))
+    c(x[seq.int(n)], sum(x[-seq.int(n)]))
+  } else {
+    c <- o[ord][seq.int(n)]
+    x
+  }
+  length(x) <- nrow(l)
+  x[is.na(x)] <- 0
+  
+  x <- caxis(side, x, c, 5, lend = 1L)
+  l <- sprintf('%s (%s)', rownames(l), s)
+  s[is.na(c)] <- l[is.na(c)] <- ''
+  
+  if (label)
+    switch(
+      side, NA, NA,
+      text(x$end, par('usr')[4L], l, col = c,
+           xpd = NA, adj = c(1, -1), cex = 0.8),
+      text(par('usr')[2L], x$end - (x$end - x$start) / 2, s,
+           col = c, xpd = NA, pos = 4L)
+    )
 }
 
 wss <- function(data, n = pmin(20L, nrow(data)), p = 0.01, return_wss = FALSE) {

@@ -15,6 +15,7 @@ dimr(data, type = c("tsne", "pca", "rpca", "umap"), k = NULL, ...)
   col = NULL,
   labels = FALSE,
   vegan = FALSE,
+  loadings = 0L,
   legend = TRUE,
   args.legend = list(),
   plot3d = FALSE,
@@ -55,6 +56,10 @@ quantile are labelled; otherwise, a vector of labels for each point}
 
 \item{vegan}{logical; if \code{TRUE}, ordination diagrams are drawn for each
 k-means cluster; see \code{\link[vegan]{ordihull}}}
+
+\item{loadings}{for PCA objects, a length 1 or 2 vector giving the number
+of loadings to plot for each component; the highest loadings will be shown
+as a proportion of the axes with the sign of the eigenvector}
 
 \item{legend}{logical; if \code{TRUE}, a legend will be drawn}
 
@@ -99,6 +104,8 @@ plot(tsne, grp)   ## use groups from data
 plot(tsne, k = 3) ## perform new k-means
 
 plot(pca, vegan = TRUE)
+plot(pca, loadings = c(3, 4))
+plot(rpca, loadings = c(3, 4))
 plot(pca, k = 4, vegan = TRUE)$kmeans$cluster
 
 
