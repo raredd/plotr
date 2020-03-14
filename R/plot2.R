@@ -1,5 +1,6 @@
 ### some less useful plots
-# waffle, histr, shist, propfall, bibar, dose_esc, boxline, toxplot, tableplot
+# waffle, histr, shist, propfall, bibar, dose_esc, boxline, toxplot, tableplot,
+# barplot2
 ###
 
 
@@ -1487,4 +1488,138 @@ tableplot <- function(x, y = NULL, table, title = NULL,
     do.call('rect', as.list(co$title))
   
   invisible(co)
+}
+
+#' barplot2
+#' 
+#' Extension of \code{\link{barplot.default}} which accepts multi-way arrays
+#' and tables, simplifies grouping and spacing, and adds \code{panel.first} and
+#' \code{panel.last} functionality.
+#' 
+#' @inheritParams graphics::barplot.default
+#' @param height a vector, matrix, table, or \code{\link{array}}
+#' 
+#' @return
+#' A list giving the locations of each bar, \code{.$at}, and the mid-point of
+#' each group, \code{.$group}.
+#' 
+#' @examples
+#' set.seed(1)
+#' x <- array(runif(4 * 3 * 3), c(4, 3, 3))
+#' 
+#' barplot(x[, , 1])
+#' barplot2(x[, , 1]) ## same
+#' 
+#' barplot2(with(mtcars, table(cyl, gear, vs)))
+#' 
+#' 
+#' ## group labels
+#' barplot2(x, names.arg = list(A = 1:3, B = 4:6, C = 7:9))
+#' 
+#' bp <- barplot2(x)
+#' mtext(1:9, side = 1L, at = bp$at, line = 1)
+#' mtext(1:3, side = 1L, at = bp$group, line = 3)
+#' 
+#' 
+#' ## simplified space argument
+#' barplot2(x, space = c(0.1, 1, 2) / 2, las = 1L, col = 1:4,
+#'          legend.text = sprintf('Factor %s', 1:4),
+#'          args.legend = list(horiz = TRUE, bty = 'n'),
+#'          names.arg = list(A = 1:3, B = 4:6, C = 7:9))
+#' 
+#' @export
+
+barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
+                     legend.text = NULL, beside = FALSE, horiz = FALSE,
+                     density = NULL, angle = 45, col = NULL, border = par('fg'),
+                     main = NULL, sub = NULL, xlab = NULL, ylab = NULL,
+                     xlim = NULL, ylim = NULL, xpd = TRUE, log = '', axes = TRUE,
+                     axisnames = TRUE,
+                     cex.axis = par('cex.axis'), cex.names = par('cex.axis'),
+                     inside = TRUE, plot = TRUE, axis.lty = 0, offset = 0,
+                     add = FALSE, ann = !add && par('ann'), args.legend = NULL,
+                     panel.first = NULL, panel.last = NULL, ...) {
+  `%||%` <- function(x, y)
+    if (is.null(x) || is.na(x)) y else x
+  
+  if (length(d <- dim(height)) == 3L) {
+    sp <- rep(space, 2L)[1:2] %||% c(0.1, 0.5)
+    s <- rep_len(sp[1L], d[2L] * d[3L])
+    i <- which(seq_along(s) %% d[2L] == 0L) + 1L
+    s[i[-length(i)]] <- sp[2L]
+    if (length(space) > 2L)
+      s <- c(0, rep_len(space, length(s))[-length(s)])
+    
+    m <- matrix(height, d[1L])
+    
+    bp <- barplot(
+      m, width = width, space = s, names.arg = names.arg, plot = plot,
+      legend.text = FALSE, beside = FALSE, horiz = horiz, density = NULL,
+      angle = angle, col = NA, border = NA, main = main, sub = sub,
+      xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xpd = xpd,
+      log = log, axes = FALSE, axisnames = FALSE, cex.axis = cex.axis,
+      cex.names = cex.names, axis.lty = axis.lty, offset = offset,
+      add = FALSE, ann = FALSE, args.legend = args.legend
+    )
+    gr <- sapply(split(bp, rep(seq.int(d[3L]), each = d[2L])), mean)
+    
+    res <- list(at = bp, group = gr)
+    
+    if (!plot)
+      return(res)
+    
+    panel.first
+    barplot(
+      m, width = width, space = s, axisnames = FALSE,
+      legend.text = legend.text, beside = FALSE, horiz = horiz,
+      density = density, angle = angle, col = col, border = border,
+      xpd = xpd, log = log, axes = FALSE, add = TRUE, ann = ann,
+      args.legend = args.legend
+    )
+    panel.last
+    
+    if (axes) {
+      axis(if (horiz) 2L else 1L, bp, lwd = 0, cex.axis = cex.axis,
+           unlist(names.arg) %||% rep(colnames(height), d[3L]) %||% FALSE, ...)
+      axis(if (horiz) 1L else 2L, cex.axis = cex.axis, ...)
+      if (ann)
+        mtext(names(names.arg) %||% dimnames(height)[[3L]], at = gr,
+              line = 3, if (horiz) 2L else 1L, cex = cex.names, ...)
+      box(bty = 'l')
+    }
+  } else {
+    if (!is.null(space)) {
+      space <- rep_len(space, ncol(height) %||% length(height))
+      space <- c(0, space[-length(space)])
+    }
+    
+    bp <- barplot(
+      height, width = width, space = space, names.arg = names.arg,
+      plot = plot, legend.text = FALSE, beside = beside, horiz = horiz,
+      density = NULL, angle = angle, col = NA, border = NA,
+      main = main, sub = sub, xlab = xlab, ylab = ylab, xlim = xlim,
+      ylim = ylim, xpd = xpd, log = log, axes = axes, axisnames = axisnames,
+      cex.axis = cex.axis, cex.names = cex.names, axis.lty = axis.lty,
+      offset = offset, add = add, ann = ann, args.legend = args.legend
+    )
+    
+    gr <- if (is.null(dim(bp)))
+      1L else rep(seq.int(nrow(height)), each = ncol(height))
+    gr <- sapply(split(bp, gr), mean)
+    res <- list(at = bp, group = gr)
+    
+    if (!plot)
+      return(res)
+    
+    panel.first
+    barplot(
+      height, width = width, space = space, axisnames = FALSE,
+      legend.text = legend.text, beside = beside, horiz = horiz,
+      density = density, angle = angle, col = col, border = border,
+      xpd = xpd, log = log, add = TRUE, ann = ann, args.legend = args.legend
+    )
+    panel.last
+  }
+  
+  invisible(res)
 }
