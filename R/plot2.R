@@ -1493,11 +1493,14 @@ tableplot <- function(x, y = NULL, table, title = NULL,
 #' barplot2
 #' 
 #' Extension of \code{\link{barplot.default}} which accepts multi-way arrays
-#' and tables, simplifies grouping and spacing, and adds \code{panel.first} and
-#' \code{panel.last} functionality.
+#' and tables, simplifies grouping and spacing, and adds \code{panel.first}
+#' and \code{panel.last} functionality.
 #' 
 #' @inheritParams graphics::barplot.default
-#' @param height a vector, matrix, table, or \code{\link{array}}
+#' @param height a vector, matrix, table, or \code{\link{array}}; 1- or 2-D
+#' obects will produce \code{\link{barplot}} results; for 3-D tables and
+#' arrays, the third dimension will be a grouping variable in a stacked
+#' barplot
 #' 
 #' @return
 #' A list giving the locations of each bar, \code{.$at}, and the mid-point of
@@ -1527,14 +1530,16 @@ tableplot <- function(x, y = NULL, table, title = NULL,
 #'          args.legend = list(horiz = TRUE, bty = 'n'),
 #'          names.arg = list(A = 1:3, B = 4:6, C = 7:9))
 #' 
+#' barplot2(1:5, panel.first = {grid(0, NULL); abline(h = 4, col = 2)})
+#' 
 #' @export
 
 barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
                      legend.text = NULL, beside = FALSE, horiz = FALSE,
                      density = NULL, angle = 45, col = NULL, border = par('fg'),
                      main = NULL, sub = NULL, xlab = NULL, ylab = NULL,
-                     xlim = NULL, ylim = NULL, xpd = TRUE, log = '', axes = TRUE,
-                     axisnames = TRUE,
+                     xlim = NULL, ylim = NULL, xpd = TRUE, log = '',
+                     axes = TRUE, axisnames = TRUE,
                      cex.axis = par('cex.axis'), cex.names = par('cex.axis'),
                      inside = TRUE, plot = TRUE, axis.lty = 0, offset = 0,
                      add = FALSE, ann = !add && par('ann'), args.legend = NULL,
@@ -1585,9 +1590,10 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
       if (ann)
         mtext(names(names.arg) %||% dimnames(height)[[3L]], at = gr,
               line = 3, if (horiz) 2L else 1L, cex = cex.names, ...)
-      box(bty = 'l')
     }
   } else {
+    d <- dim(height)
+    
     if (!is.null(space)) {
       space <- rep_len(space, ncol(height) %||% length(height))
       space <- c(0, space[-length(space)])
@@ -1603,8 +1609,9 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
       offset = offset, add = add, ann = ann, args.legend = args.legend
     )
     
-    gr <- if (is.null(dim(bp)))
-      1L else rep(seq.int(nrow(height)), each = ncol(height))
+    gr <- if (is.null(d) || is.null(dim(bp)) || ncol(bp) == 1L)
+      rep_len(1L, min(d %||% length(height)))
+    else rep(seq.int(nrow(height)), each = ncol(height))
     gr <- sapply(split(bp, gr), mean)
     res <- list(at = bp, group = gr)
     

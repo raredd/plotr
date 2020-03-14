@@ -41,7 +41,10 @@ barplot2(
 )
 }
 \arguments{
-\item{height}{a vector, matrix, table, or \code{\link{array}}}
+\item{height}{a vector, matrix, table, or \code{\link{array}}; 1- or 2-D
+obects will produce \code{\link{barplot}} results; for 3-D tables and
+arrays, the third dimension will be a grouping variable in a stacked
+barplot}
 
 \item{width}{optional vector of bar widths. Re-cycled to length the
     number of bars drawn.  Specifying a single value will have no
@@ -160,8 +163,8 @@ each group, \code{.$group}.
 }
 \description{
 Extension of \code{\link{barplot.default}} which accepts multi-way arrays
-and tables, simplifies grouping and spacing, and adds \code{panel.first} and
-\code{panel.last} functionality.
+and tables, simplifies grouping and spacing, and adds \code{panel.first}
+and \code{panel.last} functionality.
 }
 \examples{
 set.seed(1)
@@ -186,5 +189,7 @@ barplot2(x, space = c(0.1, 1, 2) / 2, las = 1L, col = 1:4,
          legend.text = sprintf('Factor \%s', 1:4),
          args.legend = list(horiz = TRUE, bty = 'n'),
          names.arg = list(A = 1:3, B = 4:6, C = 7:9))
+
+barplot2(1:5, panel.first = {grid(0, NULL); abline(h = 4, col = 2)})
 
 }
