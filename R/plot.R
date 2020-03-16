@@ -18,8 +18,12 @@
 #' @param col a vector of colors or integers for each unique value of \code{g}
 #' @param ... additional arguments passed to \code{plot} (e.g., \code{xlim},
 #' \code{panel.first}) or further to \code{par}
+#' @param add logical; if \code{TRUE}, plots will be added to an existing
+#' or multi-panel figure
 #' @param xlim,ylim the x- and y-axis limits
 #' @param axs the style(s) of axis interval calculation; see \code{\link{par}}
+#' @param heights for \code{add = TRUE}, the relative height of each density
+#' panel compared to the figure region
 #' @param legend logical; if \code{TRUE}, a \code{group} legend is drawn
 #' @param args.legend a \emph{named} list of \code{\link{legend}} arguments to
 #' override defaults
@@ -43,19 +47,34 @@
 #'   )
 #' })
 #' 
+#' 
+#' ## to add multiple figures on a plot, use add = TRUE
+#' sp <- split(mtcars, mtcars$am)
+#' op <- par(mfrow = 1:2, mar = c(5, 5, 5, 4), oma = c(0, 0, 0, 2))
+#' lapply(sp, function(d) {
+#'   scattergram(d$mpg, d$wt, d$cyl, col = 1:3, add = TRUE)
+#' })
+#' par(op)
+#' 
 #' @export
 
-scattergram <- function(x, y, g = NULL, col = NULL, ...,
-                        xlim = NULL, ylim = NULL, axs = 'i',
+scattergram <- function(x, y, g = NULL, col = NULL, ..., add = FALSE,
+                        xlim = NULL, ylim = NULL, axs = 'i', heights = 0.25,
                         main = NULL, legend = TRUE, args.legend = list()) {
+  if (add) {
+    scattergram2(x, y, g, col = col, ..., heights = heights,
+                 xlim = xlim, ylim = ylim, main = main)
+    return(invisible(NULL))
+  }
+  
   op <- par(no.readonly = TRUE)
   on.exit({
     par(op)
-    palette('default')
   })
   
-  if (is.character(col))
-    palette(col)
+  col <- if (is.character(col))
+    col else if (is.null(col)) palette() else palette()[col]
+  col2 <- rm_alpha(col)
   
   if (is.null(g)) {
     legend <- FALSE
@@ -74,8 +93,9 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
   
   axs <- rep_len(axs, 2L)
   par(mar = c(par('mar')[1:2], 0, 0), xaxs = axs[1L], yaxs = axs[2L])
-  plot(x, y, col = i, xlim = xl, ylim = yl, ...)
-  text(grconvertX(0.975, 'ndc'), grconvertY(0.95, 'ndc'), main,
+  plot(x, y, col = if (length(col) == length(i)) col else col[i],
+       xlim = xl, ylim = yl, ...)
+  text(grconvertX(0.975, 'nfc'), grconvertY(0.95, 'nfc'), main,
        adj = 1, xpd = NA, font = 3L, cex = 1.5)
   
   p <- par('usr')
@@ -89,8 +109,8 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
     xx <- xg[[ii]]
     # lines(xx$x, xx$y, col = ii)
     polyShade(
-      xx$x, xx$y, p[1L], p[2L], n = 1e3, border = rm_alpha(palette())[ii],
-      col = adjustcolor(rm_alpha(palette())[ii], alpha.f = 1/3)
+      xx$x, xx$y, p[1L], p[2L], n = 1e3, border = col2[ii],
+      col = adjustcolor(col2[ii], alpha.f = 1/3)
     )
   })
   
@@ -102,16 +122,15 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
     xx <- yg[[ii]]
     # lines(xx$y, xx$x, col = ii)
     polyShade(
-      xx$x, xx$y, n = 1e3, horiz = TRUE, border = rm_alpha(palette())[ii],
-      col = adjustcolor(rm_alpha(palette())[ii], alpha.f = 1/3)
+      xx$x, xx$y, n = 1e3, horiz = TRUE, border = col2[ii],
+      col = adjustcolor(col2[ii], alpha.f = 1/3)
     )
   })
   
   plot.new()
   largs <- list(
-    # 'bottomright',
     x = grconvertX(0, 'npc'), y = grconvertY(0, 'npc'),
-    fill = rm_alpha(palette()[sort(unique(i))]), legend = levels(g),
+    fill = sort(unique(col2[i])), legend = levels(g),
     bty = 'n', xpd = NA, cex = 1.5
   )
   if (!islist(args.legend))
@@ -121,6 +140,55 @@ scattergram <- function(x, y, g = NULL, col = NULL, ...,
   
   invisible(NULL)
 }
+
+scattergram2 <- function(x, y, g = NULL, col = NULL, ..., heights = 0.25,
+                         xlim = NULL, ylim = NULL, main = NULL) {
+  col <- if (is.character(col))
+    col else if (is.null(col)) palette() else palette()[col]
+  
+  if (is.null(g)) {
+    legend <- FALSE
+    g <- rep_len(1L, length(x))
+  }
+  g <- as.factor(g)
+  i <- as.integer(g)
+  
+  xg <- lapply(split(x, g), function(d) density(d))
+  yg <- lapply(split(y, g), function(d) density(d))
+  xl <- xlim %||% extendrange(x)
+  yl <- ylim %||% extendrange(y)
+  
+  plot(x, y, col = if (length(col) == length(i)) col else col[i],
+       xlim = xl, ylim = yl, ...)
+  
+  p <- par('usr')
+  d <- c(diff(p[1:2]), diff(p[3:4]))
+  h <- rep_len(heights, 2L)
+  h <- c(diff(p[3:4]), diff(p[1:2])) * heights + p[c(4L, 2L)]
+  
+  sapply(seq_along(xg), function(ii) {
+    xx <- xg[[ii]]
+    yy <- rescale(xx$y, c(p[4L], h[1L]))
+    polyShade(
+      xx$x, yy, p[1L], p[2L], n = 1e3, border = rm_alpha(col)[ii],
+      xpd = NA,
+      col = adjustcolor(rm_alpha(col[ii]), alpha.f = 1/3)
+    )
+  })
+  
+  sapply(seq_along(yg), function(ii) {
+    xx <- yg[[ii]]
+    yy <- rescale(xx$y, c(p[2L], h[2L]))
+    polyShade(
+      xx$x, yy, p[3L], p[4L], n = 1e3, border = rm_alpha(col[ii]),
+      horiz = TRUE, xpd = NA,
+      col = adjustcolor(rm_alpha(col[ii]), alpha.f = 1/3)
+    )
+  })
+  
+  invisible(NULL)
+}
+
 
 #' Dimension reduction
 #' 

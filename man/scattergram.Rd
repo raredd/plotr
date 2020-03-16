@@ -10,9 +10,11 @@ scattergram(
   g = NULL,
   col = NULL,
   ...,
+  add = FALSE,
   xlim = NULL,
   ylim = NULL,
   axs = "i",
+  heights = 0.25,
   main = NULL,
   legend = TRUE,
   args.legend = list()
@@ -26,9 +28,15 @@ scattergram(
 \item{...}{additional arguments passed to \code{plot} (e.g., \code{xlim},
 \code{panel.first}) or further to \code{par}}
 
+\item{add}{logical; if \code{TRUE}, plots will be added to an existing
+or multi-panel figure}
+
 \item{xlim, ylim}{the x- and y-axis limits}
 
 \item{axs}{the style(s) of axis interval calculation; see \code{\link{par}}}
+
+\item{heights}{for \code{add = TRUE}, the relative height of each density
+panel compared to the figure region}
 
 \item{main}{the main figure title}
 
@@ -57,5 +65,14 @@ with(mtcars, {
     panel.last = abline(v = c(20, 25))
   )
 })
+
+
+## to add multiple figures on a plot, use add = TRUE
+sp <- split(mtcars, mtcars$am)
+op <- par(mfrow = 1:2, mar = c(5, 5, 5, 4), oma = c(0, 0, 0, 2))
+lapply(sp, function(d) {
+  scattergram(d$mpg, d$wt, d$cyl, col = 1:3, add = TRUE)
+})
+par(op)
 
 }
