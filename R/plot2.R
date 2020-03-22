@@ -576,6 +576,7 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 #' \code{\link{adjustcolor}}
 #' @param col.med,lwd.med color and line width used for median line
 #' @param pch optional plotting character used for the median point of each
+#' @param ylim the y-axis limits
 #' @param err optional error bars around each median value; possible values
 #' are \code{"none"} (default), \code{"sd"} (standard deviation), \code{"se"}
 #' (standard error), \code{"ci"} (confidence interval), and \code{"quantile"}
@@ -604,9 +605,8 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 #' 
 #' @export
 
-boxline <- function(x, probs = c(0.75, 0.90, 0.99),
-                    col.probs = 2L, alpha = NULL,
-                    col.med = 1L, lwd.med = 2, pch = NULL,
+boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL,
+                    col.med = 1L, lwd.med = 2, pch = NULL, ylim = NULL,
                     err = c('none', 'sd', 'se', 'ci', 'quantile'),
                     err.alpha = 0.05, col.err = col.med, lwd.err = lwd.med,
                     at = seq_along(x), add = FALSE, ...) {
@@ -647,16 +647,17 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99),
     if (isTRUE(pm)) {
       hi <- sapply(cx, function(xx) quantile(xx, 1 - err.alpha))
       lo <- sapply(cx, function(xx) quantile(xx, err.alpha))
-      ylim <- extendrange(c(unlist(hi), unlist(lo)))
+      yl <- extendrange(c(unlist(hi), unlist(lo)))
     } else {
       z <- sapply(cx, pm)
-      ylim <- extendrange(c(med + z, med - z))
+      yl <- extendrange(c(med + z, med - z))
     }
   }
   
-  bp <- if (!err %in% 'none')
-    boxplot(x, border = NA, at = at, plot = !add, ylim = ylim, ...)
-  else boxplot(x, border = NA, at = at, plot = !add, ...)
+  bp <- boxplot(
+    x, border = NA, at = at, plot = !add, ...,
+    ylim = if (!err %in% 'none') ylim %||% yl else ylim
+  )
   
   for (ii in seq_along(probs[-1L])) {
     polygon(c(at, rev(at)), c(lo[ii, ], rev(lo[ii + 1L, ])),

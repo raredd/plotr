@@ -12,6 +12,7 @@ boxline(
   col.med = 1L,
   lwd.med = 2,
   pch = NULL,
+  ylim = NULL,
   err = c("none", "sd", "se", "ci", "quantile"),
   err.alpha = 0.05,
   col.err = col.med,
@@ -34,6 +35,8 @@ boxline(
 \item{col.med, lwd.med}{color and line width used for median line}
 
 \item{pch}{optional plotting character used for the median point of each}
+
+\item{ylim}{the y-axis limits}
 
 \item{err}{optional error bars around each median value; possible values
 are \code{"none"} (default), \code{"sd"} (standard deviation), \code{"se"}
