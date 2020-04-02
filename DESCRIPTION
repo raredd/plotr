@@ -39,5 +39,5 @@ License: GPL-2
 LazyData: yes
 URL: https://github.com/raredd/plotr
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Encoding: UTF-8

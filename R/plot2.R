@@ -1,6 +1,6 @@
 ### some less useful plots
 # waffle, histr, shist, propfall, bibar, dose_esc, boxline, toxplot, tableplot,
-# barplot2
+# barplot2, spider
 ###
 
 
@@ -1630,4 +1630,121 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
   }
   
   invisible(res)
+}
+
+#' Spider plot
+#' 
+#' Draw a spider plot.
+#' 
+#' @param x,y numeric vectors of data; note that \code{x} is optional and
+#' if undefined, \code{y} values are plotted at \code{seq_along(y)} on the
+#' x-axis (separately for each group)
+#' @param group a vector defining groups
+#' @param start an optional vector of length 1 or 2 giving the starting
+#' values for \code{x} and \code{y}, respectively
+#' @param breaks a vector of cut points for \code{y}; segments that end in
+#' the nth interval of \code{breaks} will be colored with \code{col[n]}
+#' @param col,lwd,lty if \code{breaks} is \code{NULL}, a vector of colors,
+#' line withds, and line types for each group; otherwise, vectors for each
+#' break
+#' @param labels optional labels for each group, plotted at the last value
+#' of \code{y} for each group
+#' @param at.labels,col.labels vectors of x-coordinates and colors for each
+#' group label
+#' @param panel.first,panel.last expressions to be evaluated before or after
+#' plotting takes place
+#' @param ... additional arguments passed to \code{plot.default} or graphical
+#' parameters further passed to \code{\link{par}}
+#' 
+#' @examples
+#' ## basic usage
+#' spider(y = airquality$Temp[airquality$Day == 1])
+#' with(airquality, spider(Day[Month == 5], Temp[Month == 5]))
+#' 
+#' ## with groups
+#' with(airquality, spider(Day, Temp, group = Month))
+#' with(airquality, spider(Day, Temp - mean(Temp), group = Month, start = 0))
+#' with(airquality, {
+#'   spider(Day, Temp - mean(Temp), group = Month, start = 0,
+#'          labels = month.abb[unique(Month)],
+#'          at.labels = par('usr')[2], col.labels = 1)
+#' })
+#' 
+#' ## with breaks
+#' br <- c(0, 70, 80, 90, 100)
+#' cc <- c('black', 'yellow', 'orange', 'red')
+#' spider(
+#'   y = airquality$Temp, breaks = br, col = cc,
+#'   bty = 'l', las = 1L, lwd = 2,
+#'   panel.first = {
+#'     p <- par('usr')
+#'     rect(p[1], br[-length(br)], p[2], br[-1],
+#'          col = adjustcolor(cc, 0.1), border = NA)
+#'   },
+#'   panel.last = points(airquality$Temp, pch = 16L,
+#'                       col = ifelse(airquality$Temp > 90, 2, NA))
+#' )
+#' 
+#' @export
+
+spider <- function(x = NULL, y, group = NULL, start = NULL, breaks = NULL,
+                   col = NULL, lwd = par('lwd'), lty = par('lty'),
+                   labels = unique(group), at.labels = NULL, col.labels = col,
+                   panel.first = NULL, panel.last = NULL,
+                   ...) {
+  if (is.null(x))
+    x <- if (is.null(group))
+      seq_along(y) else ave(seq_along(y), group, FUN = seq_along)
+  
+  dat <- data.frame(x, y, group = group %||% 1L)
+  spl <- split(dat[, 1:2], dat$group)
+  ngr <- length(spl)
+  if (!is.null(start))
+    spl <- lapply(spl, function(x) rbind(rep(start, 2L), x))
+  dat <- do.call('rbind', spl)
+  
+  leg <- function(x, y, col, lwd, lty, ...) {
+    for (ii in seq_along(x[-1L])) {
+      jj <- ii + 1L
+      segments(x[ii], y[ii], x[jj], y[jj], col = col[ii],
+               lty = lty[ii], lwd = lwd[jj], ...)
+    }
+  }
+  
+  plot(y ~ x, dat, type = 'n', ...)
+  panel.first
+  
+  r <- function(x, b, i, k, n) {
+    if (!is.null(b)) {
+      x <- rep_len(x, length(b))
+      rep_len(x, length(n))[findInterval(k, b)]
+      x[findInterval(k, b)]
+    } else {
+      x <- rep_len(x, ngr)
+      rep_len(x[i], n)
+    }
+  }
+  
+  for (ii in seq_along(spl)) {
+    xx <- spl[[ii]]
+    nr <- nrow(xx)
+    jj <- c(seq_along(xx$y)[-1L], length(xx$y))
+    
+    cols <- r(col %||% palette(), breaks, ii, xx$y[jj], nr)
+    lwds <- r(lwd, breaks, ii, xx$y[jj], nr)
+    ltys <- r(lty, breaks, ii, xx$y[jj], nr)
+    
+    leg(xx$x, xx$y, col = cols, lty = ltys, lwd = lwds)
+  }
+  
+  if (!identical(labels, FALSE)) {
+    spl <- sapply(spl, tail, 1L)
+    at.labels <- if (is.null(at.labels))
+      spl[1L, ] else rep_len(at.labels, ngr)
+    text(at.labels, spl[2L, ], labels, col = col.labels,
+         pos = 4L, xpd = NA)
+  }
+  panel.last
+  
+  invisible(NULL)
 }
