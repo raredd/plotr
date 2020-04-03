@@ -150,6 +150,9 @@ barplot}
     \code{\link[graphics]{legend}()}; names of the list are used as argument
     names.  Only used if \code{legend.text} is supplied.}
 
+\item{panel.first, panel.last}{expressions to be evaluated before or after
+plotting takes place}
+
 \item{...}{arguments to be passed to/from other methods.  For the
     default method these can include further arguments (such as
     \code{axes}, \code{asp} and \code{main}) and

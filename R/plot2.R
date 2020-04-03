@@ -1,6 +1,6 @@
 ### some less useful plots
-# waffle, histr, shist, propfall, bibar, dose_esc, boxline, toxplot, tableplot,
-# barplot2, spider
+# waffle, histr, shist, propfall, bibar, dose_esc, boxline, toxplot,
+# tableplot, barplot2, spider
 ###
 
 
@@ -1094,7 +1094,7 @@ tracebar <- function(height, col = NULL, pad = 0.05, alpha = 0.75, ...) {
 toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
                     order = c('none', 'decreasing', 'increasing'),
                     label.bars = c('n', 'percent', 'none'),
-                    col.bars = NULL, digits.bar = digits,
+                    col.bars = NULL, digits.bars = digits,
                     widths = c(1, 1, 2), space = 1, xaxis.at = NULL,
                     col.bg = 'grey', alpha.bg = c(0.25, 0.5),
                     legend = TRUE, args.legend = list(), ...) {
@@ -1231,14 +1231,14 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
   xaxis.at <- xaxis.at %||% c(0, xlim[2L])
   xaxis.at <- sort(unique(c(0, xaxis.at)))
   lbl <- sprintf('%s (%s)', xaxis.at,
-                 round(xaxis.at / total * 100, max(digits, digits.bar)))
+                 round(xaxis.at / total * 100, max(digits, digits.bars)))
   lbl[1L] <- '0 (%)'
   axis(1L, xaxis.at, lbl, mgp = par('mgp') + c(0, 0.5, 0.5))
   
   
   label.bars <- match.arg(label.bars)
   if (label.bars != 'none') {
-    fmt <- sprintf('%%.%sf', digits.bar)
+    fmt <- sprintf('%%.%sf', digits.bars)
     lbl <- if (label.bars == 'percent')
       sprintf(fmt, dat / total * 100) else dat
     
@@ -1502,6 +1502,8 @@ tableplot <- function(x, y = NULL, table, title = NULL,
 #' obects will produce \code{\link{barplot}} results; for 3-D tables and
 #' arrays, the third dimension will be a grouping variable in a stacked
 #' barplot
+#' @param panel.first,panel.last expressions to be evaluated before or after
+#' plotting takes place
 #' 
 #' @return
 #' A list giving the locations of each bar, \code{.$at}, and the mid-point of
@@ -1545,8 +1547,10 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
                      inside = TRUE, plot = TRUE, axis.lty = 0, offset = 0,
                      add = FALSE, ann = !add && par('ann'), args.legend = NULL,
                      panel.first = NULL, panel.last = NULL, ...) {
-  `%||%` <- function(x, y)
-    if (is.null(x) || is.na(x)) y else x
+  `%||%` <- function(x, y) {
+    if (is.null(x) || any(is.na(x)))
+      y else x
+  }
   
   if (length(d <- dim(height)) == 3L) {
     sp <- rep(space, 2L)[1:2] %||% c(0.1, 0.5)
@@ -1651,6 +1655,8 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
 #' of \code{y} for each group
 #' @param at.labels,col.labels vectors of x-coordinates and colors for each
 #' group label
+#' @param horiz logical; if \code{TRUE} (default), the plot is drawn with
+#' time on the x-axis; otherwise, time is on the y-axis
 #' @param panel.first,panel.last expressions to be evaluated before or after
 #' plotting takes place
 #' @param ... additional arguments passed to \code{plot.default} or graphical
@@ -1667,22 +1673,26 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
 #' with(airquality, {
 #'   spider(Day, Temp - mean(Temp), group = Month, start = 0,
 #'          labels = month.abb[unique(Month)],
-#'          at.labels = par('usr')[2], col.labels = 1)
+#'          at.labels = par('usr')[2], col.labels = 1:5)
 #' })
 #' 
 #' ## with breaks
-#' br <- c(0, 70, 80, 90, 100)
+#' br <- c(0, 70, 80, 90, 120)
 #' cc <- c('black', 'yellow', 'orange', 'red')
 #' spider(
-#'   y = airquality$Temp, breaks = br, col = cc,
-#'   bty = 'l', las = 1L, lwd = 2,
+#'   y = airquality$Temp, breaks = br, col = cc, ylim = c(50, 100),
+#'   xlab = 'Time from start', ylab = 'Temperature',
+#'   bty = 'l', las = 1L, lwd = 2, labels = 'Current',
 #'   panel.first = {
 #'     p <- par('usr')
 #'     rect(p[1], br[-length(br)], p[2], br[-1],
 #'          col = adjustcolor(cc, 0.1), border = NA)
 #'   },
-#'   panel.last = points(airquality$Temp, pch = 16L,
-#'                       col = ifelse(airquality$Temp > 90, 2, NA))
+#'   panel.last = {
+#'     points(airquality$Temp, pch = 18,
+#'            col = ifelse(airquality$Temp > 90, 2, NA))
+#'     points(nrow(airquality), airquality$Temp[nrow(airquality)], pch = 18)
+#'   }
 #' )
 #' 
 #' @export
@@ -1690,30 +1700,23 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
 spider <- function(x = NULL, y, group = NULL, start = NULL, breaks = NULL,
                    col = NULL, lwd = par('lwd'), lty = par('lty'),
                    labels = unique(group), at.labels = NULL, col.labels = col,
-                   panel.first = NULL, panel.last = NULL,
-                   ...) {
+                   horiz = TRUE, panel.first = NULL, panel.last = NULL, ...) {
+  ## get x-values if missing
   if (is.null(x))
     x <- if (is.null(group))
       seq_along(y) else ave(seq_along(y), group, FUN = seq_along)
   
+  ## list of x, y values by group
   dat <- data.frame(x, y, group = group %||% 1L)
   spl <- split(dat[, 1:2], dat$group)
   ngr <- length(spl)
   if (!is.null(start))
     spl <- lapply(spl, function(x) rbind(rep(start, 2L), x))
+  if (!horiz)
+    spl <- lapply(spl, function(x) setNames(x, c('y', 'x')))
   dat <- do.call('rbind', spl)
   
-  leg <- function(x, y, col, lwd, lty, ...) {
-    for (ii in seq_along(x[-1L])) {
-      jj <- ii + 1L
-      segments(x[ii], y[ii], x[jj], y[jj], col = col[ii],
-               lty = lty[ii], lwd = lwd[jj], ...)
-    }
-  }
-  
-  plot(y ~ x, dat, type = 'n', ...)
-  panel.first
-  
+  ## helper for recycling col, lwd, lty
   r <- function(x, b, i, k, n) {
     if (!is.null(b)) {
       x <- rep_len(x, length(b))
@@ -1724,6 +1727,24 @@ spider <- function(x = NULL, y, group = NULL, start = NULL, breaks = NULL,
       rep_len(x[i], n)
     }
   }
+  
+  ## draw one leg with optional sections by breaks
+  leg <- function(x, y, col, lwd, lty) {
+    if (length(x) == 1L) {
+      points(x, y, col = col, ...)
+      return(invisible(NULL))
+    }
+    
+    for (ii in seq_along(x[-1L])) {
+      jj <- ii + 1L
+      segments(x[ii], y[ii], x[jj], y[jj], col = col[ii],
+               lty = lty[ii], lwd = lwd[jj], ...)
+    }
+  }
+  
+  plot(y ~ x, dat, type = 'n', ...)
+  
+  panel.first
   
   for (ii in seq_along(spl)) {
     xx <- spl[[ii]]
@@ -1737,13 +1758,15 @@ spider <- function(x = NULL, y, group = NULL, start = NULL, breaks = NULL,
     leg(xx$x, xx$y, col = cols, lty = ltys, lwd = lwds)
   }
   
+  ## labels at end of each group
   if (!identical(labels, FALSE)) {
-    spl <- sapply(spl, tail, 1L)
-    at.labels <- if (is.null(at.labels))
-      spl[1L, ] else rep_len(at.labels, ngr)
-    text(at.labels, spl[2L, ], labels, col = col.labels,
-         pos = 4L, xpd = NA)
+    spl <- do.call('rbind', lapply(spl, tail, 1L))
+    var <- if (horiz) 'x' else 'y'
+    spl[, var] <- if (is.null(at.labels))
+      spl[, var] else rep_len(at.labels, ngr)
+    text(spl$x, spl$y, labels, col = col.labels, pos = 3L + horiz, xpd = NA)
   }
+  
   panel.last
   
   invisible(NULL)

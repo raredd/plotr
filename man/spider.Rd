@@ -16,6 +16,7 @@ spider(
   labels = unique(group),
   at.labels = NULL,
   col.labels = col,
+  horiz = TRUE,
   panel.first = NULL,
   panel.last = NULL,
   ...
@@ -44,6 +45,9 @@ of \code{y} for each group}
 \item{at.labels, col.labels}{vectors of x-coordinates and colors for each
 group label}
 
+\item{horiz}{logical; if \code{TRUE} (default), the plot is drawn with
+time on the x-axis; otherwise, time is on the y-axis}
+
 \item{panel.first, panel.last}{expressions to be evaluated before or after
 plotting takes place}
 
@@ -64,22 +68,26 @@ with(airquality, spider(Day, Temp - mean(Temp), group = Month, start = 0))
 with(airquality, {
   spider(Day, Temp - mean(Temp), group = Month, start = 0,
          labels = month.abb[unique(Month)],
-         at.labels = par('usr')[2], col.labels = 1)
+         at.labels = par('usr')[2], col.labels = 1:5)
 })
 
 ## with breaks
-br <- c(0, 70, 80, 90, 100)
+br <- c(0, 70, 80, 90, 120)
 cc <- c('black', 'yellow', 'orange', 'red')
 spider(
-  y = airquality$Temp, breaks = br, col = cc,
-  bty = 'l', las = 1L, lwd = 2,
+  y = airquality$Temp, breaks = br, col = cc, ylim = c(50, 100),
+  xlab = 'Time from start', ylab = 'Temperature',
+  bty = 'l', las = 1L, lwd = 2, labels = 'Current',
   panel.first = {
     p <- par('usr')
     rect(p[1], br[-length(br)], p[2], br[-1],
          col = adjustcolor(cc, 0.1), border = NA)
   },
-  panel.last = points(airquality$Temp, pch = 16L,
-                      col = ifelse(airquality$Temp > 90, 2, NA))
+  panel.last = {
+    points(airquality$Temp, pch = 18,
+           col = ifelse(airquality$Temp > 90, 2, NA))
+    points(nrow(airquality), airquality$Temp[nrow(airquality)], pch = 18)
+  }
 )
 
 }
