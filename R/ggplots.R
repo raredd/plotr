@@ -188,6 +188,7 @@ ggwidths <- function(..., moreArgs) {
 #' @seealso \code{\link[rawr]{kmplot}}; \code{survival:::plot.survfit}
 #'
 #' @examples
+#' \dontrun{
 #' library('ggplot2')
 #' library('grid')
 #' library('gridExtra')
@@ -234,7 +235,7 @@ ggwidths <- function(..., moreArgs) {
 #'   legend.labels = c('Less than 50','50-60','60-70','70+'),
 #'   plot.margin = 3)
 #' 
-#' \dontrun{
+#' 
 #' png('plot.png', height = 600, width = 750)
 #' ggsurv(coxfit1, confin = FALSE, median = TRUE, confband = FALSE,
 #'   legend.labels = c('< 45','> 45'), legend = FALSE,

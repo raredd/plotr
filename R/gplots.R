@@ -18,7 +18,7 @@
 #' \code{\link{density}} objects, etc. Use \code{methods(gplot)} and the 
 #' documentation for these.
 #' 
-#' @inheritParams graphics::plot
+#' @inheritParams graphics::plot.default
 #' @param grid logical; if \code{TRUE}, a background grid will be drawn
 #' @param col.grid \code{grid} color
 #' @param col.acc \code{grid} accent color
@@ -30,11 +30,12 @@
 #' 
 #' @export
 
-gplot <- function(x, y, ...) UseMethod("gplot")
+gplot <- function(x, y, ...) {
+  UseMethod('gplot')
+}
 
 #' @rdname gplot
 #' @export
-
 gplot.default <- function(x, y = NULL, type = "p", xlim = NULL, ylim = NULL, 
                           log = "", main = NULL, sub = NULL, xlab = NULL, 
                           ylab = NULL, ann = par("ann"), axes = TRUE, 
@@ -100,7 +101,6 @@ gplot.default <- function(x, y = NULL, type = "p", xlim = NULL, ylim = NULL,
 
 #' @rdname gplot
 #' @export
-
 gplot.data.frame <- function(x, grid = TRUE, col.grid = 'grey90', col.acc = 'white', ...) {
   gplot2 <- function(x, xlab = names(x)[1L], ylab = names(x)[2L], ...,
                      grid = grid, col.grid = col.grid, col.acc = col.acc)
@@ -254,14 +254,14 @@ gplot.formula <- function(formula, data = parent.frame(), ..., subset,
 
 gplot.lm <- function(x, which = c(1L:3L, 5L), grid = TRUE, col.grid = 'grey90', col.acc = 'white', 
                      caption = list("Residuals vs Fitted","Normal Q-Q",
-                                     "Scale-Location", "Cook's distance",
-                                     "Residuals vs Leverage",
-                                     expression("Cook's dist vs Leverage  " * h[ii]/(1 - h[ii]))),
-                      panel = if (add.smooth) panel.smooth else points, sub.caption = NULL, 
-                      main = "", ask = prod(par("mfcol")) < length(which) && dev.interactive(), 
-                      ..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75, 
-                      qqline = TRUE, cook.levels = c(0.5, 1), add.smooth = getOption("add.smooth"), 
-                      label.pos = c(4, 2), cex.caption = 1) {
+                                    "Scale-Location", "Cook's distance",
+                                    "Residuals vs Leverage",
+                                    expression("Cook's dist vs Leverage  " * h[ii]/(1 - h[ii]))),
+                     panel = if (add.smooth) panel.smooth else points, sub.caption = NULL, 
+                     main = "", ask = prod(par("mfcol")) < length(which) && dev.interactive(), 
+                     ..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75, 
+                     qqline = TRUE, cook.levels = c(0.5, 1), add.smooth = getOption("add.smooth"), 
+                     label.pos = c(4, 2), cex.caption = 1) {
   dropInf <- function(x, h) {
     if (any(isInf <- h >= 1)) {
       warning(gettextf("not plotting observations with leverage one:\n  %s", 
@@ -625,11 +625,12 @@ gplot.table <- function(x, type = "h", ylim = c(0, max(x)), lwd = 2,
 #' 
 #' @export
 
-gqqnorm <- function(y, ...) UseMethod("gqqnorm")
+gqqnorm <- function(y, ...) {
+  UseMethod('gqqnorm')
+}
 
 #' @rdname gqqnorm
 #' @export
-
 gqqnorm.default <- function(y, ylim, main = "Normal Q-Q Plot", 
                             xlab = "Theoretical Quantiles", 
                             ylab = "Sample Quantiles", plot.it = TRUE, 
@@ -659,10 +660,9 @@ gqqnorm.default <- function(y, ylim, main = "Normal Q-Q Plot",
 
 #' @rdname gqqnorm
 #' @export
-
 gqqplot <- function(x, y, plot.it = TRUE, xlab = deparse(substitute(x)), 
-          ylab = deparse(substitute(y)), ..., 
-          grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
+                    ylab = deparse(substitute(y)), ..., 
+                    grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
   sx <- sort(x)
   sy <- sort(y)
   lenx <- length(sx)
@@ -754,9 +754,8 @@ gcurve <- function(expr, from = NULL, to = NULL, n = 101, add = FALSE,
 
 #' @rdname gcurve
 #' @export
-
 gplot.function <- function(x, y = 0, to = 1, from = y, xlim = NULL, 
-                            ylab = NULL, grid = TRUE, col.grid = 'grey90', col.acc = 'white', ...) {
+                           ylab = NULL, grid = TRUE, col.grid = 'grey90', col.acc = 'white', ...) {
   if (!missing(y) && missing(from)) 
     from <- y
   if (is.null(xlim)) {
@@ -897,11 +896,12 @@ gplot.histogram <- function(x, freq = equidist, density = NULL, angle = 45,
 #' @param col.acc \code{grid} accent color
 #' @export
 
-ghist <- function(x, ...) UseMethod("ghist")
+ghist <- function(x, ...) {
+  UseMethod('ghist')
+}
 
 #' @rdname ghist
 #' @export
-
 ghist.default <- function(x, breaks = "Sturges", freq = NULL, probability = !freq,
                           include.lowest = TRUE, right = TRUE, density = NULL, angle = 45, 
                           col = 'white', border = NULL, main = paste("Histogram of", xname), 
@@ -1018,9 +1018,9 @@ ghist.default <- function(x, breaks = "Sturges", freq = NULL, probability = !fre
 #' 
 #' @export
 
-ghist.Date <- function (x, breaks, ..., xlab = deparse(substitute(x)),
-                        plot = TRUE, freq = FALSE, start.on.monday = TRUE, format,
-                        grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
+ghist.Date <- function(x, breaks, ..., xlab = deparse(substitute(x)),
+                       plot = TRUE, freq = FALSE, start.on.monday = TRUE, format,
+                       grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
   if (!inherits(x, "Date")) 
     stop("wrong method")
   force(xlab)
@@ -1120,10 +1120,9 @@ ghist.Date <- function (x, breaks, ..., xlab = deparse(substitute(x)),
 
 #' @rdname ghist.Date
 #' @export
-
-ghist.POSIXt <- function (x, breaks, ..., xlab = deparse(substitute(x)),
-                          plot = TRUE, freq = FALSE, start.on.monday = TRUE, 
-                          format, grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
+ghist.POSIXt <- function(x, breaks, ..., xlab = deparse(substitute(x)),
+                         plot = TRUE, freq = FALSE, start.on.monday = TRUE,
+                         format, grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
   if (!inherits(x, "POSIXt")) 
     stop("wrong method")
   xlab
@@ -1257,19 +1256,20 @@ ghist.POSIXt <- function (x, breaks, ..., xlab = deparse(substitute(x)),
 #' 
 #' @export
 
-gbarplot <- function(height, ...) UseMethod("gbarplot")
+gbarplot <- function(height, ...) {
+  UseMethod('gbarplot')
+}
 
 #' @rdname gbarplot
 #' @export
-
-gbarplot.default <- function (height, width = 1, space = NULL, names.arg = NULL, 
-          legend.text = NULL, beside = FALSE, horiz = FALSE, density = NULL, 
-          angle = 45, col = NULL, border = par("fg"), main = NULL, 
-          sub = NULL, xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, 
-          xpd = TRUE, log = "", axes = TRUE, axisnames = TRUE, cex.axis = .8, 
-          cex.names = par("cex.axis"), inside = TRUE, plot = TRUE, 
-          axis.lty = 0, offset = 0, add = FALSE, args.legend = NULL, 
-          grid = TRUE, col.grid = 'grey90', col.acc = 'white', ...) {
+gbarplot.default <- function(height, width = 1, space = NULL, names.arg = NULL,
+                             legend.text = NULL, beside = FALSE, horiz = FALSE, density = NULL, 
+                             angle = 45, col = NULL, border = par("fg"), main = NULL, 
+                             sub = NULL, xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, 
+                             xpd = TRUE, log = "", axes = TRUE, axisnames = TRUE, cex.axis = .8, 
+                             cex.names = par("cex.axis"), inside = TRUE, plot = TRUE, 
+                             axis.lty = 0, offset = 0, add = FALSE, args.legend = NULL, 
+                             grid = TRUE, col.grid = 'grey90', col.acc = 'white', ...) {
   if (!missing(inside)) 
     .NotYetUsed("inside", error = FALSE)
   if (is.null(space)) 
@@ -1439,16 +1439,17 @@ gbarplot.default <- function (height, width = 1, space = NULL, names.arg = NULL,
 #' 
 #' @export
 
-gboxplot <- function(x, ...) UseMethod("gboxplot")
+gboxplot <- function(x, ...) {
+  UseMethod('gboxplot')
+}
 
 #' @rdname gboxplot
 #' @export
-
 gboxplot.default <- function(x, ..., range = 1.5, width = NULL, varwidth = FALSE, 
-      notch = FALSE, outline = TRUE, names, plot = TRUE,border = par("fg"),
-      col = NULL, log = "", pars = list(boxwex = 0.8, staplewex = 0.5, outwex = 0.5),
-      horizontal = FALSE, add = FALSE, at = NULL, 
-      grid = TRUE, col.grid = "grey90", col.acc = "white") {
+                             notch = FALSE, outline = TRUE, names, plot = TRUE,border = par("fg"),
+                             col = NULL, log = "", pars = list(boxwex = 0.8, staplewex = 0.5, outwex = 0.5),
+                             horizontal = FALSE, add = FALSE, at = NULL, 
+                             grid = TRUE, col.grid = "grey90", col.acc = "white") {
   args <- list(x, ...)
   namedargs <- if (!is.null(attributes(args)$names)) 
     attributes(args)$names != ""
@@ -1494,10 +1495,10 @@ gboxplot.default <- function(x, ..., range = 1.5, width = NULL, varwidth = FALSE
     if (is.null(pars$boxfill) && is.null(args$boxfill)) 
       pars$boxfill <- col
     do.call("gbxp", c(list(z, notch = notch, width = width, 
-                          varwidth = varwidth, log = log, border = border, 
-                          pars = pars, outline = outline, horizontal = horizontal, 
-                          add = add, at = at, grid = grid, col.grid = col.grid,
-                          col.acc = col.acc), args[namedargs]))
+                           varwidth = varwidth, log = log, border = border, 
+                           pars = pars, outline = outline, horizontal = horizontal, 
+                           add = add, at = at, grid = grid, col.grid = col.grid,
+                           col.acc = col.acc), args[namedargs]))
     invisible(z)
   }
   else z
@@ -1527,7 +1528,6 @@ gboxplot.matrix <- function(x, use.cols = TRUE, ...,
 
 #' @rdname gboxplot
 #' @export
-
 gboxplot.formula <- function(formula, data = NULL, ..., subset, na.action = NULL,
                              grid = TRUE, col.grid = "grey90", col.acc = "white") {
   if (missing(formula) || (length(formula) != 3L)) 
@@ -1559,10 +1559,10 @@ gboxplot.formula <- function(formula, data = NULL, ..., subset, na.action = NULL
 #' @export
 
 gbxp <- function(z, notch = FALSE, width = NULL, varwidth = FALSE, outline = TRUE, 
-          notch.frac = 0.5, log = "", border = par("fg"), pars = NULL, 
-          horizontal = FALSE, add = FALSE, at = NULL, 
-          show.names = NULL, ..., 
-          grid = TRUE, col.grid = "grey90", col.acc = "white") {
+                 notch.frac = 0.5, log = "", border = par("fg"), pars = NULL, 
+                 horizontal = FALSE, add = FALSE, at = NULL, 
+                 show.names = NULL, ..., 
+                 grid = TRUE, col.grid = "grey90", col.acc = "white") {
   pars <- c(list(...), pars)
   pars <- pars[unique(names(pars))]
   bplt <- function(x, wid, stats, out, conf, notch, xlog, i) {
@@ -1750,17 +1750,18 @@ gbxp <- function(z, notch = FALSE, width = NULL, varwidth = FALSE, outline = TRU
 #' 
 #' @export
 
-gstripchart <- function(x, ...) UseMethod("gstripchart")
+gstripchart <- function(x, ...) {
+  UseMethod('gstripchart')
+}
 
 #' @rdname gstripchart
 #' @export
-
 gstripchart.default <- function(x, method = "overplot", jitter = 0.1, offset = 1/3, 
-          vertical = FALSE, group.names, add = FALSE, at = NULL, xlim = NULL, 
-          ylim = NULL, ylab = NULL, xlab = NULL, dlab = "", glab = "", 
-          log = "", pch = 0, col = par("fg"), cex = par("cex"), axes = TRUE, 
-          frame.plot = axes, ..., 
-          grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
+                                vertical = FALSE, group.names, add = FALSE, at = NULL, xlim = NULL, 
+                                ylim = NULL, ylab = NULL, xlab = NULL, dlab = "", glab = "", 
+                                log = "", pch = 0, col = par("fg"), cex = par("cex"), axes = TRUE, 
+                                frame.plot = axes, ..., 
+                                grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
   method <- pmatch(method, c("overplot", "jitter", "stack"))[1L]
   if (is.na(method) || method == 0L) 
     stop("invalid plotting method")
@@ -1857,7 +1858,6 @@ gstripchart.default <- function(x, method = "overplot", jitter = 0.1, offset = 1
 
 #' @rdname gstripchart
 #' @export
-
 gstripchart.formula <- function(x, data = NULL, dlab = NULL, ..., 
                                 subset, na.action = NULL, 
                                 grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
@@ -1893,16 +1893,17 @@ gstripchart.formula <- function(x, data = NULL, dlab = NULL, ...,
 #' 
 #' @export
 
-gspineplot <- function(x, ...) UseMethod("gspineplot")
+gspineplot <- function(x, ...) {
+  UseMethod('gspineplot')
+}
 
 #' @rdname gspineplot
 #' @export
-
 gspineplot.default <- function(x, y = NULL, breaks = NULL, tol.ylab = 0.05,
-          off = NULL, ylevels = NULL, col = NULL, main = "", xlab = NULL, 
-          ylab = NULL, xaxlabels = NULL, yaxlabels = NULL, xlim = NULL, 
-          ylim = c(0, 1), axes = TRUE, ..., grid = TRUE, col.grid = 'grey90',
-          col.acc = 'white') {
+                               off = NULL, ylevels = NULL, col = NULL, main = "", xlab = NULL, 
+                               ylab = NULL, xaxlabels = NULL, yaxlabels = NULL, xlim = NULL, 
+                               ylim = c(0, 1), axes = TRUE, ..., grid = TRUE, col.grid = 'grey90',
+                               col.acc = 'white') {
   if (missing(y)) {
     if (length(dim(x)) != 2L) 
       stop("a 2-way table has to be specified")
@@ -2031,12 +2032,11 @@ gspineplot.default <- function(x, y = NULL, breaks = NULL, tol.ylab = 0.05,
 
 #' @rdname gspineplot
 #' @export
-
 gspineplot.formula <- function(formula, data = NULL, breaks = NULL, tol.ylab = 0.05, 
-          off = NULL, ylevels = NULL, col = NULL, main = "", xlab = NULL, 
-          ylab = NULL, xaxlabels = NULL, yaxlabels = NULL, xlim = NULL, 
-          ylim = c(0, 1), axes = TRUE, ..., subset = NULL,
-          grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
+                               off = NULL, ylevels = NULL, col = NULL, main = "", xlab = NULL, 
+                               ylab = NULL, xaxlabels = NULL, yaxlabels = NULL, xlim = NULL, 
+                               ylim = c(0, 1), axes = TRUE, ..., subset = NULL,
+                               grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
   m <- match.call(expand.dots = FALSE)
   m$grid <- m$col.grid <- m$col.acc <- NULL
   m <- m[c(1L, match(c("formula", "data", "subset"), names(m), 0L))]
@@ -2075,16 +2075,17 @@ gspineplot.formula <- function(formula, data = NULL, breaks = NULL, tol.ylab = 0
 #' 
 #' @export
 
-gpairs <- function(x, ...) UseMethod("gpairs")
+gpairs <- function(x, ...) {
+  UseMethod('gpairs')
+}
 
 #' @rdname gpairs
 #' @export
-
 gpairs.default <- function(x, labels, panel = points, ..., lower.panel = panel, 
-          upper.panel = panel, diag.panel = NULL, text.panel = textPanel, 
-          label.pos = 0.5 + has.diag/3, line.main = 3, cex.labels = NULL, 
-          font.labels = 1, row1attop = TRUE, gap = 1, log = "",
-          grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
+                           upper.panel = panel, diag.panel = NULL, text.panel = textPanel, 
+                           label.pos = 0.5 + has.diag/3, line.main = 3, cex.labels = NULL, 
+                           font.labels = 1, row1attop = TRUE, gap = 1, log = "",
+                           grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
   if (doText <- missing(text.panel) || is.function(text.panel)) 
     textPanel <- function(x = 0.5, y = 0.5, txt, cex, font) 
       text(x, y, txt, cex = cex, font = font)
@@ -2214,7 +2215,6 @@ gpairs.default <- function(x, labels, panel = points, ..., lower.panel = panel,
 
 #' @rdname gpairs
 #' @export
-
 gpairs.formula <- function(formula, data = NULL, ..., subset, 
                            na.action = stats::na.pass, grid = TRUE, 
                            col.grid = 'grey90', col.acc = 'white') {
@@ -2241,10 +2241,10 @@ gpairs.formula <- function(formula, data = NULL, ..., subset,
 #' @export
 
 gmatplot <- function(x, y, type = "p", lty = 1:5, lwd = 1, lend = par("lend"), 
-          pch = NULL, col = 1:6, cex = NULL, bg = NA, xlab = NULL, 
-          ylab = NULL, xlim = NULL, ylim = NULL, ..., add = FALSE, 
-          verbose = getOption("verbose"), 
-          grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
+                     pch = NULL, col = 1:6, cex = NULL, bg = NA, xlab = NULL, 
+                     ylab = NULL, xlim = NULL, ylim = NULL, ..., add = FALSE, 
+                     verbose = getOption("verbose"), 
+                     grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
   paste.ch <- function(chv) paste0("\"", chv, "\"", collapse = " ")
   str2vec <- function(string) {
     if (nchar(string, type = "c")[1L] > 1L) 
@@ -2288,7 +2288,7 @@ gmatplot <- function(x, y, type = "p", lty = 1:5, lwd = 1, lend = par("lend"),
     message("matplot: doing ", k, " plots with ", 
             paste0(" col= (", paste.ch(col), ")"), 
             paste0(" pch= (", paste.ch(pch), 
-                                                                                     ")"), " ...\n", domain = NA)
+                   ")"), " ...\n", domain = NA)
   ii <- match("log", names(xargs <- list(...)), nomatch = 0L)
   log <- if (ii != 0) 
     xargs[[ii]]
@@ -2329,10 +2329,10 @@ gmatplot <- function(x, y, type = "p", lty = 1:5, lwd = 1, lend = par("lend"),
   if (!add) {
     ii <- ii[-1L]
     gplot(x[, 1L], y[, 1L], type = type[1L], xlab = xlab, 
-         ylab = ylab, xlim = xlim, ylim = ylim, lty = lty[1L], 
-         lwd = lwd[1L], lend = lend[1L], pch = pch[1L], col = col[1L], 
-         cex = cex[1L], bg = bg[1L], ..., grid = grid, col.grid = col.grid,
-         col.acc = col.acc)
+          ylab = ylab, xlim = xlim, ylim = ylim, lty = lty[1L], 
+          lwd = lwd[1L], lend = lend[1L], pch = pch[1L], col = col[1L], 
+          cex = cex[1L], bg = bg[1L], ..., grid = grid, col.grid = col.grid,
+          col.acc = col.acc)
   }
   for (i in ii) 
     lines(x[, i], y[, i], type = type[i], lty = lty[i], lwd = lwd[i],
@@ -2352,13 +2352,12 @@ gmatpoints <- function(x, y, type = "p", lty = 1:5, lwd = 1, pch = NULL,
 
 #' @rdname gmatplot
 #' @export
-
 gmatlines <- function(x, y, type = "l", lty = 1:5, lwd = 1, pch = NULL, 
                       col = 1:6, ..., grid = TRUE, col.grid = 'grey90', 
                       col.acc = 'white') {
   gmatplot(x = x, y = y, type = type, lty = lty, lwd = lwd, pch = pch,
-          col = col, add = TRUE, ..., grid = grid, col.grid = col.grid,
-          col.acc = col.acc)
+           col = col, add = TRUE, ..., grid = grid, col.grid = col.grid,
+           col.acc = col.acc)
 }
 
 #' Produce a gsunflower scatter plot
@@ -2373,16 +2372,17 @@ gmatlines <- function(x, y, type = "l", lty = 1:5, lwd = 1, pch = NULL,
 #' 
 #' @export
 
-gsunflowerplot <- function(x, ...) UseMethod("gsunflowerplot")
+gsunflowerplot <- function(x, ...) {
+  UseMethod('gsunflowerplot')
+}
 
 #' @rdname gsunflowerplot
 #' @export
-
 gsunflowerplot.default <- function(x, y = NULL, number, log = "", digits = 6L, xlab = NULL, 
-          ylab = NULL, xlim = NULL, ylim = NULL, add = FALSE, rotate = FALSE, 
-          pch = 16, cex = 0.8, cex.fact = 1.5, col = par("col"), bg = NA, 
-          size = 1/8, seg.col = 2, seg.lwd = 1.5, ..., 
-          grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
+                                   ylab = NULL, xlim = NULL, ylim = NULL, add = FALSE, rotate = FALSE, 
+                                   pch = 16, cex = 0.8, cex.fact = 1.5, col = par("col"), bg = NA, 
+                                   size = 1/8, seg.col = 2, seg.lwd = 1.5, ..., 
+                                   grid = TRUE, col.grid = 'grey90', col.acc = 'white') {
   xlabel <- if (!missing(x)) 
     deparse(substitute(x))
   ylabel <- if (!missing(y)) 
@@ -2425,8 +2425,8 @@ gsunflowerplot.default <- function(x, y = NULL, number, log = "", digits = 6L, x
   on.exit(dev.flush())
   if (!add) 
     gplot(x, y, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, 
-         log = log, type = "n", ..., grid = grid, col.grid = col.grid, 
-         col.acc = col.acc)
+          log = log, type = "n", ..., grid = grid, col.grid = col.grid, 
+          col.acc = col.acc)
   n.is1 <- number == 1
   if (any(n.is1)) 
     points(x[n.is1], y[n.is1], pch = pch, col = col, bg = bg, 
@@ -2451,10 +2451,9 @@ gsunflowerplot.default <- function(x, y = NULL, number, log = "", digits = 6L, x
 
 #' @rdname gsunflowerplot
 #' @export
-
 gsunflowerplot.formula <- function(formula, data = NULL, xlab = NULL, ylab = NULL, ..., 
-          subset, na.action = NULL, grid = TRUE, col.grid = 'grey90',
-          col.acc = 'white') {
+                                   subset, na.action = NULL, grid = TRUE, col.grid = 'grey90',
+                                   col.acc = 'white') {
   if (missing(formula) || (length(formula) != 3L)) 
     stop("formula missing or incorrect")
   m <- match.call(expand.dots = FALSE)

@@ -622,6 +622,7 @@ guess_k <- function(data, how = c('wss'), ...) {
 #' @param col.line,col.ci colors for the smoothed curve and confidence
 #' intervals (lines or band)
 #' @param alpha.ci alpha transparency for the confidence band
+#' @param xlab,ylab the x- and y-axis labels
 #' @param ci type of confidence interval to plot, one of \code{"none"} for
 #' no plotting, \code{"lines"} for lines only, or \code{"band"} for a
 #' semi-transparent color band

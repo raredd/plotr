@@ -13,7 +13,7 @@ toxplot(
   order = c("none", "decreasing", "increasing"),
   label.bars = c("n", "percent", "none"),
   col.bars = NULL,
-  digits.bar = digits,
+  digits.bars = digits,
   widths = c(1, 1, 2),
   space = 1,
   xaxis.at = NULL,
@@ -44,6 +44,9 @@ not be re-ordered}
 
 \item{col.bars}{a vector of colors for each column of \code{ftable}}
 
+\item{digits.bars}{number of places past the decimal to keep for
+\code{label.bars} text}
+
 \item{widths}{the relative width of each column}
 
 \item{space}{additional space between final text column and bar plot}
@@ -60,9 +63,6 @@ shown}
 \code{\link{legend}}}
 
 \item{...}{additional graphical parameters passed to \code{\link{par}}}
-
-\item{digits.bars}{number of places past the decimal to keep for
-\code{label.bars} text}
 }
 \description{
 Draw a toxicity summary plot.

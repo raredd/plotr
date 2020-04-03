@@ -139,6 +139,7 @@ the number of "lines" of padding (see \code{\link{unit}}). Note that the
 default for \code{ggplot} is \code{unit(.25, "lines")}.
 }
 \examples{
+\dontrun{
 library('ggplot2')
 library('grid')
 library('gridExtra')
@@ -185,7 +186,7 @@ ggsurv(coxfit0, confin = FALSE, col.atrisk = 'black',
   legend.labels = c('Less than 50','50-60','60-70','70+'),
   plot.margin = 3)
 
-\dontrun{
+
 png('plot.png', height = 600, width = 750)
 ggsurv(coxfit1, confin = FALSE, median = TRUE, confband = FALSE,
   legend.labels = c('< 45','> 45'), legend = FALSE,

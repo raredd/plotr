@@ -63,6 +63,8 @@ intervals (lines or band)}
 
 \item{alpha.ci}{alpha transparency for the confidence band}
 
+\item{xlab, ylab}{the x- and y-axis labels}
+
 \item{ci}{type of confidence interval to plot, one of \code{"none"} for
 no plotting, \code{"lines"} for lines only, or \code{"band"} for a
 semi-transparent color band}
