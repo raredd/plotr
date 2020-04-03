@@ -1,7 +1,7 @@
 Package: plotr
 Type: Package
 Title: More plotting functions and examples
-Version: 0.0.6
+Version: 0.0.7
 Authors@R: person("Robert", "Redd", email = "raredd01@gmail.com",
   role = c("aut", "cre"))
 Author: Robert Redd
