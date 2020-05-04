@@ -61,12 +61,16 @@ gmatlines(
 \item{x}{vectors or matrices of data for plotting.  The number of
     rows should match.  If one of them are missing, the other is taken
     as \code{y} and an \code{x} vector of \code{1:n} is used.
-    Missing values (\code{NA}s) are allowed.}
+    Missing values (\code{NA}s) are allowed.  Since \R 4.0.0,
+    \code{\link{class}(.)}es of \code{x} and \code{y} such as
+    \code{"\link{Date}"} are typically preserved.}
 
 \item{y}{vectors or matrices of data for plotting.  The number of
     rows should match.  If one of them are missing, the other is taken
     as \code{y} and an \code{x} vector of \code{1:n} is used.
-    Missing values (\code{NA}s) are allowed.}
+    Missing values (\code{NA}s) are allowed.  Since \R 4.0.0,
+    \code{\link{class}(.)}es of \code{x} and \code{y} such as
+    \code{"\link{Date}"} are typically preserved.}
 
 \item{type}{character string (length 1 vector) or vector of 1-character
     strings indicating the type of plot for each
@@ -95,15 +99,10 @@ gmatlines(
     drawn.}
 
 \item{pch}{character string or vector of 1-characters or integers for
-    plotting characters, see \code{\link[graphics]{points}}.
+    plotting characters, see \code{\link[graphics]{points}} for details.
     The first character is the plotting-character for the first plot,
     the second for the second, etc.  The default is the digits (1
     through 9, 0) then the lowercase and uppercase letters.
-%%__FIXME__ Which of the following is still true; what's the "right" UI ?
-%  To mix special plotting symbols (those specified by integers) and
-%  plotting characters, either use character escapes \code{pch = "Xe002"}
-%  or figure out the numeric equivalent of the ASCII character,
-%  \code{pch = c(88, 2)}.
   }
 
 \item{col}{vector of colors.  Colors are used cyclically.}

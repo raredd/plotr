@@ -68,9 +68,7 @@ scattergram <- function(x, y, g = NULL, col = NULL, ..., add = FALSE,
   }
   
   op <- par(no.readonly = TRUE)
-  on.exit({
-    par(op)
-  })
+  on.exit(par(op))
   
   col <- if (is.character(col))
     col else if (is.null(col)) palette() else palette()[col]
@@ -107,7 +105,6 @@ scattergram <- function(x, y, g = NULL, col = NULL, ..., add = FALSE,
   
   sapply(seq_along(xg), function(ii) {
     xx <- xg[[ii]]
-    # lines(xx$x, xx$y, col = ii)
     polyShade(
       xx$x, xx$y, p[1L], p[2L], n = 1e3, border = col2[ii],
       col = adjustcolor(col2[ii], alpha.f = 1/3)
@@ -120,7 +117,6 @@ scattergram <- function(x, y, g = NULL, col = NULL, ..., add = FALSE,
   
   sapply(seq_along(yg), function(ii) {
     xx <- yg[[ii]]
-    # lines(xx$y, xx$x, col = ii)
     polyShade(
       xx$x, xx$y, n = 1e3, horiz = TRUE, border = col2[ii],
       col = adjustcolor(col2[ii], alpha.f = 1/3)
@@ -188,7 +184,6 @@ scattergram2 <- function(x, y, g = NULL, col = NULL, ..., heights = 0.25,
   
   invisible(NULL)
 }
-
 
 #' Dimension reduction
 #' 

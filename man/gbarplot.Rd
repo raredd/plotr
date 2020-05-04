@@ -138,7 +138,8 @@ gbarplot(height, ...)
     \code{names.arg} (see above), the
     other axis is drawn (with \code{lty = 0}) and labeled.}
 
-\item{cex.axis}{expansion factor for numeric axis labels.}
+\item{cex.axis}{expansion factor for numeric axis labels (see
+    \code{\link[graphics]{par}('cex')}).}
 
 \item{cex.names}{expansion factor for axis names (bar labels).}
 
@@ -148,7 +149,8 @@ gbarplot(height, ...)
 
 \item{plot}{logical.  If \code{FALSE}, nothing is plotted.}
 
-\item{axis.lty}{the graphics parameter \code{lty} applied to the axis
+\item{axis.lty}{the graphics parameter \code{lty} (see
+    \code{\link[graphics]{par}('lty')}) applied to the axis
     and tick marks of the categorical (default horizontal) axis.  Note
     that by default the axis is suppressed.}
 
