@@ -655,7 +655,7 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL
   }
   
   bp <- boxplot(
-    x, border = NA, at = at, plot = !add, ...,
+    x, border = NA, at = at, plot = !add, col = NA, ...,
     ylim = if (!err %in% 'none') ylim %||% yl else ylim
   )
   
