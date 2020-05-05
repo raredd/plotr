@@ -19,6 +19,8 @@ boxline(
   lwd.err = lwd.med,
   at = seq_along(x),
   add = FALSE,
+  panel.first = NULL,
+  panel.last = NULL,
   ...
 )
 }
@@ -51,6 +53,9 @@ are \code{"none"} (default), \code{"sd"} (standard deviation), \code{"se"}
 \item{at}{a vector of x-coodinates for each element of \code{x}}
 
 \item{add}{logical; if \code{TRUE}, adds to existing plot}
+
+\item{panel.first, panel.last}{expressions to be evaluated before or after
+plotting takes place}
 
 \item{...}{additional arguments passed to \code{\link{boxplot}} or further
 to \code{\link{par}}}

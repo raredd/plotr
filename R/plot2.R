@@ -586,6 +586,8 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 #' @param col.err,lwd.err color and line width used for error bars
 #' @param at a vector of x-coodinates for each element of \code{x}
 #' @param add logical; if \code{TRUE}, adds to existing plot
+#' @param panel.first,panel.last expressions to be evaluated before or after
+#' plotting takes place
 #' @param ... additional arguments passed to \code{\link{boxplot}} or further
 #' to \code{\link{par}}
 #' 
@@ -609,7 +611,8 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL
                     col.med = 1L, lwd.med = 2, pch = NULL, ylim = NULL,
                     err = c('none', 'sd', 'se', 'ci', 'quantile'),
                     err.alpha = 0.05, col.err = col.med, lwd.err = lwd.med,
-                    at = seq_along(x), add = FALSE, ...) {
+                    at = seq_along(x), add = FALSE,
+                    panel.first = NULL, panel.last = NULL, ...) {
   probs <- unique(sort(c(0.5, probs), decreasing = TRUE))
   lprob <- length(probs)
   
@@ -659,6 +662,8 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL
     ylim = if (!err %in% 'none') ylim %||% yl else ylim
   )
   
+  panel.first
+  
   for (ii in seq_along(probs[-1L])) {
     polygon(c(at, rev(at)), c(lo[ii, ], rev(lo[ii + 1L, ])),
             col = col.probs[ii], border = NA)
@@ -678,6 +683,8 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL
   ## median points for each element of x
   lines(at, med, col = col.med, lwd = lwd.med, pch = pch,
         type = if (is.null(pch)) 'l' else 'o')
+  
+  panel.last
   
   invisible(bp)
 }
