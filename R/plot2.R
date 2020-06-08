@@ -586,6 +586,8 @@ dose_esc <- function(dose, col.dose, nstep = 3L, dose.exp, col.exp,
 #' @param col.err,lwd.err color and line width used for error bars
 #' @param at a vector of x-coodinates for each element of \code{x}
 #' @param add logical; if \code{TRUE}, adds to existing plot
+#' @param limits optional vector of length two with lower and upper limits for
+#' the error bars
 #' @param panel.first,panel.last expressions to be evaluated before or after
 #' plotting takes place
 #' @param ... additional arguments passed to \code{\link{boxplot}} or further
@@ -611,7 +613,7 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL
                     col.med = 1L, lwd.med = 2, pch = NULL, ylim = NULL,
                     err = c('none', 'sd', 'se', 'ci', 'quantile'),
                     err.alpha = 0.05, col.err = col.med, lwd.err = lwd.med,
-                    at = seq_along(x), add = FALSE,
+                    at = seq_along(x), add = FALSE, limits = c(-Inf, Inf),
                     panel.first = NULL, panel.last = NULL, ...) {
   probs <- unique(sort(c(0.5, probs), decreasing = TRUE))
   lprob <- length(probs)
@@ -662,6 +664,9 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL
     ylim = if (!err %in% 'none') ylim %||% yl else ylim
   )
   
+  lo[lo < limits[1L]] <- limits[1L]
+  hi[hi > limits[2L]] <- limits[2L]
+  
   panel.first
   
   for (ii in seq_along(probs[-1L])) {
@@ -676,8 +681,8 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL
     arrows(at, hi, at, lo, col = col.err,
          code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
     else
-      arrows(at, med + z, at, med - z, col = col.err,
-             code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
+      arrows(at, pmax(limits[1L], med + z), at, pmin(limits[2L], med - z),
+             col = col.err, code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
   }
   
   ## median points for each element of x

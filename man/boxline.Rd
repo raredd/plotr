@@ -19,6 +19,7 @@ boxline(
   lwd.err = lwd.med,
   at = seq_along(x),
   add = FALSE,
+  limits = c(-Inf, Inf),
   panel.first = NULL,
   panel.last = NULL,
   ...
@@ -53,6 +54,9 @@ are \code{"none"} (default), \code{"sd"} (standard deviation), \code{"se"}
 \item{at}{a vector of x-coodinates for each element of \code{x}}
 
 \item{add}{logical; if \code{TRUE}, adds to existing plot}
+
+\item{limits}{optional vector of length two with lower and upper limits for
+the error bars}
 
 \item{panel.first, panel.last}{expressions to be evaluated before or after
 plotting takes place}
