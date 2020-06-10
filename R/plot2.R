@@ -681,7 +681,7 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL
     arrows(at, hi, at, lo, col = col.err,
          code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
     else
-      arrows(at, pmax(limits[1L], med + z), at, pmin(limits[2L], med - z),
+      arrows(at, pmin(limits[2L], med + z), at, pmax(limits[1L], med - z),
              col = col.err, code = 3L, angle = 90, length = 0.1, lwd = lwd.err)
   }
   
