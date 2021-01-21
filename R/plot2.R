@@ -1297,6 +1297,7 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
 #' draws a frame around the object
 #' @param frame.type the type of framing for column names, title, and table,
 #' respectively; options are \code{"box"} or \code{"line"}
+#' @param ... additional graphical parameters passed to \code{\link{par}}
 #' 
 #' @return
 #' A list with components \code{table}, \code{colnames}, \code{title}, and
@@ -1320,7 +1321,7 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
 #' @export
 
 tableplot <- function(x, y = NULL, table, title = NULL,
-                      bg = 'transparent', cex = 1, cex.title = cex,
+                      bg = 'transparent', cex = par('cex'), cex.title = cex,
                       xjust = 0, yjust = 1, xpad = 0.25, ypad = 0.75,
                       col.table = 1L, col.title = col.table,
                       col.colnames = col.table, col.rownames = col.table,
@@ -1329,7 +1330,7 @@ tableplot <- function(x, y = NULL, table, title = NULL,
                       show.colnames = TRUE, show.rownames = FALSE, 
                       hlines = FALSE, vlines = FALSE,
                       frame.colnames = FALSE, frame.title = FALSE, frame.table = FALSE,
-                      frame.type = c('box', 'box', 'line')) {
+                      frame.type = c('box', 'box', 'line'), ...) {
   if (is.null(y)) {
     if (is.character(x)) {
       pos <- plotrix::get.tablepos(x)
@@ -1403,6 +1404,7 @@ tableplot <- function(x, y = NULL, table, title = NULL,
   ytop <- y + yjust * nvcells * cellheight
   
   op <- par(xlog = FALSE, ylog = FALSE, xpd = TRUE)
+  par(...)
   on.exit(par(op))
   
   ## x-coodinates of center of each column

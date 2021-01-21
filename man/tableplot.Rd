@@ -10,7 +10,7 @@ tableplot(
   table,
   title = NULL,
   bg = "transparent",
-  cex = 1,
+  cex = par("cex"),
   cex.title = cex,
   xjust = 0,
   yjust = 1,
@@ -31,7 +31,8 @@ tableplot(
   frame.colnames = FALSE,
   frame.title = FALSE,
   frame.table = FALSE,
-  frame.type = c("box", "box", "line")
+  frame.type = c("box", "box", "line"),
+  ...
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ draws a frame around the object}
 
 \item{frame.type}{the type of framing for column names, title, and table,
 respectively; options are \code{"box"} or \code{"line"}}
+
+\item{...}{additional graphical parameters passed to \code{\link{par}}}
 }
 \value{
 A list with components \code{table}, \code{colnames}, \code{title}, and
