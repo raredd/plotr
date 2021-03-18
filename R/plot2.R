@@ -1,6 +1,6 @@
 ### some less useful plots
-# waffle, histr, shist, propfall, bibar, dose_esc, boxline, toxplot,
-# tableplot, barplot2, spider
+# waffle, histr, shist, propfall, bibar, dose_esc, boxline, inbar, tracebar,
+# toxplot, tableplot, barplot2, spider, dotplot
 ###
 
 
@@ -744,7 +744,6 @@ boxline <- function(x, probs = c(0.75, 0.90, 0.99), col.probs = 2L, alpha = NULL
 #'   horiz = TRUE, names.arg = 1:3,
 #'   legend.text = 1:3, xlim = c(0, 20), border = NA
 #' )
-#' 
 #' 
 #' ## inbar returns rect coordinates for future use
 #' co <- inbar(tbl)
@@ -1784,4 +1783,159 @@ spider <- function(x = NULL, y, group = NULL, start = NULL, breaks = NULL,
   panel.last
   
   invisible(NULL)
+}
+
+#' dotplot
+#' 
+#' Draw a dotplot.
+#' 
+#' @param x an \code{r x 3} numeric matrix
+#' @param at a numeric vector giving the locations where each row is drawn
+#' @param names optional axis labels for each row
+#' @param label logical; if \code{TRUE}, each dot is labeled with its
+#' numeric value
+#' @param col,col.rect vectors of colors for dots and background shading
+#' @param radius,width numeric values controlling the size of dots and
+#' background shading
+#' @param horiz logical; if \code{TRUE} (default), dots are plotted
+#' horizontally
+#' @param axes logical; if \code{TRUE}, an x- or y-axis is drawn if
+#' \code{horiz} is \code{TRUE} or \code{FALSE}, respectively
+#' @param xlim,ylim the x- and y-axis limits
+#' @param reset_par logical; if \code{TRUE} (default), graphical parameters
+#' are reset to state before function call
+#' @param ... additional graphical parameters passed to \code{\link{par}}
+#' 
+#' @examples
+#' # https://twitter.com/RandyRenstrom/status/1318053323828756480/photo/1
+#' x <- c(
+#'   39, 55, 36, 47, 32, 58, 57, 17, 14, 17, 43, 49, 40, 38, 28,
+#'   60, 57, 56, 52, 49, 46, 45, 43, 43, 42, 40, 36, 36, 33, 23,
+#'   85, 68, 73, 58, 69, 48, 43, 68, 64, 62, 44, 35, 31, 36, 19
+#' )
+#' y <- c(
+#'   'The coronavirus pandemic',
+#'   'Fairness of presidential elections',
+#'   'Health care',
+#'   'Jobs and employment',
+#'   'Foreign interference in presidential elections',
+#'   'Crime',
+#'   'Terrorism',
+#'   'Racial inequality',
+#'   'Climate change',
+#'   'Growing gap between rich and poor',
+#'   'Appointment of U.S. Supreme Court Justices',
+#'   'Abortion',
+#'   'The federal deficit',
+#'   'Immigration',
+#'   'Trade agreements with other countries'
+#' )
+#' x <- matrix(x, ncol = 3L, dimnames = list(y, c('R', 'All', 'D')))
+#' 
+#' dotplot(x, col = c('blue4', 'darkgrey', 'tomato2'))
+#' 
+#' col <- rep_len('grey96', nrow(x))
+#' col[which.max(apply(x[, -2], 1, diff))] <- 'darkgrey'
+#' dotplot(x, col.rect = col)
+#' 
+#' @export
+
+dotplot <- function(x, at = NULL, names = rownames(x), label = TRUE,
+                    col = NULL, col.rect = 'grey95',
+                    radius = 0.25, width = radius * 2,
+                    horiz = TRUE, axes = TRUE, xlim = NULL, ylim = NULL,
+                    reset_par = TRUE, ...) {
+  stopifnot(ncol(x) == 3L)
+  nc <- ncol(x)
+  nr <- nrow(x)
+  xx <- x[rev(seq.int(nr)), ]
+  at <- if (is.null(at))
+    seq.int(nr) * 2 - 2 else rep_len(at, nr)
+  
+  if (horiz) {
+    lims <- xlim
+    xlim <- xlim %||% range(pretty(xx))
+    ylim <- ylim %||% c(0, max(at))
+    axat <- lims %||% range(pretty(xlim))
+    ry <- rep(at, each = 3L)
+    rx <- c(t(xx))
+  } else {
+    lims <- ylim
+    xlim <- xlim %||% c(0, max(at))
+    ylim <- ylim %||% range(pretty(xx))
+    axat <- lims %||% range(pretty(ylim))
+    rx <- rep(at, each = 3L)
+    ry <- rev(c(t(x)))
+  }
+  
+  range <- t(apply(xx, 1L, range))
+  col.rect <- rep_len(col.rect, nr)
+  
+  op <- par(mar = par('mar') + c(0, (!is.null(names)) * 5, 0, 0))
+  par(...)
+  
+  if (reset_par)
+    on.exit(par(op))
+  
+  plot(
+    NA, xlim = xlim, ylim = ylim, type = 'n', axes = FALSE, ann = FALSE,
+    
+    panel.first = {
+      if (axes)
+        axis((!horiz) + 1L, axat, col = 'grey60', col.axis = 'grey60',
+             xpd = NA, las = 1L, cex.axis = 1.5)
+      if (!is.null(names)) {
+        names <- sapply(names, function(x)
+          paste0(strwrap(x, diff(par('usr')[1:2]) * 0.2), collapse = '\n'))
+        axis(horiz + 1L, at, names, lwd = 0, las = 1L, xpd = NA,
+             hadj = 0, padj = 0.5, gap.axis = 0, line = 7)
+      }
+    },
+    
+    panel.last = {
+      for (ii in seq.int(nr)) {
+        if (horiz) {
+          usr <- par('usr')
+          wid <- width / 2
+          rad <- width / diff(usr[3:4]) * diff(usr[1:2])
+          rect(
+            range[ii, 1L], at[ii] - wid, range[ii, 2L], at[ii] + wid,
+            border = NA, col = col.rect[ii]
+          )
+          symbols(
+            xx[ii, ], rep_len(at[ii], nc), circles = rep_len(rad, nc),
+            inches = FALSE, add = TRUE, fg = col.rect, bg = col(xx)[ii, ]
+          )
+          
+          if (label)
+            for (jj in seq.int(nc)) {
+              r <- range[ii, ]
+              p <- xx[ii, jj]
+              s <- sum(p >= r[1L], p > r[1L], p == r[2L]) + 1L
+              text(p, at[ii], p, xpd = NA, pos = s)
+            }
+        } else {
+          wid <- width / 2
+          rect(
+            at[ii] - wid, range[ii, 1L], at[ii] + wid, range[ii, 2L],
+            border = NA, col = col.rect
+          )
+          symbols(
+            rep_len(at[ii], nc), xx[ii, ], circles = rep_len(radius, nc),
+            inches = FALSE, add = TRUE, fg = col.rect, bg = col(xx)[ii, ]
+          )
+          
+          if (label)
+            for (jj in seq.int(nc)) {
+              r <- range[ii, ]
+              p <- xx[ii, jj]
+              s <- sum(p > r[1L], p <= r[2L], p == r[2L])
+              text(at[ii], p, p, xpd = NA, pos = s)
+            }
+        }
+      }
+    }
+  )
+  
+  invisible(list(x = rx, y = ry))
 }
