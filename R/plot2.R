@@ -136,10 +136,12 @@ waffle <- function(x, rows, horiz = TRUE, cols = seq_along(x), mat,
 #' histr(x <- rnorm(100), xlim = c(-3, 3), las = 1)
 #' plot(density(x), xlim = c(-3, 3))
 #' 
-#' histr(x + 50, main = 'Age at diagnosis', xlab = 'Age',
-#'       poly.pars = list(col = 'dodgerblue2', density = 30),
-#'       lines.pars = list(lty = 'dashed', lwd = 3),
-#'       rug.pars = list(side = 3, col = 'red'))
+#' histr(
+#'   x + 50, main = 'Age at diagnosis', xlab = 'Age',
+#'   poly.pars = list(col = 'dodgerblue2', density = 30),
+#'   lines.pars = list(lty = 'dashed', lwd = 3),
+#'   rug.pars = list(side = 3, col = 'red')
+#' )
 #' 
 #' @export
 
@@ -485,8 +487,9 @@ bibar <- function(x, left = NULL, right = NULL, sleft = NULL, sright = NULL,
 #' 
 #' @examples
 #' ## 3 + 3
-#' dose_esc(d33 <- c(1,1,1,2,2,2,3,3,3,3,3,3,4,4,4),
-#'          c33 <- c(3,3,3,3,3,3,3,3,2,3,3,3,3,2,2))
+#' d33 <- c(1,1,1,2,2,2,3,3,3,3,3,3,4,4,4)
+#' c33 <- c(3,3,3,3,3,3,3,3,2,3,3,3,3,2,2)
+#' dose_esc(d33, c33)
 #' legend(0, 4, col = 2:3, pch = 16, pt.cex = 4, xpd = NA, bty = 'n',
 #'        legend = paste(c('','Non-'), 'DLT'), y.intersp = 1.5)
 #' 
@@ -1541,10 +1544,12 @@ tableplot <- function(x, y = NULL, table, title = NULL,
 #' 
 #' 
 #' ## simplified space argument
-#' barplot2(x, space = c(0.1, 1, 2) / 2, las = 1L, col = 1:4,
-#'          legend.text = sprintf('Factor %s', 1:4),
-#'          args.legend = list(horiz = TRUE, bty = 'n'),
-#'          names.arg = list(A = 1:3, B = 4:6, C = 7:9))
+#' barplot2(
+#'   x, space = c(0.1, 1, 2) / 2, las = 1L, col = 1:4,
+#'   legend.text = sprintf('Factor %s', 1:4),
+#'   args.legend = list(horiz = TRUE, bty = 'n'),
+#'   names.arg = list(A = 1:3, B = 4:6, C = 7:9)
+#' )
 #' 
 #' barplot2(1:5, panel.first = {grid(0, NULL); abline(h = 4, col = 2)})
 #' 

@@ -49,7 +49,8 @@
 #'   note = 'vehicles with less than 100 hp in bold'
 #' )
 #'
-#' prettybars(mtcars$mpg, y = rownames(mtcars), col.bg = 'snow',
+#' prettybars(
+#'   mtcars$mpg, y = rownames(mtcars), col.bg = 'snow',
 #'   emph = rownames(mtcars)[grepl('Merc', rownames(mtcars))],
 #'   extra.margin = 1, col.emph = 'cyan2',
 #'   FUN = quantile, probs = c(.25, .5, .75), na.rm = TRUE,
@@ -483,7 +484,7 @@ prettypie2 <- function(x, group = 1, labels = NA, col.group = NULL,
 #' op <- par(mar = c(0, 0, 0, 0))
 #' barmap(1, region = 'Germany')
 #' 
-#' barmap(c(1, 1, 1) / 3, region = 'Germany', cols = c('red', 'black', 'gold'))
+#' barmap(c(1, 1, 1) / 3, region = 'Germany', cols = c('gold', 'red', 'black'))
 #'  
 #' voteGermany2013 <- read.table(
 #'   header = TRUE, text = "Party Result
@@ -493,9 +494,10 @@ prettypie2 <- function(x, group = 1, labels = NA, col.group = NULL,
 #'                          4  GRUENE   10.0"
 #' )
 #'  
-#' with(voteGermany2013,
-#'      barmap(Result / 100, region = 'Germany',
-#'             labels = sprintf('%s (%s%%)', Party, Result)))
+#' with(voteGermany2013, {
+#'   barmap(Result / 100, region = 'Germany',
+#'          labels = sprintf('%s (%s%%)', Party, Result))
+#' })
 #' par(op)
 #' 
 #' @export
@@ -629,6 +631,7 @@ widebars <- function(x, y, main = NULL, sub = NULL, foot = NULL, note = NULL,
 #' @param ... additional graphical parameters passed to \code{\link{par}}
 #' 
 #' @examples
+#' set.seed(1)
 #' mat <- replicate(5, sample(1:10))
 #' dimnames(mat) <- list(rownames(mtcars)[1:nrow(mat)],
 #'                       paste0('time', 1:ncol(mat)))

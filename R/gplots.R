@@ -2229,7 +2229,7 @@ gpairs.formula <- function(formula, data = NULL, ..., subset,
   gpairs(mf, ..., grid = grid, col.grid = col.grid, col.acc = col.acc)
 }
 
-#' Plos columns of matrices
+#' Plot columns of matrices
 #' 
 #' Plot the columns of one matrix against the columns of another.
 #' 

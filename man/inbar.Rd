@@ -191,7 +191,6 @@ inbar(
   legend.text = 1:3, xlim = c(0, 20), border = NA
 )
 
-
 ## inbar returns rect coordinates for future use
 co <- inbar(tbl)
 co <- do.call('rbind', attr(co, 'coords'))
