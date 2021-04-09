@@ -40,8 +40,7 @@ grid.arrange(g1, g2)
 
 }
 \references{
-\href{http://stackoverflow.com/questions/32580946/setting-absolute-size-of-
-facets-in-ggplot2}{SO question}
+\href{http://stackoverflow.com/questions/32580946/setting-absolute-size-of-facets-in-ggplot2}{SO question}
 }
 \author{
 Baptiste Auguie

@@ -4,7 +4,7 @@
 \alias{gmatplot}
 \alias{gmatpoints}
 \alias{gmatlines}
-\title{Plos columns of matrices}
+\title{Plot columns of matrices}
 \usage{
 gmatplot(
   x,

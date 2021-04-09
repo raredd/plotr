@@ -86,7 +86,8 @@ prettybars(
   note = 'vehicles with less than 100 hp in bold'
 )
 
-prettybars(mtcars$mpg, y = rownames(mtcars), col.bg = 'snow',
+prettybars(
+  mtcars$mpg, y = rownames(mtcars), col.bg = 'snow',
   emph = rownames(mtcars)[grepl('Merc', rownames(mtcars))],
   extra.margin = 1, col.emph = 'cyan2',
   FUN = quantile, probs = c(.25, .5, .75), na.rm = TRUE,

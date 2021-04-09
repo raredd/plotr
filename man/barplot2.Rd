@@ -190,10 +190,12 @@ mtext(1:3, side = 1L, at = bp$group, line = 3)
 
 
 ## simplified space argument
-barplot2(x, space = c(0.1, 1, 2) / 2, las = 1L, col = 1:4,
-         legend.text = sprintf('Factor \%s', 1:4),
-         args.legend = list(horiz = TRUE, bty = 'n'),
-         names.arg = list(A = 1:3, B = 4:6, C = 7:9))
+barplot2(
+  x, space = c(0.1, 1, 2) / 2, las = 1L, col = 1:4,
+  legend.text = sprintf('Factor \%s', 1:4),
+  args.legend = list(horiz = TRUE, bty = 'n'),
+  names.arg = list(A = 1:3, B = 4:6, C = 7:9)
+)
 
 barplot2(1:5, panel.first = {grid(0, NULL); abline(h = 4, col = 2)})
 

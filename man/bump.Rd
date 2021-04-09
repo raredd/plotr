@@ -19,6 +19,7 @@ from start/end positions}
 A bump chart
 }
 \examples{
+set.seed(1)
 mat <- replicate(5, sample(1:10))
 dimnames(mat) <- list(rownames(mtcars)[1:nrow(mat)],
                       paste0('time', 1:ncol(mat)))

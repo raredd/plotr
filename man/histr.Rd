@@ -37,9 +37,11 @@ set.seed(1)
 histr(x <- rnorm(100), xlim = c(-3, 3), las = 1)
 plot(density(x), xlim = c(-3, 3))
 
-histr(x + 50, main = 'Age at diagnosis', xlab = 'Age',
-      poly.pars = list(col = 'dodgerblue2', density = 30),
-      lines.pars = list(lty = 'dashed', lwd = 3),
-      rug.pars = list(side = 3, col = 'red'))
+histr(
+  x + 50, main = 'Age at diagnosis', xlab = 'Age',
+  poly.pars = list(col = 'dodgerblue2', density = 30),
+  lines.pars = list(lty = 'dashed', lwd = 3),
+  rug.pars = list(side = 3, col = 'red')
+)
 
 }

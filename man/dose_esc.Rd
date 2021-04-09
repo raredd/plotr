@@ -39,8 +39,9 @@ Plot results of a dose-escalation study.
 }
 \examples{
 ## 3 + 3
-dose_esc(d33 <- c(1,1,1,2,2,2,3,3,3,3,3,3,4,4,4),
-         c33 <- c(3,3,3,3,3,3,3,3,2,3,3,3,3,2,2))
+d33 <- c(1,1,1,2,2,2,3,3,3,3,3,3,4,4,4)
+c33 <- c(3,3,3,3,3,3,3,3,2,3,3,3,3,2,2)
+dose_esc(d33, c33)
 legend(0, 4, col = 2:3, pch = 16, pt.cex = 4, xpd = NA, bty = 'n',
        legend = paste(c('','Non-'), 'DLT'), y.intersp = 1.5)
 

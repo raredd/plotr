@@ -24,7 +24,7 @@ Creates a barplot in the shape of a map region.
 op <- par(mar = c(0, 0, 0, 0))
 barmap(1, region = 'Germany')
 
-barmap(c(1, 1, 1) / 3, region = 'Germany', cols = c('red', 'black', 'gold'))
+barmap(c(1, 1, 1) / 3, region = 'Germany', cols = c('gold', 'red', 'black'))
  
 voteGermany2013 <- read.table(
   header = TRUE, text = "Party Result
@@ -34,9 +34,10 @@ voteGermany2013 <- read.table(
                          4  GRUENE   10.0"
 )
  
-with(voteGermany2013,
-     barmap(Result / 100, region = 'Germany',
-            labels = sprintf('\%s (\%s\%\%)', Party, Result)))
+with(voteGermany2013, {
+  barmap(Result / 100, region = 'Germany',
+         labels = sprintf('\%s (\%s\%\%)', Party, Result))
+})
 par(op)
 
 }
