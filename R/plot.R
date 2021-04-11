@@ -1081,31 +1081,22 @@ dsplot.formula <- function(formula, data = NULL, ...,
   args <- lapply(m$..., eval, data, parent.frame(1L))
   nmargs <- names(args)
   
+  form <- as.character(formula)
+  args <- modifyList(list(xlab = form[3L], ylab = form[2L]), args)
+  
   if ('main' %in% nmargs) args[['main']] <- enquote(args[['main']])
   if ('sub' %in% nmargs)  args[['sub']]  <- enquote(args[['sub']])
   if ('xlab' %in% nmargs) args[['xlab']] <- enquote(args[['xlab']])
   if ('ylab' %in% nmargs) args[['ylab']] <- enquote(args[['ylab']])
   
   # m$na.action <- na.pass
-  subset.expr <- m$subset
-  m$... <- m$subset <- NULL
+  m$... <- NULL
   
   m[[1L]] <- as.name('model.frame')
   m <- as.call(c(as.list(m), list(na.action = NULL)))
   mf <- eval(m, parent.frame(1L))
   n <- nrow(mf)
   response <- attr(attr(mf, 'terms'), 'response')
-  
-  if (!missing(subset)) {
-    do_sub_ <- function(x, n, s) {
-      if (length(x) == n)
-        x[s] else x
-    }
-    s <- eval(subset.expr, data, parent.frame(1L))
-    args <- lapply(args, do_sub_, n = n, s = s)
-    ## rawr:::do_sub_
-    mf <- mf[s, ]
-  }
   
   do.call('dsplot', c(list(mf[[-response]], mf[[response]]), args))
 }
