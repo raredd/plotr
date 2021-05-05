@@ -9,6 +9,8 @@ tableplot(
   y = NULL,
   table,
   title = NULL,
+  rownames = NULL,
+  colnames = NULL,
   bg = "transparent",
   cex = par("cex"),
   cex.title = cex,
@@ -42,6 +44,9 @@ tableplot(
 \item{table}{a data frame or matrix}
 
 \item{title}{optional title for the table}
+
+\item{rownames, colnames}{optional labels for rows and columns (default
+are \code{rownames(table)} and \code{colnames(table)}, respectively)}
 
 \item{bg}{background color for each table cell, recycled as needed}
 

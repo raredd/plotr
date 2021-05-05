@@ -1282,6 +1282,8 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
 #' \code{\link{xy.coords}}
 #' @param table a data frame or matrix
 #' @param title optional title for the table
+#' @param rownames,colnames optional labels for rows and columns (default
+#' are \code{rownames(table)} and \code{colnames(table)}, respectively)
 #' @param cex,cex.title text size for table, title
 #' @param bg background color for each table cell, recycled as needed
 #' @param xjust,yjust table position relative to \code{x} and \code{y}
@@ -1323,6 +1325,7 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
 #' @export
 
 tableplot <- function(x, y = NULL, table, title = NULL,
+                      rownames = NULL, colnames = NULL,
                       bg = 'transparent', cex = par('cex'), cex.title = cex,
                       xjust = 0, yjust = 1, xpad = 0.25, ypad = 0.75,
                       col.table = 1L, col.title = col.table,
@@ -1361,12 +1364,15 @@ tableplot <- function(x, y = NULL, table, title = NULL,
   if (is.null(dim(bg)))
     bg <- matrix(bg, tdim[1L], tdim[2L])
   
-  cnames <- colnames(table)
+  cnames <- colnames %||% colnames(table)
   if (is.null(cnames) && show.colnames)
     cnames <- seq.int(tdim[2L])
-  rnames <- rownames(table)
+  cnames <- rep_len(cnames, tdim[2L])
+  
+  rnames <- rownames %||% rownames(table)
   if (is.null(rnames) && show.rownames) 
     rnames <- seq.int(tdim[1L])
+  rnames <- rep_len(rnames, tdim[1L])
   
   if (par('xlog'))
     x <- log10(x)
