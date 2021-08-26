@@ -1297,10 +1297,12 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
 #' names of \code{table} are added
 #' @param hlines,vlines logical; if \code{TRUE}, horizontal and/or vertical
 #' lines are drawn between table cells
-#' @param frame.colnames,frame.title,frame.table logical; if \code{TRUE},
-#' draws a frame around the object
-#' @param frame.type the type of framing for column names, title, and table,
-#' respectively; options are \code{"box"} or \code{"line"}
+#' @param frame.colnames,frame.title,frame.table,frame.rownames logical; if
+#' \code{TRUE}, draws a frame around the object
+#' @param frame.type a vector giving the type of framing for column names,
+#' title, table, and row names, respectively; options are \code{"box"} or
+#' \code{"line"}; alternatively, a character string with the first letter
+#' for each, e.g., \code{"blbl"}
 #' @param ... additional graphical parameters passed to \code{\link{par}}
 #' 
 #' @return
@@ -1311,15 +1313,23 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
 #' \code{\link[plotrix]{addtable2plot}}
 #' 
 #' @examples
+#' tbl <- head(mtcars, 3)
 #' plot(mpg ~ wt, mtcars)
+#' 
 #' tableplot(
-#'   'topright', table = head(mtcars, 3),
+#'   'topright', table = tbl,
 #'   title = 'mtcars data set', cex.title = 2
 #' )
+#' 
 #' tableplot(
-#'   par('usr')[1], 35, head(mtcars, 3)[, 1:3],
+#'   par('usr')[1], 35, tbl[, 1:3],
 #'   show.rownames = TRUE, col.rownames = 'red',
 #'   font.colnames = 2, hlines = TRUE
+#' )
+#' 
+#' tableplot(
+#'   'bottomleft', table = tbl[, 1:3],
+#'   show.rownames = TRUE, frame.rownames = TRUE, frame.type = 'bbll'
 #' )
 #' 
 #' @export
@@ -1332,10 +1342,11 @@ tableplot <- function(x, y = NULL, table, title = NULL,
                       col.colnames = col.table, col.rownames = col.table,
                       font.table = 1L, font.title = font.table,
                       font.colnames = font.table, font.rownames = font.table,
-                      show.colnames = TRUE, show.rownames = FALSE, 
+                      show.colnames = TRUE, show.rownames = FALSE,
                       hlines = FALSE, vlines = FALSE,
                       frame.colnames = FALSE, frame.title = FALSE, frame.table = FALSE,
-                      frame.type = c('box', 'box', 'line'), ...) {
+                      frame.rownames = FALSE,
+                      frame.type = c('box', 'box', 'line', 'box'), ...) {
   if (is.null(y)) {
     if (is.character(x)) {
       pos <- plotrix::get.tablepos(x)
@@ -1355,7 +1366,11 @@ tableplot <- function(x, y = NULL, table, title = NULL,
   drop <- any(grepl('top', x))
   
   ## framing table, column names, title
-  frame.type <- rep_len(frame.type, 3L)
+  if (length(frame.type) == 1L && !nzchar(gsub('[bl]', '', frame.type))) {
+    frame.type <- strrep(frame.type, 4L)
+    frame.type <- c('line', 'box')[match(strsplit(frame.type, '')[[1L]], c('l', 'b'))]
+  }
+  frame.type <- rep_len(frame.type, 4L)
   
   if (tdim[1L] == 1L)
     hlines <- FALSE
@@ -1412,8 +1427,8 @@ tableplot <- function(x, y = NULL, table, title = NULL,
   ytop <- y + yjust * nvcells * cellheight
   
   op <- par(xlog = FALSE, ylog = FALSE, xpd = TRUE)
-  par(...)
   on.exit(par(op))
+  par(...)
   
   ## x-coodinates of center of each column
   xat <- x + show.rownames * rowname.width - xjust *
@@ -1481,12 +1496,6 @@ tableplot <- function(x, y = NULL, table, title = NULL,
   }
   
   co <- list(
-    table = {
-      yt <- if (frame.type[3L] == 'line')
-        ytop - (tdim[1L] + show.colnames) * cellheight
-      else ytop - cellheight
-      c(xleft, yt, xright, ytop - (tdim[1L] + show.colnames) * cellheight)
-    },
     colnames = {
       yt <- if (frame.type[1L] == 'line')
         ytop - cellheight else ytop
@@ -1496,6 +1505,18 @@ tableplot <- function(x, y = NULL, table, title = NULL,
       yt <- if (frame.type[[2L]] == 'line')
         ytop else ytop + titleheight
       c(xleft, yt, xright, ytop)
+    },
+    table = {
+      yt <- if (frame.type[3L] == 'line')
+        ytop - (tdim[1L] + show.colnames) * cellheight
+      else ytop - cellheight
+      c(xleft, yt, xright, ytop - (tdim[1L] + show.colnames) * cellheight)
+    },
+    rownames = {
+      xright <- if (frame.type[4L] == 'line')
+        xleft else xleft - rowname.width
+      c(xleft, ytop - (tdim[1L] + show.colnames) * cellheight,
+        xright, ytop - titleheight - cellheight * show.colnames)
     }
   )
   co$outline <- c(
@@ -1507,6 +1528,8 @@ tableplot <- function(x, y = NULL, table, title = NULL,
     do.call('rect', as.list(co$table))
   if (frame.colnames & show.colnames)
     do.call('rect', as.list(co$colnames))
+  if (frame.rownames & show.rownames)
+    do.call('rect', as.list(co$rownames))
   if (frame.title & !is.null(title))
     do.call('rect', as.list(co$title))
   

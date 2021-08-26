@@ -33,7 +33,8 @@ tableplot(
   frame.colnames = FALSE,
   frame.title = FALSE,
   frame.table = FALSE,
-  frame.type = c("box", "box", "line"),
+  frame.rownames = FALSE,
+  frame.type = c("box", "box", "line", "box"),
   ...
 )
 }
@@ -69,11 +70,13 @@ names of \code{table} are added}
 \item{hlines, vlines}{logical; if \code{TRUE}, horizontal and/or vertical
 lines are drawn between table cells}
 
-\item{frame.colnames, frame.title, frame.table}{logical; if \code{TRUE},
-draws a frame around the object}
+\item{frame.colnames, frame.title, frame.table, frame.rownames}{logical; if
+\code{TRUE}, draws a frame around the object}
 
-\item{frame.type}{the type of framing for column names, title, and table,
-respectively; options are \code{"box"} or \code{"line"}}
+\item{frame.type}{a vector giving the type of framing for column names,
+title, table, and row names, respectively; options are \code{"box"} or
+\code{"line"}; alternatively, a character string with the first letter
+for each, e.g., \code{"blbl"}}
 
 \item{...}{additional graphical parameters passed to \code{\link{par}}}
 }
@@ -85,15 +88,23 @@ A list with components \code{table}, \code{colnames}, \code{title}, and
 Add a table to a base plot.
 }
 \examples{
+tbl <- head(mtcars, 3)
 plot(mpg ~ wt, mtcars)
+
 tableplot(
-  'topright', table = head(mtcars, 3),
+  'topright', table = tbl,
   title = 'mtcars data set', cex.title = 2
 )
+
 tableplot(
-  par('usr')[1], 35, head(mtcars, 3)[, 1:3],
+  par('usr')[1], 35, tbl[, 1:3],
   show.rownames = TRUE, col.rownames = 'red',
   font.colnames = 2, hlines = TRUE
+)
+
+tableplot(
+  'bottomleft', table = tbl[, 1:3],
+  show.rownames = TRUE, frame.rownames = TRUE, frame.type = 'bbll'
 )
 
 }
