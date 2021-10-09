@@ -1323,12 +1323,12 @@ toxplot <- function(ftable, total, digits = 0L, headers = NULL, xlim = NULL,
 #' 
 #' tableplot(
 #'   par('usr')[1], 35, tbl[, 1:3],
-#'   show.rownames = TRUE, col.rownames = 'red',
+#'   show.rownames = TRUE, col.rownames = 1:3,
 #'   font.colnames = 2, hlines = TRUE
 #' )
 #' 
 #' tableplot(
-#'   'bottomleft', table = tbl[, 1:3],
+#'   'bottomleft', table = tbl[, 1:3], col.table = 1:3,
 #'   show.rownames = TRUE, frame.rownames = TRUE, frame.type = 'bbll'
 #' )
 #' 
@@ -1442,13 +1442,16 @@ tableplot <- function(x, y = NULL, table, title = NULL,
     )
   
   ## plot each table row
+  col.rownames <- rep_len(col.rownames, tdim[1L])
+  font.rownames <- rep_len(font.rownames, tdim[1L])
+  
   for (rr in seq.int(tdim[1L])) {
     xleft <- x - xjust * (sum(cellwidth) + rowname.width)
     
     if (show.rownames) {
       text(
         xleft + 0.5 * rowname.width, ytop - (rr + show.colnames - 0.5) * cellheight,
-        rnames[rr], cex = cex, col = col.rownames, font = font.rownames
+        rnames[rr], cex = cex, col = col.rownames[rr], font = font.rownames[rr]
       )
       xleft <- xleft + rowname.width
     }

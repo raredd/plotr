@@ -98,12 +98,12 @@ tableplot(
 
 tableplot(
   par('usr')[1], 35, tbl[, 1:3],
-  show.rownames = TRUE, col.rownames = 'red',
+  show.rownames = TRUE, col.rownames = 1:3,
   font.colnames = 2, hlines = TRUE
 )
 
 tableplot(
-  'bottomleft', table = tbl[, 1:3],
+  'bottomleft', table = tbl[, 1:3], col.table = 1:3,
   show.rownames = TRUE, frame.rownames = TRUE, frame.type = 'bbll'
 )
 
