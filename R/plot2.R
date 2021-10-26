@@ -1,6 +1,6 @@
 ### some less useful plots
 # waffle, histr, shist, propfall, bibar, dose_esc, boxline, inbar, tracebar,
-# toxplot, tableplot, barplot2, spider, dotplot
+# toxplot, tableplot, barplot2, spider, dotplot, barprop
 ###
 
 
@@ -365,7 +365,7 @@ propfall <- function(data, group, order, group.order = unique(group),
   
   tt <- table(factor(group, group.order))
   times <- rawr::interleave(
-    which = 'rbind', matrix(tt), matrix(1L, length(tt))
+    matrix(tt), matrix(1L, length(tt)), which = 'rbind'
   )
   
   mm[is.na(mm)] <- 0
@@ -1975,4 +1975,162 @@ dotplot <- function(x, at = NULL, names = rownames(x), label = TRUE,
   )
   
   invisible(list(x = rx, y = ry))
+}
+
+#' barprop
+#' 
+#' A \code{\link{barplot}} for proportions. This function is intended to show
+#' a matrix of proportions as a stacked bar plot but each group will have a
+#' common starting height. Therefore, it is recommended that each column sums
+#' to 100% (or 1 for proportions); however, this is not required.
+#' 
+#' @param height a matrix (or vector) of proportions
+#' @param col colors for each group, i.e., \code{nrow(height)} colors
+#' @param labels a matrix or vector of labels for each bar plot segment; if
+#'   \code{FALSE}, no labels are drawn
+#' @param col.labels a matrix or vector of colors for each label, i.e.,
+#'   \code{length(height)} colors
+#' @param horiz logical; if \code{TRUE} (default), bars are drawn horizontally
+#'   with the first at the bottom; otherwise, bars are drawn vertically with
+#'   the first to the left
+#' @param gap the space between each group as a single value or vector in units
+#'   of \code{height}, recycled as needed
+#' @param min.prop the minimum proportion controlling which labels are drawn
+#'   in the center of each bar; for any \code{height > min.prop}, labels are
+#'   drawn to the right of the bar (or to the top if \code{horiz = FALSE})
+#' @param axis.pos a vector of length 2 giving the position of the x- and
+#'   y-axes; note that \code{axis.pos[1L]} can only be 1 or 3 and
+#'   \code{axis.pos[2L]} can only be 2 or 4
+#' @param xlab,ylab the x- and y-axis labels, default is
+#'   \code{names(dimnames(height))}
+#' @param ... additional graphical parameters passed to \code{\link{par}}
+#'   
+#'   \code{labels} (i.e., the labels for each bar segment) may be customized
+#'   using \code{col.labels}; \code{cex.lab}, and/or \code{font.lab}
+#'   
+#'   the axis labels (i.e., the labels for each group) may be customized
+#'   using \code{col.axis}; \code{cex.axis}, and/or \code{font.axis}
+#'   
+#'   the main labels (i.e., \code{xlab} and \code{ylab}) may be customized using
+#'   \code{col.main}; \code{cex.main}, and/or \code{font.main} if given
+#' 
+#' @examples
+#' x <- table(Gear = mtcars$gear, Cylinder = mtcars$cyl)
+#' dimnames(x) <- lapply(dimnames(x), function(y) rawr::num2char(as.numeric(y)))
+#' p <- round(prop.table(x, 2) * 100)
+#' barprop(p)
+#' 
+#' barprop(x, horiz = FALSE)
+#' ## compare
+#' barplot(x)
+#' 
+#' ## on vectors (or single-column matrices)
+#' barprop(p[, 1])
+#' barprop(p[, 1, drop = FALSE])
+#' 
+#' ## options/aesthetics
+#' barprop(p, min.prop = 0, col.labels = ifelse(row(p) == 1, 'white', 'black'))
+#' barprop(p, gap = 10)
+#' barprop(p, min.prop = 0, gap = c(10, 0))
+#' barprop(x, min.prop = 0, labels = sprintf('%s%%', x), cex.lab = 1.5,
+#'   font.axis = 2, cex.axis = 1.5)
+#' 
+#' @export
+
+barprop <- function(height, col = NULL, labels = height, col.labels = par('col.lab'),
+                    horiz = TRUE, gap = NULL, min.prop = Inf, axis.pos = NULL,
+                    xlab = NULL, ylab = NULL, ...) {
+  height <- as.matrix(height)
+  dn <- names(dimnames(height))
+  
+  ok <- if (ncol(height) == 1L) {
+    height <- cbind(height, 0)
+    TRUE
+  } else FALSE
+  
+  axis.pos <- if (is.null(axis.pos)) {
+    1:2
+  } else {
+    axis.pos <- rep_len(as.integer(axis.pos), 2L)
+    stopifnot(
+      axis.pos[1L] %in% c(1L, 3L),
+      axis.pos[2L] %in% c(2L, 4L)
+    )
+    axis.pos
+  }
+  
+  nr <- nrow(height)
+  pm <- apply(height, 1L, max)
+  
+  col <- if (is.null(col))
+    grey.colors(nr) else rep_len(col, nr)
+  col <- rawr::interleave(col, 'transparent')
+  
+  gap <- rep_len(if (is.null(gap)) max(pm) * 0.1 else gap, nr) + pm - height
+  
+  heights <- rawr::insert_matrix(height, rowsep = seq_along(pm)[-1L])
+  rownames(heights)[seq_along(pm)[-length(pm)] * 2] <- '<gap>'
+  heights[is.na(heights)] <- gap[-nrow(gap), ]
+  
+  idx <- seq.int(nr) * 2 - 1
+  mids <- apply(heights, 2L, function(x) cumsum(c(0, x)) + c(x, 0) / 2)[idx, ]
+  ends <- apply(heights, 2L, cumsum)[idx, ]
+  left <- apply(heights, 2L, function(x) cumsum(c(0, x)))
+  
+  at <- mids
+  le <- height <= min.prop
+  at[le] <- ends[le]
+  
+  op <- par(..., no.readonly = TRUE)
+  on.exit(par(op))
+  
+  if (ok)
+    heights <- heights[, -2L, drop = FALSE]
+  bp <- barplot(
+    heights, col = col, border = NA, horiz = horiz,
+    axes = FALSE, axisnames = FALSE
+  )
+  
+  if (!identical(labels, FALSE)) {
+    if (isTRUE(labels))
+      labels <- height
+    col.labels <- rep_len(c(col.labels), length(height))
+    
+    if (horiz) {
+      dn <- rev(dn)
+      ## column/row labels
+      axis(axis.pos[1L], left[idx, 1L], rownames(heights)[idx] %||% '',
+           lwd = 0, hadj = 0)
+      axis(axis.pos[2L], unique(bp), colnames(heights) %||% '',
+           lwd = 0, las = 1L)
+      
+      ## prop labels
+      for (ii in seq_along(at))
+        text(c(at)[ii], rep(bp, each = nrow(height))[ii], c(labels)[ii],
+             cex = par('cex.lab'), font = par('font.lab'),
+             col = col.labels[ii], xpd = NA, pos = if (le[ii]) 4L else NULL)
+    } else {
+      ## row/column labels
+      axis(axis.pos[2L], left[idx, 1L], rownames(heights)[idx],
+           lwd = 0, las = 1L, hadj = 1, padj = 0, mgp = c(0, 0, 0))
+      axis(axis.pos[1L], unique(bp), colnames(heights), lwd = 0)
+      
+      ## prop labels
+      for (ii in seq_along(at))
+        text(rep(bp, each = nrow(height))[ii], c(at)[ii], c(labels)[ii],
+             cex = par('cex.lab'), font = par('font.lab'),
+             col = col.labels[ii], xpd = NA, pos = if (le[ii]) 3L else NULL)
+    }
+    
+    title(xlab = xlab %||% dn[1L], ylab = ylab %||% dn[2L],
+          font.lab = par('font.main'), cex.lab = par('cex.main'),
+          col.lab = par('col.main'))
+  }
+  
+  res <- list(
+    barplot = bp, at = at, height = height, heights = heights,
+    mids = mids, ends = ends, left = left
+  )
+  
+  invisible(res)
 }
