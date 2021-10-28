@@ -1559,10 +1559,12 @@ tableplot <- function(x, y = NULL, table, title = NULL,
 #' 
 #' @examples
 #' set.seed(1)
-#' x <- array(runif(4 * 3 * 3), c(4, 3, 3))
+#' x <- array(runif(4 * 3 * 3), c(4, 3, 3), dimnames = list(1:4, 1:3, 1:3))
+#' barplot2(x, legend.text = TRUE)
 #' 
+#' barplot2(x[, , 1])
+#' ## compare
 #' barplot(x[, , 1])
-#' barplot2(x[, , 1]) ## same
 #' 
 #' barplot2(with(mtcars, table(cyl, gear, vs)))
 #' 
@@ -1570,7 +1572,8 @@ tableplot <- function(x, y = NULL, table, title = NULL,
 #' ## group labels
 #' barplot2(x, names.arg = list(A = 1:3, B = 4:6, C = 7:9))
 #' 
-#' bp <- barplot2(x)
+#' ## same but manually
+#' bp <- barplot2(x, axisnames = FALSE, ann = FALSE)
 #' mtext(1:9, side = 1L, at = bp$at, line = 1)
 #' mtext(1:3, side = 1L, at = bp$group, line = 3)
 #' 
@@ -1583,6 +1586,8 @@ tableplot <- function(x, y = NULL, table, title = NULL,
 #'   names.arg = list(A = 1:3, B = 4:6, C = 7:9)
 #' )
 #' 
+#' 
+#' ## extra features - panel.first, panel.last
 #' barplot2(1:5, panel.first = {grid(0, NULL); abline(h = 4, col = 2)})
 #' 
 #' @export
@@ -1611,6 +1616,8 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
       s <- c(0, rep_len(space, length(s))[-length(s)])
     
     m <- matrix(height, d[1L])
+    n <- dimnames(height)
+    dimnames(m) <- list(n[[1L]], rep(n[[2L]], length(n[[3L]])))
     
     bp <- barplot(
       m, width = width, space = s, names.arg = names.arg, plot = plot,
@@ -1639,8 +1646,9 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
     panel.last
     
     if (axes) {
-      axis(if (horiz) 2L else 1L, bp, lwd = 0, cex.axis = cex.axis,
-           unlist(names.arg) %||% rep(colnames(height), d[3L]) %||% FALSE, ...)
+      if (axisnames)
+        axis(if (horiz) 2L else 1L, bp, lwd = 0, cex.axis = cex.axis,
+             unlist(names.arg) %||% rep(colnames(height), d[3L]) %||% FALSE, ...)
       axis(if (horiz) 1L else 2L, cex.axis = cex.axis, ...)
       if (ann)
         mtext(names(names.arg) %||% dimnames(height)[[3L]], at = gr,
@@ -1666,7 +1674,11 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
     
     gr <- if (is.null(d) || is.null(dim(bp)) || ncol(bp) == 1L)
       rep_len(1L, min(d %||% length(height)))
-    else rep(seq.int(nrow(height)), each = ncol(height))
+    else {
+      if (beside)
+        rep(seq.int(ncol(height)), each = nrow(height))
+      else rep(seq.int(nrow(height)), each = ncol(height))
+    }
     gr <- sapply(split(bp, gr), mean)
     res <- list(at = bp, group = gr)
     

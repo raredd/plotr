@@ -173,10 +173,12 @@ and \code{panel.last} functionality.
 }
 \examples{
 set.seed(1)
-x <- array(runif(4 * 3 * 3), c(4, 3, 3))
+x <- array(runif(4 * 3 * 3), c(4, 3, 3), dimnames = list(1:4, 1:3, 1:3))
+barplot2(x, legend.text = TRUE)
 
+barplot2(x[, , 1])
+## compare
 barplot(x[, , 1])
-barplot2(x[, , 1]) ## same
 
 barplot2(with(mtcars, table(cyl, gear, vs)))
 
@@ -184,7 +186,8 @@ barplot2(with(mtcars, table(cyl, gear, vs)))
 ## group labels
 barplot2(x, names.arg = list(A = 1:3, B = 4:6, C = 7:9))
 
-bp <- barplot2(x)
+## same but manually
+bp <- barplot2(x, axisnames = FALSE, ann = FALSE)
 mtext(1:9, side = 1L, at = bp$at, line = 1)
 mtext(1:3, side = 1L, at = bp$group, line = 3)
 
@@ -197,6 +200,8 @@ barplot2(
   names.arg = list(A = 1:3, B = 4:6, C = 7:9)
 )
 
+
+## extra features - panel.first, panel.last
 barplot2(1:5, panel.first = {grid(0, NULL); abline(h = 4, col = 2)})
 
 }
