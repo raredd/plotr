@@ -1679,7 +1679,8 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
         rep(seq.int(ncol(height)), each = nrow(height))
       else rep(seq.int(nrow(height)), each = ncol(height))
     }
-    gr <- sapply(split(bp, gr), mean)
+    gr <- if (is.null(dim(bp)))
+      mean(bp) else sapply(split(bp, gr), mean)
     res <- list(at = bp, group = gr)
     
     if (!plot)
