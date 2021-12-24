@@ -1,7 +1,8 @@
 ### plotting extras
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
 # click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot,
-# coords, fig, arrows2, carrows, laxis, pretty_sci, oom, parse_sci, caxis
+# coords, fig, arrows2, carrows, laxis, pretty_sci, oom, parse_sci, caxis,
+# subrect
 # 
 # unexported:
 # to_sci_
@@ -1600,4 +1601,65 @@ caxis <- function(side, prop, col = NULL, lwd = 3, ...) {
   )
   
   invisible(list(start = at[-la], end = at[-1L]))
+}
+
+#' subrect
+#' 
+#' Draw shapes inside a \code{\link{rect}}
+#' 
+#' @param xleft,ybottom,xright,ytop coordinates of the main \code{rect}
+#' @param type,pos the type (diagonal or square) and position of the shape
+#'   inside the \code{rect}
+#' @param ... additional arguments passed to \code{\link{rect}}
+#' 
+#' @examples
+#' pos <- eval(formals(subrect)$pos)
+#' par(mfrow = n2mfrow(length(pos)))
+#' 
+#' for (p in pos) {
+#'   plot(0, 0, main = p, type = 'n', xlab = '', ylab = '')
+#'   rect(-0.5, -0.5, 0.5, 0.5)
+#'   subrect(-0.5, -0.5, 0.5, 0.5, type = 'diag', pos = p, col = 'red')
+#' }
+#' 
+#' for (p in pos) {
+#'   plot(0, 0, main = p, type = 'n', xlab = '', ylab = '')
+#'   rect(-0.5, -0.5, 0.5, 0.5)
+#'   subrect(-0.5, -0.5, 0.5, 0.5, type = 'square', pos = p, col = 'red')
+#' }
+#' 
+#' @export
+
+subrect <- function(xleft, ybottom, xright, ytop, type = c('diagonal', 'square'),
+                    pos = c('topleft', 'topright', 'bottomleft', 'bottomright'),
+                    ...) {
+  type <- match.arg(type)
+  pos <- match.arg(pos)
+  
+  if (type == 'diagonal') {
+    left <- c(xleft, xright, xleft, xleft)
+    right <- c(xleft, xright, xright, xleft)
+    top <- c(ytop, ytop, ybottom, ytop)
+    bottom <- c(ybottom, ybottom, ytop, ybottom)
+  } else {
+    xmid <- mean(c(xleft, xright))
+    ymid <- mean(c(ybottom, ytop))
+    
+    left <- c(xleft, xmid, xmid, xleft, xleft)
+    right <- c(xmid, xright, xright, xmid, xmid)
+    top <- c(ymid, ymid, ytop, ytop, ymid)
+    bottom <- c(ybottom, ybottom, ymid, ymid, ybottom)
+  }
+  
+  co <- switch(
+    match.arg(pos),
+    topleft = list(x = left, y = top),
+    topright = list(x = right, y = top),
+    bottomleft = list(x = left, y = bottom),
+    bottomright = list(x = right, y = bottom)
+  )
+  
+  polygon(co, ...)
+  
+  invisible(co)
 }
