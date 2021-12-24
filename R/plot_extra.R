@@ -1636,6 +1636,13 @@ subrect <- function(xleft, ybottom, xright, ytop, type = c('diagonal', 'square')
   type <- match.arg(type)
   pos <- match.arg(pos)
   
+  if (length(xleft) == 4L) {
+    ybottom <- xleft[2L]
+    xright <- xleft[3L]
+    ytop <- xleft[4L]
+    xleft <- xleft[1L]
+  }
+  
   if (type == 'diagonal') {
     left <- c(xleft, xright, xleft, xleft)
     right <- c(xleft, xright, xright, xleft)
