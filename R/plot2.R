@@ -1,6 +1,6 @@
 ### some less useful plots
 # waffle, histr, shist, propfall, bibar, dose_esc, boxline, inbar, tracebar,
-# toxplot, tableplot, barplot2, spider, dotplot, barprop
+# toxplot, tableplot, barplot2, spider, dotplot, barprop, upset
 ###
 
 
@@ -2146,4 +2146,94 @@ barprop <- function(height, col = NULL, labels = height, col.labels = par('col.l
   )
   
   invisible(res)
+}
+
+#' upset
+#' 
+#' Add an upset panel to an existing plot.
+#' 
+#' @param x a numeric or integer matrix, coerced to binary with 0s and
+#'   \code{NA}s treated as false/missing, i.e., only non-zero and non-missing
+#'   values are used
+#' @param xat,yat the x- and y-coordinates for the columns and rows of
+#'   \code{x}, respectively
+#' @param col the colors for \code{x > 0} and 0s/\code{NA}s, respectively;
+#'   note that 0s/\code{NA}s only appear if \code{fullrange = TRUE}
+#' @param labels.x,labels.y (optional) labels for the columns and rows
+#' @param col.na,col.rect colors for background placeholder points and
+#'   bars for each row of \code{x}; default is alternating grey and white
+#' @param fullrange logical; if \code{TRUE}, open circles will be shown for
+#'   any 0s or \code{NA}s in \code{x}
+#' 
+#' @examples
+#' x <- t(mtcars[, c('cyl', 'vs', 'am', 'gear')])
+#' y <- t(!!mtcars[, c('cyl', 'vs', 'am')])
+#' 
+#' op <- par(mar = c(9, 5, 4, 1), las = 1L)
+#' 
+#' bp <- barplot(x, col = 2:5, axisnames = FALSE)
+#' text(bp, -4, colnames(x), srt = 45, xpd = NA, adj = 1)
+#' box(bty = 'u')
+#' 
+#' yat <- seq(1, 3, length.out = nrow(y))
+#' upset(y, xat = bp, yat = -yat, col.na = NA)
+#' upset(y, xat = bp, yat = par('usr')[4L] + yat, col.rect = adjustcolor(2:4, 0.5))
+#' 
+#' par(op)
+#' 
+#' @export
+
+upset <- function(x, xat = NULL, yat = NULL, col = c('black', 'white'),
+                  labels.x = NULL, labels.y = rownames(x), col.na = 'grey75',
+                  col.rect = c('grey95', 'transparent'), fullrange = FALSE) {
+  x <- as.matrix(x)
+  
+  nr <- nrow(x)
+  nc <- ncol(x)
+  
+  xat <- xat %||% seq.int(nc)
+  yat <- yat %||% seq.int(nr)
+  
+  stopifnot(
+    length(xat) == ncol(x),
+    length(yat) == nrow(x)
+  )
+  
+  col <- rev(rep_len(col, 2L))
+  col.na <- col.na[1L]
+  col.rect <- rep_len(col.rect, nr)
+  
+  ## background rect/points
+  usr <- par('usr')
+  pad <- min(diff(abs(yat)) / 2)
+  
+  sapply(seq.int(nr), function(ri) {
+    rect(usr[1L], yat[ri] - pad, usr[2L], yat[ri] + pad,
+         border = NA, col = col.rect[ri], xpd = NA)
+  })
+  points(xat[col(x)], yat[row(x)], pch = 21L, col = col.na, bg = col.na, xpd = NA)
+  
+  ## main
+  sapply(seq.int(nc), function(ci) {
+    dd <- data.frame(x = xat[ci], y = yat, p = x[, ci])
+    dd[is.na(dd)] <- 0
+    
+    if (!fullrange) {
+      dd$p[dd$p %in% 0] <- NA
+      dd <- na.omit(dd)
+    }
+    
+    points(dd$x, dd$y, pch = 21L, bg = col[(dd$p > 0) + 1L],
+           col = 'black', xpd = NA, type = 'o')
+  })
+  
+  ## labels
+  if (identical(labels.y, FALSE) || !is.null(labels.y)) {
+    axis(2L, yat, labels.y, lwd = 0, adj = 0, xpd = NA, las = 1L)
+  }
+  if (identical(labels.x, FALSE) || !is.null(labels.x)) {
+    axis(1L, xat, labels.x, lwd = 0, xpd = NA, las = 1L)
+  }
+  
+  invisible(NULL)
 }
