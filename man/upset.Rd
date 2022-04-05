@@ -49,7 +49,7 @@ text(bp, -4, colnames(x), srt = 45, xpd = NA, adj = 1)
 box(bty = 'u')
 
 yat <- seq(1, 3, length.out = nrow(y))
-upset(y, xat = bp, yat = -yat, col.na = NA)
+upset(y, xat = bp, yat = -yat, col.na = NA, fullrange = TRUE)
 upset(y, xat = bp, yat = par('usr')[4L] + yat, col.rect = adjustcolor(2:4, 0.5))
 
 par(op)

@@ -2176,7 +2176,7 @@ barprop <- function(height, col = NULL, labels = height, col.labels = par('col.l
 #' box(bty = 'u')
 #' 
 #' yat <- seq(1, 3, length.out = nrow(y))
-#' upset(y, xat = bp, yat = -yat, col.na = NA)
+#' upset(y, xat = bp, yat = -yat, col.na = NA, fullrange = TRUE)
 #' upset(y, xat = bp, yat = par('usr')[4L] + yat, col.rect = adjustcolor(2:4, 0.5))
 #' 
 #' par(op)
@@ -2186,7 +2186,8 @@ barprop <- function(height, col = NULL, labels = height, col.labels = par('col.l
 upset <- function(x, xat = NULL, yat = NULL, col = c('black', 'white'),
                   labels.x = NULL, labels.y = rownames(x), col.na = 'grey75',
                   col.rect = c('grey95', 'transparent'), fullrange = FALSE) {
-  x <- as.matrix(x)
+  x <- if (is.null(dim(x)))
+    t(x) else as.matrix(x)
   
   nr <- nrow(x)
   nc <- ncol(x)
@@ -2205,12 +2206,14 @@ upset <- function(x, xat = NULL, yat = NULL, col = c('black', 'white'),
   
   ## background rect/points
   usr <- par('usr')
-  pad <- min(diff(abs(yat)) / 2)
+  pad <- if (nr == 1L)
+    NA else min(diff(abs(yat)) / 2)
   
-  sapply(seq.int(nr), function(ri) {
-    rect(usr[1L], yat[ri] - pad, usr[2L], yat[ri] + pad,
-         border = NA, col = col.rect[ri], xpd = NA)
-  })
+  if (!is.na(pad))
+    sapply(seq.int(nr), function(ri) {
+      rect(usr[1L], yat[ri] - pad, usr[2L], yat[ri] + pad,
+           border = NA, col = col.rect[ri], xpd = NA)
+    })
   points(xat[col(x)], yat[row(x)], pch = 21L, col = col.na, bg = col.na, xpd = NA)
   
   ## main
@@ -2224,7 +2227,7 @@ upset <- function(x, xat = NULL, yat = NULL, col = c('black', 'white'),
     }
     
     points(dd$x, dd$y, pch = 21L, bg = col[(dd$p > 0) + 1L],
-           col = 'black', xpd = NA, type = 'o')
+           col = 'black', xpd = NA, type = 'o', lwd = 0.5)
   })
   
   ## labels
