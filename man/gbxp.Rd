@@ -63,7 +63,8 @@ gbxp(
     Currently, \code{yaxs} and \code{ylim} are used \sQuote{along the
       boxplot}, i.e., vertically, when \code{horizontal} is
     false, and \code{xlim} horizontally.
-    \code{xaxt}, \code{yaxt}, \code{las}, \code{cex.axis}, and
+    \code{xaxt}, \code{yaxt}, \code{las}, \code{cex.axis},
+    \code{gap.axis}, and
     \code{col.axis} are passed to \code{\link[graphics]{axis}}, and \code{main},
     \code{cex.main}, \code{col.main}, \code{sub}, \code{cex.sub},
     \code{col.sub}, \code{xlab}, \code{ylab}, \code{cex.lab}, and

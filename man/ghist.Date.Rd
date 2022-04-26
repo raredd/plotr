@@ -47,7 +47,7 @@
 
 \item{...}{\link[graphics]{graphical parameters}, or arguments to
     \code{\link[graphics]{hist.default}} such as \code{include.lowest},
-      \code{right} and \code{labels}.}
+    \code{density} and \code{labels}.}
 
 \item{xlab}{a character string giving the label for the x axis, if plotted.}
 
