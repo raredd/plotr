@@ -1,6 +1,6 @@
 ### some less useful plots
 # waffle, histr, shist, propfall, bibar, dose_esc, boxline, inbar, tracebar,
-# toxplot, tableplot, barplot2, spider, dotplot, barprop, upset
+# toxplot, tableplot, barplot2, spider, dotplot, barprop, upset, tallbar
 ###
 
 
@@ -1575,7 +1575,7 @@ tableplot <- function(x, y = NULL, table, title = NULL,
 #' ## same but manually
 #' bp <- barplot2(x, axisnames = FALSE, ann = FALSE)
 #' mtext(1:9, side = 1L, at = bp$at, line = 1)
-#' mtext(1:3, side = 1L, at = bp$group, line = 3)
+#' mtext(c('A', 'B', 'C'), side = 1L, at = bp$group, line = 3)
 #' 
 #' 
 #' ## simplified space argument
@@ -1588,7 +1588,11 @@ tableplot <- function(x, y = NULL, table, title = NULL,
 #' 
 #' 
 #' ## extra features - panel.first, panel.last
-#' barplot2(1:5, panel.first = {grid(0, NULL); abline(h = 4, col = 2)})
+#' barplot2(
+#'   1:5,
+#'   panel.first = {grid(0, NULL); abline(h = 4, col = 2)},
+#'   panel.last  = {abline(h = 4.5, col = 3)}
+#' )
 #' 
 #' @export
 
@@ -1669,7 +1673,7 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
       main = main, sub = sub, xlab = xlab, ylab = ylab, xlim = xlim,
       ylim = ylim, xpd = xpd, log = log, axes = axes, axisnames = axisnames,
       cex.axis = cex.axis, cex.names = cex.names, axis.lty = axis.lty,
-      offset = offset, add = add, ann = ann, args.legend = args.legend
+      offset = offset, add = add, ann = ann, args.legend = args.legend, ...
     )
     
     gr <- if (is.null(d) || is.null(dim(bp)) || ncol(bp) == 1L)
@@ -2239,4 +2243,87 @@ upset <- function(x, xat = NULL, yat = NULL, col = c('black', 'white'),
   }
   
   invisible(NULL)
+}
+
+#' Tall barplots
+#' 
+#' Stack multiple bar plots vertically (or horizontally).
+#' 
+#' @param height a list of \code{\link{barplot}}s having either a single row
+#'   or a common row variable
+#' @param labels,groups labels for each bar plot in \code{height} and
+#'   (optionally) for groups of bar plots
+#' @param horiz logical the direction of the bars
+#' @param ... additional arguments passed to \code{\link{barplot2}}
+#' 
+#' @return
+#' The default return of \code{\link{barplot2}} plus additional elements
+#' \code{names}, \code{labels}, and \code{groups} giving the tick coordinates
+#' and labels for each, useful for finer control over the axes; see examples.
+#' 
+#' @examples
+#' x <- mtcars[, sapply(mtcars, function(x) length(unique(x)) < 5)]
+#' y <- sapply(x, simplify = FALSE, function(x) t(table(x, mtcars$mpg > 25)))
+#' x <- sapply(x, simplify = FALSE, function(x) t(table(x)))
+#' 
+#' tallbar(x, horiz = FALSE)
+#' tallbar(x, las = 1)
+#' tallbar(x, las = 1, groups = c('Group 2' = 2, 'Group 3' = 4))
+#' 
+#' bp <- tallbar(
+#'   y, horiz = TRUE, las = 1, axisnames = FALSE,
+#'   groups = c('Group 2' = 2, 'Group 3' = 4)
+#' )
+#' axis(2, bp$names,  names(bp$names),  las = 1, lwd = 0)
+#' axis(2, bp$labels, names(bp$labels), las = 1, lwd = 0, font = 3)
+#' axis(2, bp$groups, names(bp$groups), las = 1, lwd = 0, font = 2)
+#' 
+#' @export
+
+tallbar <- function(height, labels = names(height), groups = NULL,
+                    horiz = TRUE, ...) {
+  stopifnot(
+    inherits(height, 'list'),
+    length(height) == length(labels)
+  )
+  
+  lp <- '--h--'
+  gp <- '--g--'
+  
+  h <- lapply(seq_along(height), function(ii) {
+    x <- height[[ii]]
+    x <- cbind(NA, x, NA)
+    colnames(x)[1L] <- lp
+    if (ii %in% groups) {
+      x <- cbind(NA, x)
+      colnames(x)[1L] <- gp
+    }
+    x
+  })
+  
+  xx <- do.call('cbind', h)
+  ii <- identity
+  if (horiz) {
+    xx <- xx[, rev(seq.int(ncol(xx))), drop = FALSE]
+    ii <- rev
+  } else {
+    
+  }
+  
+  lb <- grepl(lp, colnames(xx))
+  gr <- grepl(gp, colnames(xx))
+  
+  colnames(xx)[lb] <- ii(labels)
+  colnames(xx)[gr] <- ii(names(groups))
+  
+  bp <- barplot2(xx, horiz = horiz, ...)
+  sn <- function(x) {
+    setNames(bp$at[x], colnames(xx)[x])
+  }
+  
+  bp$names  <- sn(!(lb | gr))
+  bp$labels <- sn(lb)
+  bp$groups <- sn(gr)
+  
+  invisible(bp)
 }
