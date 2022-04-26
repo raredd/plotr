@@ -189,7 +189,7 @@ barplot2(x, names.arg = list(A = 1:3, B = 4:6, C = 7:9))
 ## same but manually
 bp <- barplot2(x, axisnames = FALSE, ann = FALSE)
 mtext(1:9, side = 1L, at = bp$at, line = 1)
-mtext(1:3, side = 1L, at = bp$group, line = 3)
+mtext(c('A', 'B', 'C'), side = 1L, at = bp$group, line = 3)
 
 
 ## simplified space argument
@@ -202,6 +202,10 @@ barplot2(
 
 
 ## extra features - panel.first, panel.last
-barplot2(1:5, panel.first = {grid(0, NULL); abline(h = 4, col = 2)})
+barplot2(
+  1:5,
+  panel.first = {grid(0, NULL); abline(h = 4, col = 2)},
+  panel.last  = {abline(h = 4.5, col = 3)}
+)
 
 }
