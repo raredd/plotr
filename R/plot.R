@@ -1081,7 +1081,7 @@ dsplot.formula <- function(formula, data = NULL, ...,
   args <- lapply(m$..., eval, data, parent.frame(1L))
   nmargs <- names(args)
   
-  form <- as.character(formula)
+  form <- as.character(as.list(formula))
   args <- modifyList(list(xlab = form[3L], ylab = form[2L]), args)
   
   if ('main' %in% nmargs) args[['main']] <- enquote(args[['main']])
