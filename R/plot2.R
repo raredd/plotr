@@ -1642,6 +1642,7 @@ barplot2 <- function(height, width = 1, space = NULL, names.arg = NULL,
     panel.first
     barplot(
       m, width = width, space = s, axisnames = FALSE,
+      main = main, xlab = xlab, ylab = ylab, sub = sub,
       legend.text = legend.text, beside = FALSE, horiz = horiz,
       density = density, angle = angle, col = col, border = border,
       xpd = xpd, log = log, axes = FALSE, add = TRUE, ann = ann,
