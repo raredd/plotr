@@ -84,30 +84,18 @@ ghist(x, ...)
     degrees (counter-clockwise).}
 
 \item{col}{a colour to be used to fill the bars.
-    The default of \code{NULL} yields unfilled bars.}
+    The default used to be \code{NULL} (unfilled bars) in \R versions before 4.0.0.}
 
 \item{border}{the color of the border around the bars.  The default
     is to use the standard foreground color.}
 
-\item{main}{main title and axis labels: these arguments to
+\item{main, xlab, ylab}{main title and axis labels: these arguments to
     \code{\link[graphics]{title}()} get \dQuote{smart} defaults here, e.g., the default
     \code{ylab} is \code{"Frequency"} iff \code{freq} is true.}
 
-\item{xlim}{the range of x and y values with sensible defaults.
+\item{xlim, ylim}{the range of x and y values with sensible defaults.
     Note that \code{xlim} is \emph{not} used to define the histogram (breaks),
     but only for plotting (when \code{plot = TRUE}).}
-
-\item{ylim}{the range of x and y values with sensible defaults.
-    Note that \code{xlim} is \emph{not} used to define the histogram (breaks),
-    but only for plotting (when \code{plot = TRUE}).}
-
-\item{xlab}{main title and axis labels: these arguments to
-    \code{\link[graphics]{title}()} get \dQuote{smart} defaults here, e.g., the default
-    \code{ylab} is \code{"Frequency"} iff \code{freq} is true.}
-
-\item{ylab}{main title and axis labels: these arguments to
-    \code{\link[graphics]{title}()} get \dQuote{smart} defaults here, e.g., the default
-    \code{ylab} is \code{"Frequency"} iff \code{freq} is true.}
 
 \item{axes}{logical.  If \code{TRUE} (default), axes are draw if the
     plot is drawn.}

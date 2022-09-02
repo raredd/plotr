@@ -79,25 +79,14 @@ gspineplot(x, ...)
 \item{col}{a vector of fill colors of the same length as \code{levels(y)}.
     The default is to call \code{\link{gray.colors}}.}
 
-\item{main}{character strings for annotation}
+\item{main, xlab, ylab}{character strings for annotation}
 
-\item{xlab}{character strings for annotation}
-
-\item{ylab}{character strings for annotation}
-
-\item{xaxlabels}{character vectors for annotation of x and y axis.
+\item{xaxlabels, yaxlabels}{character vectors for annotation of x and y axis.
     Default to \code{levels(y)} and \code{levels(x)}, respectively for the
     spine plot. For \code{xaxlabels} in the spinogram, the breaks are
     used.}
 
-\item{yaxlabels}{character vectors for annotation of x and y axis.
-    Default to \code{levels(y)} and \code{levels(x)}, respectively for the
-    spine plot. For \code{xaxlabels} in the spinogram, the breaks are
-    used.}
-
-\item{xlim}{the range of x and y values with sensible defaults.}
-
-\item{ylim}{the range of x and y values with sensible defaults.}
+\item{xlim, ylim}{the range of x and y values with sensible defaults.}
 
 \item{axes}{logical.  If \code{FALSE} all axes (including those giving
     level names) are suppressed.}

@@ -15,9 +15,7 @@
 )
 }
 \arguments{
-\item{x}{numeric or factor. \code{y} may be missing.}
-
-\item{y}{numeric or factor. \code{y} may be missing.}
+\item{x, y}{numeric or factor. \code{y} may be missing.}
 
 \item{legend.text}{character vector for annotation of y axis in the
       case of a factor \code{y}: defaults to \code{levels(y)}.  This

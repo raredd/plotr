@@ -105,9 +105,7 @@ is mapped to \code{col} and recycled for each column of \code{height}}
     lines, \code{border = TRUE} means use the same colour for
     the border as for the shading lines.}
 
-\item{main}{overall and sub title for the plot.}
-
-\item{sub}{overall and sub title for the plot.}
+\item{main, sub}{main title and subtitle for the plot.}
 
 \item{xlab}{a label for the x axis.}
 

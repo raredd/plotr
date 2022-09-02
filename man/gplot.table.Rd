@@ -27,9 +27,7 @@
 
 \item{lwd}{line width for bars when \code{type = "h"} is used in the 1D case.}
 
-\item{xlab}{x- and y-axis labels.}
-
-\item{ylab}{x- and y-axis labels.}
+\item{xlab, ylab}{x- and y-axis labels.}
 
 \item{frame.plot}{logical indicating if a frame (\code{\link[graphics]{box}})
     should be drawn in the 1D case.  Defaults to true when \code{x} has

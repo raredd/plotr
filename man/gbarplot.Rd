@@ -106,17 +106,16 @@ gbarplot(height, ...)
     degrees (counter-clockwise), for the bars or bar components.}
 
 \item{col}{a vector of colors for the bars or bar components.
-    By default, grey is used if \code{height} is a vector, and a
-    gamma-corrected grey palette if \code{height} is a matrix.}
+    By default, \code{"grey"} is used if \code{height} is a vector, and a
+    gamma-corrected grey palette if \code{height} is a matrix;
+    see \code{\link{grey.colors}}.}
 
 \item{border}{the color to be used for the border of the bars.
     Use \code{border = NA} to omit borders.  If there are shading
     lines, \code{border = TRUE} means use the same colour for
     the border as for the shading lines.}
 
-\item{main}{overall and sub title for the plot.}
-
-\item{sub}{overall and sub title for the plot.}
+\item{main, sub}{main title and subtitle for the plot.}
 
 \item{xlab}{a label for the x axis.}
 

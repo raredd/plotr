@@ -41,9 +41,7 @@ gcurve(
     \link{expression} written as a function of \code{x} which will
     evaluate to an object of the same length as \code{x}.}
 
-\item{from}{the range over which the function will be plotted.}
-
-\item{to}{the range over which the function will be plotted.}
+\item{from, to}{the range over which the function will be plotted.}
 
 \item{n}{integer; the number of x values at which to evaluate.}
 
@@ -56,33 +54,6 @@ gcurve(
 \item{type}{plot type: see \code{\link[graphics]{plot.default}}.}
 
 \item{xname}{character string giving the name to be used for the x axis.}
-
-\item{xlab}{labels and \link[graphics]{graphical parameters}
-    can also be specified as arguments.  See \sQuote{Details} for the
-    interpretation of the default for \code{log}.
-
-    For the \code{"function"} method of \code{plot}, \code{\dots} can
-    include any of the other arguments of \code{curve}, except
-    \code{expr}.
-  }
-
-\item{ylab}{labels and \link[graphics]{graphical parameters}
-    can also be specified as arguments.  See \sQuote{Details} for the
-    interpretation of the default for \code{log}.
-
-    For the \code{"function"} method of \code{plot}, \code{\dots} can
-    include any of the other arguments of \code{curve}, except
-    \code{expr}.
-  }
-
-\item{log}{labels and \link[graphics]{graphical parameters}
-    can also be specified as arguments.  See \sQuote{Details} for the
-    interpretation of the default for \code{log}.
-
-    For the \code{"function"} method of \code{plot}, \code{\dots} can
-    include any of the other arguments of \code{curve}, except
-    \code{expr}.
-  }
 
 \item{xlim}{\code{NULL} or a numeric vector of length 2;
     if non-\code{NULL} it provides the defaults for \code{c(from, to)}

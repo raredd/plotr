@@ -20,13 +20,7 @@
 \arguments{
 \item{x}{a \code{"density"} object.}
 
-\item{main}{plotting parameters with useful defaults.}
-
-\item{xlab}{plotting parameters with useful defaults.}
-
-\item{ylab}{plotting parameters with useful defaults.}
-
-\item{type}{plotting parameters with useful defaults.}
+\item{main, xlab, ylab, type}{plotting parameters with useful defaults.}
 
 \item{zero.line}{logical; if \code{TRUE}, add a base line at \eqn{y = 0}}
 

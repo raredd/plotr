@@ -58,14 +58,7 @@ gmatlines(
 )
 }
 \arguments{
-\item{x}{vectors or matrices of data for plotting.  The number of
-    rows should match.  If one of them are missing, the other is taken
-    as \code{y} and an \code{x} vector of \code{1:n} is used.
-    Missing values (\code{NA}s) are allowed.  Since \R 4.0.0,
-    \code{\link{class}(.)}es of \code{x} and \code{y} such as
-    \code{"\link{Date}"} are typically preserved.}
-
-\item{y}{vectors or matrices of data for plotting.  The number of
+\item{x, y}{vectors or matrices of data for plotting.  The number of
     rows should match.  If one of them are missing, the other is taken
     as \code{y} and an \code{x} vector of \code{1:n} is used.
     Missing values (\code{NA}s) are allowed.  Since \R 4.0.0,
@@ -80,19 +73,7 @@ gmatlines(
     Characters in \code{type} are cycled through; e.g., \code{"pl"}
     alternately plots points and lines.}
 
-\item{lty}{vector of line types, widths, and end styles.
-    The first element is for the first column, the second element for
-    the second column, etc., even if lines are not plotted for all
-    columns. Line types will be used cyclically until all plots are
-    drawn.}
-
-\item{lwd}{vector of line types, widths, and end styles.
-    The first element is for the first column, the second element for
-    the second column, etc., even if lines are not plotted for all
-    columns. Line types will be used cyclically until all plots are
-    drawn.}
-
-\item{lend}{vector of line types, widths, and end styles.
+\item{lty, lwd, lend}{vector of line types, widths, and end styles.
     The first element is for the first column, the second element for
     the second column, etc., even if lines are not plotted for all
     columns. Line types will be used cyclically until all plots are
@@ -116,13 +97,9 @@ gmatlines(
     default \code{NA} corresponds to the one of the underlying function
     \code{\link[graphics]{plot.xy}}.}
 
-\item{xlab}{titles for x and y axes, as in \code{\link[graphics]{plot}}.}
+\item{xlab, ylab}{titles for x and y axes, as in \code{\link[graphics]{plot}}.}
 
-\item{ylab}{titles for x and y axes, as in \code{\link[graphics]{plot}}.}
-
-\item{xlim}{ranges of x and y axes, as in \code{\link[graphics]{plot}}.}
-
-\item{ylim}{ranges of x and y axes, as in \code{\link[graphics]{plot}}.}
+\item{xlim, ylim}{ranges of x and y axes, as in \code{\link[graphics]{plot}}.}
 
 \item{add}{logical.  If \code{TRUE}, plots are added to current one,
     using \code{\link[graphics]{points}} and \code{\link[graphics]{lines}}.}

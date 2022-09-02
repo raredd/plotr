@@ -37,15 +37,7 @@ gqqplot(
 \arguments{
 \item{y}{The second or only data sample.}
 
-\item{ylim}{graphical parameters.}
-
-\item{main}{plot labels.  The \code{xlab} and \code{ylab}
-    refer to the y and x axes respectively if \code{datax = TRUE}.}
-
-\item{xlab}{plot labels.  The \code{xlab} and \code{ylab}
-    refer to the y and x axes respectively if \code{datax = TRUE}.}
-
-\item{ylab}{plot labels.  The \code{xlab} and \code{ylab}
+\item{xlab, ylab, main}{plot labels.  The \code{xlab} and \code{ylab}
     refer to the y and x axes respectively if \code{datax = TRUE}.}
 
 \item{plot.it}{logical. Should the result be plotted?}

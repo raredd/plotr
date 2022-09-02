@@ -70,14 +70,9 @@ gsunflowerplot(x, ...)
     \code{x} and \code{y} are rounded to \code{digits} significant
     digits before multiplicities are computed.}
 
-\item{xlab}{character label for x-, or y-axis, respectively.}
+\item{xlab, ylab}{character label for x-, or y-axis, respectively.}
 
-\item{ylab}{character label for x-, or y-axis, respectively.}
-
-\item{xlim}{\code{numeric(2)} limiting the extents of the x-,
-    or y-axis.}
-
-\item{ylim}{\code{numeric(2)} limiting the extents of the x-,
+\item{xlim, ylim}{\code{numeric(2)} limiting the extents of the x-,
     or y-axis.}
 
 \item{add}{logical; should the plot be added on a previous one ?
@@ -96,10 +91,7 @@ gsunflowerplot(x, ...)
     center points \emph{when there are flower leaves},
     i.e., \code{cex / cex.fact} is used for these.}
 
-\item{col}{colors for the plot symbols, passed to
-    \code{\link[graphics]{plot.default}}.}
-
-\item{bg}{colors for the plot symbols, passed to
+\item{col, bg}{colors for the plot symbols, passed to
     \code{\link[graphics]{plot.default}}.}
 
 \item{size}{of sunflower leaves in inches, 1[in] := 2.54[cm].

@@ -86,30 +86,18 @@ gstripchart(x, ...)
     be drawn, particularly when \code{add = TRUE};
     defaults to \code{1:n} where \code{n} is the number of boxes.}
 
-\item{xlim}{plot limits: see \code{\link[graphics]{plot.window}}.}
+\item{xlim, ylim}{plot limits: see \code{\link[graphics]{plot.window}}.}
 
-\item{ylim}{plot limits: see \code{\link[graphics]{plot.window}}.}
+\item{ylab, xlab}{labels: see \code{\link[graphics]{title}}.}
 
-\item{ylab}{labels: see \code{\link[graphics]{title}}.}
-
-\item{xlab}{labels: see \code{\link[graphics]{title}}.}
-
-\item{dlab}{alternate way to specify axis labels: see \sQuote{Details}.}
-
-\item{glab}{alternate way to specify axis labels: see \sQuote{Details}.}
+\item{dlab, glab}{alternate way to specify axis labels: see \sQuote{Details}.}
 
 \item{log}{on which axes to use a log scale:  see
     \code{\link[graphics]{plot.default}}}
 
-\item{pch}{Graphical parameters: see \code{\link[graphics]{par}}.}
+\item{pch, col, cex}{Graphical parameters: see \code{\link[graphics]{par}}.}
 
-\item{col}{Graphical parameters: see \code{\link[graphics]{par}}.}
-
-\item{cex}{Graphical parameters: see \code{\link[graphics]{par}}.}
-
-\item{axes}{Axis control:  see \code{\link[graphics]{plot.default}}.}
-
-\item{frame.plot}{Axis control:  see \code{\link[graphics]{plot.default}}.}
+\item{axes, frame.plot}{Axis control:  see \code{\link[graphics]{plot.default}}.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}
 

@@ -29,7 +29,7 @@
 )
 }
 \arguments{
-\item{x}{a \code{histogram} object, or a list with components
+\item{x}{a \code{histogram} object, or a \code{\link{list}} with components
     \code{density}, \code{mid}, etc, see \code{\link[graphics]{hist}} for
     information about the components of \code{x}.}
 
@@ -39,34 +39,21 @@
     (probabilities), i.e., \code{x$density}, are plotted.  The
     default is true for equidistant \code{breaks} and false otherwise.}
 
-\item{density}{select shading of bars by lines:
+\item{angle, density}{select shading of bars by lines:
     see \code{\link[graphics]{rect}}.}
 
-\item{angle}{select shading of bars by lines:
-    see \code{\link[graphics]{rect}}.}
-
-\item{col}{a colour to be used to fill the bars.  The default of
-    \code{NULL} yields unfilled bars.}
+\item{col}{a colour to be used to fill the bars.  The default has been
+    changed from \code{NULL} (unfilled bars) only for \R 4.2.0 for
+    consistency with the change in \code{\link[graphics]{hist.default}} for \R 4.0.0.}
 
 \item{border}{the color of the border around the bars.}
 
 \item{lty}{the line type used for the bars, see also \code{\link[graphics]{lines}}.}
 
-\item{main}{these arguments to \code{title} have useful
+\item{main, sub, xlab, ylab}{these arguments to \code{title} have useful
     defaults here.}
 
-\item{sub}{these arguments to \code{title} have useful
-    defaults here.}
-
-\item{xlab}{these arguments to \code{title} have useful
-    defaults here.}
-
-\item{ylab}{these arguments to \code{title} have useful
-    defaults here.}
-
-\item{xlim}{the range of x and y values with sensible defaults.}
-
-\item{ylim}{the range of x and y values with sensible defaults.}
+\item{xlim, ylim}{the range of x and y values with sensible defaults.}
 
 \item{axes}{logical, indicating if axes should be drawn.}
 

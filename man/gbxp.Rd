@@ -55,56 +55,6 @@ gbxp(
     and \code{outcol} options (see below).
   }
 
-\item{pars}{\link[graphics]{graphical parameters} (etc) can be passed as
-    arguments to this function, either as a list (\code{pars}) or
-    normally(\code{\dots}), see the following.  (Those in \code{\dots}
-    take precedence over those in \code{pars}.)
-
-    Currently, \code{yaxs} and \code{ylim} are used \sQuote{along the
-      boxplot}, i.e., vertically, when \code{horizontal} is
-    false, and \code{xlim} horizontally.
-    \code{xaxt}, \code{yaxt}, \code{las}, \code{cex.axis},
-    \code{gap.axis}, and
-    \code{col.axis} are passed to \code{\link[graphics]{axis}}, and \code{main},
-    \code{cex.main}, \code{col.main}, \code{sub}, \code{cex.sub},
-    \code{col.sub}, \code{xlab}, \code{ylab}, \code{cex.lab}, and
-    \code{col.lab} are passed to \code{\link[graphics]{title}}.
-
-    In addition, \code{axes} is accepted (see
-    \code{\link[graphics]{plot.window}}), with default \code{TRUE}.
-
-    The following arguments (or \code{pars} components) allow further
-    customization of the boxplot graphics.  Their defaults are typically
-    determined from the non-prefixed version (e.g., \code{boxlty} from
-    \code{lty}), either from the specified argument or \code{pars}
-    component or the corresponding \code{\link[graphics]{par}} one.
-    \describe{
-      \item{boxwex:}{a scale factor to be applied to all boxes.  When there
-        are only a few groups, the appearance of the plot can be improved by
-        making the boxes narrower.  The default depends on \code{at} and
-        typically is \eqn{0.8}.}
-      \item{staplewex, outwex:}{staple and outlier line width expansion,
-        proportional to box width; both default to 0.5.}
-      \item{boxlty, boxlwd, boxcol, boxfill:}{box outline type, width,
-        color, and fill color (which currently defaults to \code{col} and will
-        in future default to \code{par("bg")}).}
-      \item{medlty, medlwd, medpch, medcex, medcol, medbg:}{median line type,
-        line width, point character, point size expansion, color, and
-        background color.  The default \code{medpch = NA} suppresses the
-        point, and \code{medlty = "blank"} does so for the line.
-        Note that \code{medlwd} defaults to
-        \eqn{3\times}{3x} the default \code{lwd}.}
-      \item{whisklty, whisklwd, whiskcol:}{whisker line type (default:
-        \code{"dashed"}), width, and color.}
-      \item{staplelty, staplelwd, staplecol:}{staple (= end of whisker) line
-        type, width, and color.}
-      \item{outlty, outlwd, outpch, outcex, outcol, outbg:}{outlier line
-        type, line width, point character, point size expansion, color, and
-        background color.  The default \code{outlty =  "blank"} suppresses the
-        lines and \code{outpch = NA} suppresses points.}
-    }
-  }
-
 \item{horizontal}{logical indicating if the  boxplots should be
     horizontal; default \code{FALSE} means vertical boxes.}
 

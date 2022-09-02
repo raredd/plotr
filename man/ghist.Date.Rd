@@ -34,7 +34,8 @@
 )
 }
 \arguments{
-\item{x}{an object inheriting from class \code{"POSIXt"} or \code{"Date"}.}
+\item{x}{an object inheriting from class \code{"\link{POSIXt}"}
+    or \code{"\link{Date}"}.}
 
 \item{breaks}{
     a vector of cut points \emph{or} number giving the number of

@@ -32,9 +32,16 @@
 \item{x}{\code{lm} object, typically result of \code{\link[stats]{lm}} or
     \code{\link[stats]{glm}}.}
 
-\item{which}{if a subset of the plots is required, specify a subset of
-    the numbers \code{1:6}, see \code{caption} below (and the
-    \sQuote{Details}) for the different kinds.}
+\item{which}{a subset of the numbers \code{1:6}, by default \code{1:3, 5},
+    referring to \enumerate{
+      \item "Residuals vs Fitted", aka \sQuote{Tukey-Anscombe} plot % 1
+      \item "Normal Q-Q" plot, an enhanced \code{\link[stats]{qqnorm}(resid(.))} % 2
+      \item "Scale-Location"     % 3
+      \item "Cook's distance"    % 4
+      \item "Residuals   vs  Leverage"      % 5
+      \item "Cook's dist vs Lev./(1-Lev.)"  % 6
+    }
+    See also \sQuote{Details} below.}
 
 \item{grid}{logical; if \code{TRUE}, a background grid will be drawn}
 
@@ -45,7 +52,8 @@
 \item{caption}{captions to appear above the plots;
     \code{\link{character}} vector or \code{\link{list}} of valid
     graphics annotations, see \code{\link{as.graphicsAnnot}}, of length
-    6, the j-th entry corresponding to \code{which[j]}.  Can be set to
+    6, the j-th entry corresponding to \code{which[j]}, see also the
+    default vector in \sQuote{Usage}.  Can be set to
     \code{""} or \code{NA} to suppress all captions.
   }
 
@@ -83,7 +91,7 @@
     most plots; see also \code{panel} above.}
 
 \item{label.pos}{positioning of labels, for the left half and right
-    half of the graph respectively, for plots 1-3.}
+    half of the graph respectively, for plots 1-3, 5, 6.}
 
 \item{cex.caption}{controls the size of \code{caption}.}
 }
