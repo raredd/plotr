@@ -2,7 +2,7 @@
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
 # click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot,
 # coords, fig, arrows2, carrows, laxis, pretty_sci, oom, parse_sci, caxis,
-# subrect
+# subrect, barlabel
 # 
 # unexported:
 # to_sci_
@@ -1669,4 +1669,73 @@ subrect <- function(xleft, ybottom, xright, ytop, type = c('diagonal', 'square')
   polygon(co, ...)
   
   invisible(co)
+}
+
+#' Bar plot labels
+#' 
+#' Add labels to a \code{\link{barplot}}.
+#' 
+#' @param x a vector or matrix of bar heights, typically the same object used
+#'   in \code{barplot(x)}
+#' @param at the position of the midpoint of each bar
+#' @param labels labels for each bar segment
+#' @param horiz logical; plot vertical (default) or horizontal bars
+#' @param hadj,vadj optional horizontal and vertical adjustments to the
+#'   calculated coordinates
+#' @param position the position for labels relative to each bar segment, one of
+#'   \code{"middle"} (default), \code{"top"}, or \code{"bottom"}
+#' @param plot logical; if \code{TRUE}, labels are drawn; otherwise, calculated
+#'   coordinates are returned invisibly
+#' @param ... additional graphical parameters passed to \code{\link{text}} or
+#'   further to \code{\link{par}}
+#' 
+#' @return
+#' A list containing the x- and y-coordinates at which \code{labels} were drawn.
+#' 
+#' @examples
+#' x <- table(mtcars$gear)
+#' barplot(x)
+#' barlabel(x, position = 'top', pos = 3L)
+#' 
+#' x <- table(mtcars$gear, mtcars$vs)
+#' barplot(x)
+#' barlabel(x, labels = sprintf('n = %s (%.1f%%)', x, x / colSums(x) * 109),
+#'          col = cm.colors(nrow(x)))
+#' 
+#' bp <- barplot(x, beside = TRUE)
+#' barlabel(x, beside = TRUE)
+#' 
+#' @export
+
+barlabel <- function(x, labels = x,
+                     at = barplot(x, plot = FALSE, horiz = horiz, beside = beside),
+                     horiz = FALSE, beside = FALSE, hadj = 0, vadj = 0,
+                     position = c('middle', 'top', 'bottom'),
+                     plot = TRUE, ...) {
+  if (!is.matrix(x))
+    x <- t(x)
+  if (beside) {
+    at <- c(at)
+    x <- t(matrix(x))
+  }
+  
+  yat <- switch(
+    match.arg(position),
+    top = apply(x, 2L, cumsum),
+    bottom = apply(rbind(0, x), 2L, cumsum)[-(nrow(x) + 1L), ],
+    middle = apply(rbind(0, x), 2L, cumsum)[-(nrow(x) + 1L), ] + x / 2
+  )
+  
+  if (horiz) {
+    xat <- yat + vadj
+    yat <- at[col(x)] + hadj
+  } else {
+    xat <- at[col(x)] + hadj
+    yat <- yat + vadj
+  }
+  
+  if (plot)
+    text(xat, yat, labels, xpd = NA, ...)
+  
+  invisible(list(x = xat, y = yat))
 }
