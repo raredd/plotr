@@ -2,9 +2,12 @@
 % Please edit documentation in R/plot_extra.R
 \name{fig}
 \alias{fig}
+\alias{fig2}
 \title{Determine figure location}
 \usage{
 fig(idx, dim, byrow = TRUE)
+
+fig2(idx, dim, byrow = TRUE, nfig = prod(dim))
 }
 \arguments{
 \item{idx}{the figure index}
@@ -15,9 +18,12 @@ fig(idx, dim, byrow = TRUE)
 \item{byrow}{logical; use \code{FALSE} if \code{par(mfcol = )} was used
 since this sets figures to be column-major; otherwise, figures are assumed
 to be drawn row-major}
+
+\item{nfig}{the number of figures that will be drawn}
 }
 \description{
 Convenience function to determine the location of a figure within a matrix.
+\code{fig2} will also identify edge figures.
 }
 \examples{
 op <- par(no.readonly = TRUE)
@@ -49,6 +55,23 @@ matrix(names(i), 1, 4, byrow = TRUE)
 i <- fig(1:4, c(4, 1))
 matrix(names(i), 4, 1, byrow = TRUE)
 
+## which figures are on the edges
+par(mfrow = c(3, 3))
+i <- fig2(1:7, par('mfrow'), nfig = 7)
+tmp <- sapply(1:7, function(ii) {
+  plot(
+    1,
+    main = ifelse(i$top[ii], 'main', ''),
+    xlab = ifelse(i$bottom[ii], 'x label', ''),
+    ylab = ifelse(i$left[ii], 'y label', '')
+  )
+  if (i$right[ii])
+    axis(4L)
+  idx <- c(i$bottom[ii], i$right[ii], i$left[ii], i$top[ii])
+  legend('top', bty = 'n', legend = toString(
+    c('bottom', 'right', 'left', 'top')[idx]
+  ))
+})
 
 ## example usage
 pars <- list(

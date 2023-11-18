@@ -1,8 +1,8 @@
 ### plotting extras
 # color_bar, zoomin, ptlocator, polyShade, bpCI, pstar_, inset, grcols,
 # click_text, click_shape, ctext, cmtext, ctitle, ctext_, polygon2, subplot,
-# coords, fig, arrows2, carrows, laxis, pretty_sci, oom, parse_sci, caxis,
-# subrect, barlabel
+# coords, fig, fig2, arrows2, carrows, laxis, pretty_sci, oom, parse_sci,
+# caxis, subrect, barlabel
 # 
 # unexported:
 # to_sci_
@@ -1109,6 +1109,7 @@ coords <- function(x = 0:1, y = x, to = 'user', line, side) {
 #' Determine figure location
 #' 
 #' Convenience function to determine the location of a figure within a matrix.
+#' \code{fig2} will also identify edge figures.
 #' 
 #' @param idx the figure index
 #' @param dim the dimensions of the figure matrix, usually set with
@@ -1147,6 +1148,23 @@ coords <- function(x = 0:1, y = x, to = 'user', line, side) {
 #' i <- fig(1:4, c(4, 1))
 #' matrix(names(i), 4, 1, byrow = TRUE)
 #' 
+#' ## which figures are on the edges
+#' par(mfrow = c(3, 3))
+#' i <- fig2(1:7, par('mfrow'), nfig = 7)
+#' tmp <- sapply(1:7, function(ii) {
+#'   plot(
+#'     1,
+#'     main = ifelse(i$top[ii], 'main', ''),
+#'     xlab = ifelse(i$bottom[ii], 'x label', ''),
+#'     ylab = ifelse(i$left[ii], 'y label', '')
+#'   )
+#'   if (i$right[ii])
+#'     axis(4L)
+#'   idx <- c(i$bottom[ii], i$right[ii], i$left[ii], i$top[ii])
+#'   legend('top', bty = 'n', legend = toString(
+#'     c('bottom', 'right', 'left', 'top')[idx]
+#'   ))
+#' })
 #' 
 #' ## example usage
 #' pars <- list(
@@ -1185,8 +1203,7 @@ fig <- function(idx, dim, byrow = TRUE) {
     'ltop', 'lcenter', 'lbottom', 'wleft', 'wcenter', 'wright'
   )
   mat <- if (is.matrix(dim))
-    dim
-  else matrix(seq.int(prod(dim)), dim[1L], dim[2L], byrow = byrow)
+    dim else matrix(seq.int(prod(dim)), dim[1L], dim[2L], byrow = byrow)
   
   res <- if (identical(dim(mat), c(1L, 1L)))
     rep_len(0L, length(idx))
@@ -1198,6 +1215,30 @@ fig <- function(idx, dim, byrow = TRUE) {
     which(fig(1:9, matrix(1:9, 3L, 3L, byrow = TRUE)) %in% fig(ii, mat)))
   
   setNames(res, loc[res + 1L])
+}
+
+#' @param nfig the number of figures that will be drawn
+#' 
+#' @rdname fig
+#' @export
+fig2 <- function(idx, dim, byrow = TRUE, nfig = prod(dim)) {
+  mat <- matrix(NA, dim[1L], dim[2L])
+  if (byrow) {
+    mat <- t(mat)
+    mat[seq.int(nfig)] <- seq.int(nfig)
+    mat <- t(mat)
+  } else {
+    mat[seq.int(nfig)] <- seq.int(nfig)
+  }
+  
+  
+  list(
+    fig = fig(idx, dim, byrow),
+    bottom = idx %in% apply(mat, 2L, max, na.rm = TRUE),
+    right = idx %in% apply(mat, 1L, max, na.rm = TRUE),
+    left = idx %in% apply(mat, 1L, min, na.rm = TRUE),
+    top = idx %in% apply(mat, 2L, min, na.rm = TRUE)
+  )
 }
 
 #' Add filled arrows to a plot
